@@ -36,8 +36,6 @@ dependencies:
   msix: ^2.6.7
   process_run: ^0.12.3+1
   styled_widget: ^0.4.0+3
-  desktop_webview_window: ^0.1.5
-  webview_flutter: ^3.0.0
   path_provider: ^2.0.8
 
 dev_dependencies:
@@ -62,6 +60,7 @@ flutter:
   uses-material-design: true
   assets:
     - assets/
+    - assets/bin/
 
   # To add assets to your application, add an assets section, like this:
   # assets:
