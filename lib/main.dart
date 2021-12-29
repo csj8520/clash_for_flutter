@@ -68,10 +68,16 @@ class _MyHomePageState extends State<MyHomePage> {
   void _handleCick() async {
     // https://clash.razord.top/?host=127.0.0.1&port=3328#/proxies
 
+    String clashName = Platform.isWindows
+        ? 'clash-windows-amd64.exe'
+        : Platform.isMacOS
+            ? 'clash-darwin-arm64'
+            : '';
+
     Directory configDir = Directory(path.join(userHomePath, '.config', 'clash-pro'));
     Directory binDir = Directory(path.join(configDir.path, 'bin'));
     File configFile = File(path.join(configDir.path, '.config.yaml'));
-    File binFile = File(path.join(binDir.path, 'clash-windows-amd64.exe'));
+    File binFile = File(path.join(binDir.path, clashName));
 
     if (!await binDir.exists()) {
       log.info('Creater Dir', binDir);
@@ -79,15 +85,17 @@ class _MyHomePageState extends State<MyHomePage> {
     }
 
     if (!(await binFile.exists())) {
-      log.info('Copy File From assets/bin/clash-windows-amd64.exe, to ${binFile.path}');
-      final bin = await rootBundle.load('assets/bin/clash-windows-amd64.exe');
+      log.info('Copy File From assets/bin/$clashName, to ${binFile.path}');
+      final bin = await rootBundle.load('assets/bin/$clashName');
       await binFile.writeAsBytes(bin.buffer.asUint8List(bin.offsetInBytes, bin.lengthInBytes));
+      // TODO: -fix Permission denied, operation not permitted
+      if (Platform.isMacOS) await Process.run('chmod', ['755', binFile.path]);
     }
 
     log.debug(binFile);
 
-    String config = await configFile.readAsString();
-    log.info(config);
+    // String config = await configFile.readAsString();
+    // log.info(config);
 
     log.time('exec time');
     final out = await Process.run(binFile.path, ['-v'], runInShell: false);
