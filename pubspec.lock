@@ -327,9 +327,11 @@ packages:
   system_tray:
     dependency: "direct main"
     description:
-      name: system_tray
-      url: "https://pub.flutter-io.cn"
-    source: hosted
+      path: "."
+      ref: HEAD
+      resolved-ref: "18332f5263872293f09833cd94249b7d6f525e8c"
+      url: "git@github.com:antler119/system_tray.git"
+    source: git
     version: "0.0.7"
   term_glyph:
     dependency: transitive

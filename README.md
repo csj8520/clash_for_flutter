@@ -35,3 +35,7 @@ https://github.com/flutter/flutter/issues/47891#issuecomment-708850435
 https://github.com/flutter/flutter/issues/47891#issuecomment-869729956
 
 https://github.com/dart-lang/sdk/issues/39945#issuecomment-870428151
+
+
+## fix macos run error
+https://github.com/bitsdojo/bitsdojo_window/issues/119#issuecomment-997190458

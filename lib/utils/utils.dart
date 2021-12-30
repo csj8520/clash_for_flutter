@@ -83,7 +83,12 @@ String clashName = Platform.isWindows
         : '';
 
 File mainFile = File(Platform.resolvedExecutable);
-Directory assetsDir = Platform.isWindows ? Directory(path.join(mainFile.parent.path, 'data', 'flutter_assets', 'assets')) : Directory('');
+Directory assetsDir = Platform.isWindows
+    ? Directory(path.join(mainFile.parent.path, 'data', 'flutter_assets', 'assets'))
+    : Platform.isMacOS
+        ? Directory(path.join(mainFile.parent.parent.path, 'Frameworks', 'App.framework', 'Resources', 'flutter_assets', 'assets'))
+        : Directory('');
+
 File clashFile = File(path.join(assetsDir.path, 'bin', clashName));
 
 Directory configDir = Directory(path.join(userHomePath, '.config', 'clash-pro'));

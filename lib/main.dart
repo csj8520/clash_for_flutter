@@ -91,7 +91,7 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
       MenuItem(label: 'Exit', onClicked: appWindow.close),
     ];
 
-    _systemTray.initSystemTray('Tray', iconPath: 'assets/bitbug_favicon.ico').then((value) {
+    _systemTray.initSystemTray(title: 'Tray', iconPath: 'assets/bitbug_favicon.ico').then((value) {
       _systemTray.setContextMenu(menu);
     });
 
@@ -128,8 +128,8 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
   void _handleCick() async {
     // https://clash.razord.top/?host=127.0.0.1&port=3328#/proxies
 
-    String config = await configFile.readAsString();
-    log.info(config);
+    // String config = await configFile.readAsString();
+    // log.info(config);
 
     log.time('exec time');
     final out = await Process.run(clashFile.path, ['-v']);
@@ -157,44 +157,50 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
 
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop: () async {
-        log.debug('WillPopScope');
-        return false;
-      },
-      child: Scaffold(
-        appBar: AppBar(
-          title: Text(widget.title),
+    return Scaffold(
+      // appBar: AppBar(
+      //   title: Text(widget.title),
+      // ),
+      body: WindowBorder(
+          color: const Color(0xff805306),
+          width: 1,
+          child: [
+            WindowTitleBarBox(
+                child: MoveWindow(
+              child: AppBar(
+                title: Text(widget.title),
+              ),
+            )),
+            const Text('data'),
+            ListView.builder(
+              padding: const EdgeInsets.only(left: 10, top: 10, right: 10, bottom: 10),
+              itemBuilder: (context, index) => _logs[index],
+              itemCount: _logs.length,
+              controller: _scrollController,
+            ).expanded()
+          ].toColumn()),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+      floatingActionButton: [
+        FloatingActionButton(
+          onPressed: _handleCick,
+          tooltip: 'Increment',
+          child: const Icon(Icons.add),
         ),
-        body: ListView.builder(
-          padding: const EdgeInsets.only(left: 10, top: 10, right: 10, bottom: 10),
-          itemBuilder: (context, index) => _logs[index],
-          itemCount: _logs.length,
-          controller: _scrollController,
+        FloatingActionButton(
+          onPressed: () {
+            log.debug(_scrollController.offset);
+            log.debug(_scrollController.position.maxScrollExtent);
+          },
+          tooltip: 'Increment',
+          child: const Icon(Icons.ac_unit),
         ),
-        floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-        floatingActionButton: [
-          FloatingActionButton(
-            onPressed: _handleCick,
-            tooltip: 'Increment',
-            child: const Icon(Icons.add),
-          ),
-          FloatingActionButton(
-            onPressed: () {
-              log.debug(_scrollController.offset);
-              log.debug(_scrollController.position.maxScrollExtent);
-            },
-            tooltip: 'Increment',
-            child: const Icon(Icons.ac_unit),
-          ),
-          FloatingActionButton(
-            onPressed: () {
-              exit(0);
-            },
-            child: const Icon(Icons.exit_to_app),
-          )
-        ].toRow(mainAxisAlignment: MainAxisAlignment.center).padding(bottom: 20),
-      ),
+        FloatingActionButton(
+          onPressed: () {
+            exit(0);
+          },
+          child: const Icon(Icons.exit_to_app),
+        )
+      ].toRow(mainAxisAlignment: MainAxisAlignment.center).padding(bottom: 20),
     );
   }
 }
