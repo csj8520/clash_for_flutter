@@ -1,16 +1,28 @@
 import 'dart:io';
 import 'dart:async';
 import 'dart:convert';
-import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:process_run/shell.dart';
 import 'package:path/path.dart' as path;
 import 'package:styled_widget/styled_widget.dart';
+import 'package:bitsdojo_window/bitsdojo_window.dart';
+import 'package:system_tray/system_tray.dart';
 
 import 'package:clashf_pro/utils/utils.dart';
 
 void main() {
   runApp(const MyApp());
+  doWhenWindowReady(() {
+    final win = appWindow;
+    const initialSize = Size(600, 450);
+    win.minSize = initialSize;
+    win.size = initialSize;
+    win.alignment = Alignment.center;
+    win.title = "How to use system tray with Flutter";
+    win.show();
+  });
 }
 
 class MyApp extends StatelessWidget {
@@ -37,19 +49,23 @@ class MyHomePage extends StatefulWidget {
   State<MyHomePage> createState() => _MyHomePageState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
+class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
   final List<Widget> _logs = [];
   final ScrollController _scrollController = ScrollController();
+  final SystemTray _systemTray = SystemTray();
+  // final AppWindow _appWindow = AppWindow();
+
   Timer? _timer;
-  bool _lockScroll = true;
+  bool _lockScrollToBottom = true;
   bool _notHandleScroll = false;
 
   @override
   void initState() {
     super.initState();
+
     _scrollController.addListener(() {
       if (_notHandleScroll) return;
-      _lockScroll = _scrollController.position.maxScrollExtent - _scrollController.offset < 20;
+      _lockScrollToBottom = _scrollController.position.maxScrollExtent - _scrollController.offset < 20;
     });
     log.on(onLog: (event) {
       setState(() {
@@ -57,60 +73,70 @@ class _MyHomePageState extends State<MyHomePage> {
       });
       _timer?.cancel();
       _timer = Timer(const Duration(milliseconds: 16), () {
-        if (!_lockScroll) return;
+        if (!_lockScrollToBottom) return;
         _notHandleScroll = true;
         _scrollController.position.moveTo(_scrollController.position.maxScrollExtent);
         _notHandleScroll = false;
       });
     });
+
+    configDir.watch(events: FileSystemEvent.modify).listen((event) {
+      log.debug(event.path);
+    });
+
+    // https://github.com/antler119/system_tray/blob/master/example/lib/main.dart
+    final menu = [
+      MenuItem(label: 'Show', onClicked: appWindow.show),
+      MenuItem(label: 'Hide', onClicked: appWindow.hide),
+      MenuItem(label: 'Exit', onClicked: appWindow.close),
+    ];
+
+    _systemTray.initSystemTray('Tray', iconPath: 'assets/bitbug_favicon.ico').then((value) {
+      _systemTray.setContextMenu(menu);
+    });
+
+    log.debug(Platform.version);
+    log.debug(Platform.resolvedExecutable);
+    log.debug(assetsDir);
+    log.debug(clashFile);
+    log.debug(configDir);
+    log.debug(configFile);
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    super.didChangeAppLifecycleState(state);
+    if (state == AppLifecycleState.resumed) {
+      log.debug("app进入前台");
+    } else if (state == AppLifecycleState.inactive) {
+      log.debug("app在前台但不响应事件，比如电话，touch id等");
+    } else if (state == AppLifecycleState.paused) {
+      log.debug("app进入后台");
+    } else if (state == AppLifecycleState.detached) {
+      log.debug("没有宿主视图但是flutter引擎仍然有效");
+    } else {
+      log.debug('state', state);
+    }
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    log.debug('exit');
   }
 
   void _handleCick() async {
     // https://clash.razord.top/?host=127.0.0.1&port=3328#/proxies
 
-    String clashName = Platform.isWindows
-        ? 'clash-windows-amd64.exe'
-        : Platform.isMacOS
-            ? 'clash-darwin-arm64'
-            : '';
-
-    Directory configDir = Directory(path.join(userHomePath, '.config', 'clash-pro'));
-    Directory binDir = Directory(path.join(configDir.path, 'bin'));
-    File configFile = File(path.join(configDir.path, '.config.yaml'));
-    File binFile = File(path.join(binDir.path, clashName));
-
-    if (!await binDir.exists()) {
-      log.info('Creater Dir', binDir);
-      await binDir.create(recursive: true);
-    }
-
-    if (!(await binFile.exists())) {
-      log.info('Copy File From assets/bin/$clashName, to ${binFile.path}');
-      final bin = await rootBundle.load('assets/bin/$clashName');
-      await binFile.writeAsBytes(bin.buffer.asUint8List(bin.offsetInBytes, bin.lengthInBytes));
-      // TODO: -fix Permission denied, operation not permitted
-      if (Platform.isMacOS) await Process.run('chmod', ['755', binFile.path]);
-    }
-
-    log.debug(binFile);
-
-    // String config = await configFile.readAsString();
-    // log.info(config);
+    String config = await configFile.readAsString();
+    log.info(config);
 
     log.time('exec time');
-    final out = await Process.run(binFile.path, ['-v'], runInShell: false);
+    final out = await Process.run(clashFile.path, ['-v']);
     log.info(out.stdout.toString().trim());
     log.timeEnd('exec time');
 
-    final calsh = await Process.start(
-        binFile.path,
-        [
-          '-d',
-          configDir.path,
-          '-f',
-          path.join(configDir.path, 'clash.yaml'),
-        ],
-        runInShell: false);
+    final calsh = await Process.start(clashFile.path, ['-d', configDir.path, '-f', path.join(configDir.path, 'clash.yaml')]);
 
     calsh.stdout.listen((event) {
       List<String> strs = utf8.decode(event).trim().split('\n');
@@ -131,31 +157,44 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.title),
-      ),
-      body: ListView.builder(
-        padding: const EdgeInsets.only(left: 10, top: 10, right: 10, bottom: 10),
-        itemBuilder: (context, index) => _logs[index],
-        itemCount: _logs.length,
-        controller: _scrollController,
-      ),
-      floatingActionButton: [
-        FloatingActionButton(
-          onPressed: _handleCick,
-          tooltip: 'Increment',
-          child: const Icon(Icons.add),
+    return WillPopScope(
+      onWillPop: () async {
+        log.debug('WillPopScope');
+        return false;
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text(widget.title),
         ),
-        FloatingActionButton(
-          onPressed: () {
-            log.debug(_scrollController.offset);
-            log.debug(_scrollController.position.maxScrollExtent);
-          },
-          tooltip: 'Increment',
-          child: const Icon(Icons.ac_unit),
-        )
-      ].toColumn(),
+        body: ListView.builder(
+          padding: const EdgeInsets.only(left: 10, top: 10, right: 10, bottom: 10),
+          itemBuilder: (context, index) => _logs[index],
+          itemCount: _logs.length,
+          controller: _scrollController,
+        ),
+        floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+        floatingActionButton: [
+          FloatingActionButton(
+            onPressed: _handleCick,
+            tooltip: 'Increment',
+            child: const Icon(Icons.add),
+          ),
+          FloatingActionButton(
+            onPressed: () {
+              log.debug(_scrollController.offset);
+              log.debug(_scrollController.position.maxScrollExtent);
+            },
+            tooltip: 'Increment',
+            child: const Icon(Icons.ac_unit),
+          ),
+          FloatingActionButton(
+            onPressed: () {
+              exit(0);
+            },
+            child: const Icon(Icons.exit_to_app),
+          )
+        ].toRow(mainAxisAlignment: MainAxisAlignment.center).padding(bottom: 20),
+      ),
     );
   }
 }

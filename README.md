@@ -15,13 +15,23 @@ For help getting started with Flutter, view our
 [online documentation](https://flutter.dev/docs), which offers tutorials,
 samples, guidance on mobile development, and a full API reference.
 
-
 ## dev
+
 ```
 flutter run -d windows
 ```
+
 ## build
+
 ```
 flutter build windows
 flutter pub run msix:create
 ```
+
+## Hide cmd window
+
+https://github.com/flutter/flutter/issues/47891#issuecomment-708850435
+
+https://github.com/flutter/flutter/issues/47891#issuecomment-869729956
+
+https://github.com/dart-lang/sdk/issues/39945#issuecomment-870428151

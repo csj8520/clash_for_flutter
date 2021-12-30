@@ -9,8 +9,14 @@ int APIENTRY wWinMain(_In_ HINSTANCE instance, _In_opt_ HINSTANCE prev,
                       _In_ wchar_t *command_line, _In_ int show_command) {
   // Attach to console when present (e.g., 'flutter run') or create a
   // new console when running with a debugger.
+  // https://github.com/flutter/flutter/issues/47891#issuecomment-708850435
+  // https://github.com/flutter/flutter/issues/47891#issuecomment-869729956
+  // https://github.com/dart-lang/sdk/issues/39945#issuecomment-870428151
   if (!::AttachConsole(ATTACH_PARENT_PROCESS) && ::IsDebuggerPresent()) {
     CreateAndAttachConsole();
+  } else {
+    AllocConsole();
+    ShowWindow(GetConsoleWindow(), SW_HIDE);
   }
 
   // Initialize COM, so that it is available for use in the library and/or

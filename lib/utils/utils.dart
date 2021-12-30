@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:process_run/process_run.dart' as run;
 import 'package:path/path.dart' as path;
+import 'package:process_run/shell.dart';
 
 class Event {
   final Map<String, List<Function>> _events = {};
@@ -37,19 +38,19 @@ class Logger extends Event {
     _emit('log', log);
   }
 
-  info(Object text, [Object? text2, Object? text3, Object? text4, Object? text5, Object? text6, Object? text7, Object? text8]) {
+  info(Object? text, [Object? text2, Object? text3, Object? text4, Object? text5, Object? text6, Object? text7, Object? text8]) {
     log(_join(text, text2, text3, text4, text5, text6, text7, text8), level: 'info');
   }
 
-  warning(Object text, [Object? text2, Object? text3, Object? text4, Object? text5, Object? text6, Object? text7, Object? text8]) {
+  warning(Object? text, [Object? text2, Object? text3, Object? text4, Object? text5, Object? text6, Object? text7, Object? text8]) {
     log(_join(text, text2, text3, text4, text5, text6, text7, text8), level: 'warning');
   }
 
-  error(Object text, [Object? text2, Object? text3, Object? text4, Object? text5, Object? text6, Object? text7, Object? text8]) {
+  error(Object? text, [Object? text2, Object? text3, Object? text4, Object? text5, Object? text6, Object? text7, Object? text8]) {
     log(_join(text, text2, text3, text4, text5, text6, text7, text8), level: 'error');
   }
 
-  debug(Object text, [Object? text2, Object? text3, Object? text4, Object? text5, Object? text6, Object? text7, Object? text8]) {
+  debug(Object? text, [Object? text2, Object? text3, Object? text4, Object? text5, Object? text6, Object? text7, Object? text8]) {
     log(_join(text, text2, text3, text4, text5, text6, text7, text8), level: 'debug');
   }
 
@@ -74,3 +75,16 @@ class Logger extends Event {
 }
 
 Logger log = Logger();
+
+String clashName = Platform.isWindows
+    ? 'clash-windows-amd64.exe'
+    : Platform.isMacOS
+        ? 'clash-darwin-arm64'
+        : '';
+
+File mainFile = File(Platform.resolvedExecutable);
+Directory assetsDir = Platform.isWindows ? Directory(path.join(mainFile.parent.path, 'data', 'flutter_assets', 'assets')) : Directory('');
+File clashFile = File(path.join(assetsDir.path, 'bin', clashName));
+
+Directory configDir = Directory(path.join(userHomePath, '.config', 'clash-pro'));
+File configFile = File(path.join(configDir.path, '.config.yaml'));
