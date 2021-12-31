@@ -55,6 +55,10 @@ FlutterWindow::MessageHandler(HWND hwnd, UINT const message,
     case WM_FONTCHANGE:
       flutter_controller_->engine()->ReloadSystemFonts();
       break;
+    case WM_CLOSE: // add this
+      ShowWindow(GetHandle(), SW_HIDE); // try this code
+      return 0;
+      break;
   }
 
   return Win32Window::MessageHandler(hwnd, message, wparam, lparam);
