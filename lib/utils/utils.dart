@@ -7,17 +7,17 @@ import 'package:process_run/shell.dart';
 class Event {
   final Map<String, List<Function>> _events = {};
 
-  _on(String key, Function handle) {
+  void _on(String key, Function handle) {
     final handles = _events[key] ??= [];
     if (!handles.contains(handle)) handles.add(handle);
   }
 
-  _emit(String key, dynamic arg) {
+  void _emit(String key, dynamic arg) {
     final handles = _events[key];
     handles?.forEach((it) => it(arg));
   }
 
-  _off(String key, Function handle) {
+  void _off(String key, Function handle) {
     final handles = _events[key];
     if (handles == null) return;
     handles.remove(handle);

@@ -3,29 +3,36 @@ import 'package:clashf_pro/containers/logs/logs.dart';
 import 'package:clashf_pro/utils/clash.dart';
 import 'package:flutter/material.dart';
 import 'package:styled_widget/styled_widget.dart';
-import 'package:bitsdojo_window/bitsdojo_window.dart';
-import 'package:system_tray/system_tray.dart';
+// import 'package:bitsdojo_window/bitsdojo_window.dart';
+// import 'package:system_tray/system_tray.dart';
 
 import 'package:clashf_pro/utils/utils.dart';
 import 'package:clashf_pro/containers/sidebar/sidebar.dart';
+import 'package:tray_manager/tray_manager.dart';
+import 'package:window_manager/window_manager.dart';
 
-// int count = 0;
-final count = {"count": 0};
-
-void main() {
-  runApp(const MyApp());
-  log.time('start time');
-  count['count'] = count['count']! + 1;
-  log.debug('count', count['count']);
-  doWhenWindowReady(() {
-    const initialSize = Size(950, 600);
-    appWindow.minSize = initialSize;
-    appWindow.size = initialSize;
-    appWindow.alignment = Alignment.center;
-    appWindow.title = "How to use system tray with Flutter";
-    appWindow.show();
-    log.timeEnd('start time');
+void main() async {
+  log.time('Start Window Time');
+  WidgetsFlutterBinding.ensureInitialized();
+  await windowManager.ensureInitialized();
+  windowManager.waitUntilReadyToShow().then((_) async {
+    // await windowManager.setAsFrameless();
+    await windowManager.setSize(const Size(950, 600));
+    await windowManager.setMinimumSize(const Size(500, 400));
+    // await windowManager.setPosition(Offset.zero);
+    windowManager.show();
+    log.timeEnd('Start Window Time');
   });
+
+  runApp(const MyApp());
+  // doWhenWindowReady(() {
+  //   const initialSize = Size(950, 600);
+  //   appWindow.minSize = initialSize;
+  //   appWindow.size = initialSize;
+  //   appWindow.alignment = Alignment.center;
+  //   appWindow.title = "How to use system tray with Flutter";
+  //   appWindow.show();
+  // });
   ProcessSignal.sigint.watch().listen((event) {
     print('-----exit');
   });
@@ -54,8 +61,8 @@ class MyHomePage extends StatefulWidget {
   State<MyHomePage> createState() => _MyHomePageState();
 }
 
-class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
-  final SystemTray _systemTray = SystemTray();
+class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver, TrayListener, WindowListener {
+  // final SystemTray _systemTray = SystemTray();
   String _selected = 'agent';
   Logs logs = const Logs();
 
@@ -103,44 +110,111 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
   @override
   void initState() {
     super.initState();
+    _initTray();
+    windowManager.addListener(this);
     startClash();
 
-    final menu = [
-      MenuItem(label: '显示', onClicked: appWindow.show),
-      MenuItem(label: '隐藏', onClicked: appWindow.hide),
-      MenuItem(label: '退出', onClicked: () => exit(0)),
+    // final menu = [
+    //   MenuItem(label: '显示', onClicked: windowManager.show),
+    //   MenuItem(label: '隐藏', onClicked: windowManager.hide),
+    //   MenuItem(label: '退出', onClicked: () => exit(0)),
+    // ];
+    // _systemTray.registerSystemTrayEventHandler((eventName) {
+    //   log.debug(eventName);
+    //   if (eventName == 'leftMouseUp') {
+    //     windowManager.show();
+    //   }
+    // });
+    // _systemTray.initSystemTray(title: 'Tray', iconPath: 'assets/logo.ico').then((value) {
+    //   _systemTray.setContextMenu(menu);
+    // });
+  }
+
+  void _initTray() async {
+    await TrayManager.instance.setIcon('assets/logo.ico');
+    List<MenuItem> items = [
+      MenuItem(
+        key: 'show',
+        title: '显示',
+      ),
+      MenuItem(
+        key: 'hide',
+        title: '隐藏',
+      ),
+      MenuItem.separator,
+      MenuItem(
+        key: 'exit',
+        title: '退出',
+      ),
     ];
-    _systemTray.registerSystemTrayEventHandler((eventName) {
-      log.debug(eventName);
-      if (eventName == 'leftMouseUp') {
-        log.debug(appWindow.isVisible);
-        if (appWindow.isVisible) {
-          appWindow.restore();
-        } else {
-          return appWindow.show();
-        }
-      }
-    });
-    _systemTray.initSystemTray(title: 'Tray', iconPath: 'assets/logo.ico').then((value) {
-      _systemTray.setContextMenu(menu);
-    });
+    await TrayManager.instance.setContextMenu(items);
+    TrayManager.instance.addListener(this);
+  }
+
+  @override
+  void onWindowEvent(String eventName) {
+    super.onWindowEvent(eventName);
+    log.debug('onWindowEvent: ', eventName);
+  }
+
+  @override
+  void onTrayIconMouseDown() {
+    log.debug('Tray Click: onTrayIconMouseDown');
+    super.onTrayIconMouseDown();
+    if (Platform.isWindows) {
+      WindowManager.instance.show();
+    } else {
+      onTrayIconRightMouseDown();
+      // TrayManager.instance.popUpContextMenu();
+    }
+  }
+
+  @override
+  void onTrayIconRightMouseDown() {
+    log.debug('Tray Click: onTrayIconRightMouseDown');
+    super.onTrayIconRightMouseDown();
+    TrayManager.instance.popUpContextMenu();
+  }
+
+  @override
+  void onTrayMenuItemClick(MenuItem menuItem) async {
+    log.debug('Menu Item Click: ', menuItem.title);
+    super.onTrayMenuItemClick(menuItem);
+    if (menuItem.key == 'show') {
+      WindowManager.instance.show();
+      await windowManager.setSkipTaskbar(false);
+    } else if (menuItem.key == 'hide') {
+      WindowManager.instance.hide();
+      await windowManager.setSkipTaskbar(true);
+    } else if (menuItem.key == 'exit') {
+      clash?.kill();
+      exit(0);
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        body: Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        SideBar(
-          selected: _selected,
-          onChange: (menu) {
-            setState(() => _selected = menu.type);
-            log.debug('Menu Changed: ', menu.label);
-          },
-        ),
-        Expanded(child: logs)
-      ],
-    ).height(double.infinity).backgroundColor(const Color(0xfff4f5f6)));
+      body: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SideBar(
+            selected: _selected,
+            onChange: (menu) {
+              setState(() => _selected = menu.type);
+              log.debug('Menu Changed: ', menu.label);
+            },
+          ),
+          Expanded(child: logs)
+        ],
+      ).height(double.infinity).backgroundColor(const Color(0xfff4f5f6)),
+      floatingActionButton: FloatingActionButton(
+        tooltip: '关闭Clash主进程',
+        onPressed: () {
+          clash?.kill();
+        },
+        child: const Icon(Icons.close),
+      ),
+    );
   }
 }

@@ -46,3 +46,10 @@ https://github.com/bitsdojo/bitsdojo_window/tree/master/bitsdojo_window/example
 
 ## close window not exit process for win
 https://github.com/antler119/system_tray/issues/7#issuecomment-896905693
+
+## close window not exit process for mac
+https://github.com/antler119/system_tray/issues/10#issuecomment-905212027
+
+
+## issues
+https://github.com/flutter/flutter/issues/10437
