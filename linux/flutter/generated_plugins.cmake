@@ -3,7 +3,6 @@
 #
 
 list(APPEND FLUTTER_PLUGIN_LIST
-  system_tray
   tray_manager
   window_manager
 )

@@ -1,7 +1,3 @@
-// 使用 windows 默认窗口
-#include <bitsdojo_window_windows/bitsdojo_window_plugin.h>
-auto bdw = bitsdojo_window_configure(BDW_HIDE_ON_STARTUP);
-
 #include <flutter/dart_project.h>
 #include <flutter/flutter_view_controller.h>
 #include <windows.h>
@@ -37,10 +33,10 @@ int APIENTRY wWinMain(_In_ HINSTANCE instance, _In_opt_ HINSTANCE prev,
   FlutterWindow window(project);
   Win32Window::Point origin(10, 10);
   Win32Window::Size size(1280, 720);
-  if (!window.CreateAndShow(L"clashf_pro", origin, size)) {
+  if (!window.CreateAndShow(L"ClashF Pro", origin, size)) {
     return EXIT_FAILURE;
   }
-  window.SetQuitOnClose(true);
+  window.SetQuitOnClose(false);
 
   ::MSG msg;
   while (::GetMessage(&msg, nullptr, 0, 0)) {

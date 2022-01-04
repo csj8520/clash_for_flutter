@@ -1,13 +1,15 @@
 import 'dart:io';
-import 'package:clashf_pro/containers/logs/logs.dart';
+import 'package:clashf_pro/view/connections/connections.dart';
+import 'package:clashf_pro/view/logs/logs.dart';
 import 'package:clashf_pro/utils/clash.dart';
+import 'package:clashf_pro/view/proxies/proxy.dart';
+import 'package:clashf_pro/view/rules/rules.dart';
+import 'package:clashf_pro/view/settings/settings.dart';
 import 'package:flutter/material.dart';
 import 'package:styled_widget/styled_widget.dart';
-// import 'package:bitsdojo_window/bitsdojo_window.dart';
-// import 'package:system_tray/system_tray.dart';
 
 import 'package:clashf_pro/utils/utils.dart';
-import 'package:clashf_pro/containers/sidebar/sidebar.dart';
+import 'package:clashf_pro/view/sidebar/sidebar.dart';
 import 'package:tray_manager/tray_manager.dart';
 import 'package:window_manager/window_manager.dart';
 
@@ -25,17 +27,6 @@ void main() async {
   });
 
   runApp(const MyApp());
-  // doWhenWindowReady(() {
-  //   const initialSize = Size(950, 600);
-  //   appWindow.minSize = initialSize;
-  //   appWindow.size = initialSize;
-  //   appWindow.alignment = Alignment.center;
-  //   appWindow.title = "How to use system tray with Flutter";
-  //   appWindow.show();
-  // });
-  ProcessSignal.sigint.watch().listen((event) {
-    print('-----exit');
-  });
 }
 
 class MyApp extends StatelessWidget {
@@ -61,51 +52,16 @@ class MyHomePage extends StatefulWidget {
   State<MyHomePage> createState() => _MyHomePageState();
 }
 
-class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver, TrayListener, WindowListener {
-  // final SystemTray _systemTray = SystemTray();
-  String _selected = 'agent';
-  Logs logs = const Logs();
-
-  @override
-  void didChangeAppLifecycleState(AppLifecycleState state) {
-    super.didChangeAppLifecycleState(state);
-    log.debug('-----didChangeAppLifecycleState', state);
-  }
-
-  @override
-  void reassemble() {
-    super.reassemble();
-    log.debug('-----reassemble');
-  }
-
-  void reassembleApplication() {
-    log.debug('-----reassembleApplication');
-  }
-
-  @override
-  void activate() {
-    super.activate();
-    log.debug('-----activate');
-  }
-
-  @override
-  void deactivate() {
-    super.deactivate();
-    log.debug('-----deactivate');
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-    log.debug('-----dispose');
-  }
-
-  @override
-  void didUpdateWidget(covariant MyHomePage oldWidget) {
-    print('-----didUpdateWidget');
-    super.didUpdateWidget(oldWidget);
-    log.debug('-----didUpdateWidget');
-  }
+class _MyHomePageState extends State<MyHomePage> with TrayListener, WindowListener {
+  int _index = 0;
+  // final List<Widget> _views = const [ViewProxies(), ViewLogs(), ViewRules(), ViewConnections(), ViewSettings()];
+  final _menus = [
+    SideBarMenu('代理', 'proxies'),
+    SideBarMenu('日志', 'logs'),
+    SideBarMenu('规则', 'rules'),
+    SideBarMenu('连接', 'connections'),
+    SideBarMenu('设置', 'settings'),
+  ];
 
   @override
   void initState() {
@@ -113,21 +69,6 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver, Tr
     _initTray();
     windowManager.addListener(this);
     startClash();
-
-    // final menu = [
-    //   MenuItem(label: '显示', onClicked: windowManager.show),
-    //   MenuItem(label: '隐藏', onClicked: windowManager.hide),
-    //   MenuItem(label: '退出', onClicked: () => exit(0)),
-    // ];
-    // _systemTray.registerSystemTrayEventHandler((eventName) {
-    //   log.debug(eventName);
-    //   if (eventName == 'leftMouseUp') {
-    //     windowManager.show();
-    //   }
-    // });
-    // _systemTray.initSystemTray(title: 'Tray', iconPath: 'assets/logo.ico').then((value) {
-    //   _systemTray.setContextMenu(menu);
-    // });
   }
 
   void _initTray() async {
@@ -151,11 +92,16 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver, Tr
     TrayManager.instance.addListener(this);
   }
 
-  @override
-  void onWindowEvent(String eventName) {
-    super.onWindowEvent(eventName);
-    log.debug('onWindowEvent: ', eventName);
+  void _onChange(menu, index) {
+    setState(() => {_index = index});
+    log.debug('Menu Changed: ', menu.label);
   }
+
+  // @override
+  // void onWindowEvent(String eventName) {
+  //   super.onWindowEvent(eventName);
+  //   log.debug('onWindowEvent: ', eventName);
+  // }
 
   @override
   void onTrayIconMouseDown() {
@@ -165,7 +111,6 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver, Tr
       WindowManager.instance.show();
     } else {
       onTrayIconRightMouseDown();
-      // TrayManager.instance.popUpContextMenu();
     }
   }
 
@@ -182,10 +127,10 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver, Tr
     super.onTrayMenuItemClick(menuItem);
     if (menuItem.key == 'show') {
       WindowManager.instance.show();
-      await windowManager.setSkipTaskbar(false);
+      if (Platform.isMacOS) await windowManager.setSkipTaskbar(false);
     } else if (menuItem.key == 'hide') {
       WindowManager.instance.hide();
-      await windowManager.setSkipTaskbar(true);
+      if (Platform.isMacOS) await windowManager.setSkipTaskbar(true);
     } else if (menuItem.key == 'exit') {
       clash?.kill();
       exit(0);
@@ -198,21 +143,24 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver, Tr
       body: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          SideBar(
-            selected: _selected,
-            onChange: (menu) {
-              setState(() => _selected = menu.type);
-              log.debug('Menu Changed: ', menu.label);
-            },
+          ViewSideBar(menus: _menus, index: _index, onChange: _onChange),
+          Expanded(
+            child: IndexedStack(
+              children: [
+                ViewProxies(show: _index == 0),
+                ViewLogs(show: _index == 1),
+                ViewRules(show: _index == 2),
+                ViewConnections(show: _index == 3),
+                ViewSettings(show: _index == 4),
+              ],
+              index: _index,
+            ),
           ),
-          Expanded(child: logs)
         ],
       ).height(double.infinity).backgroundColor(const Color(0xfff4f5f6)),
       floatingActionButton: FloatingActionButton(
         tooltip: '关闭Clash主进程',
-        onPressed: () {
-          clash?.kill();
-        },
+        onPressed: clash?.kill,
         child: const Icon(Icons.close),
       ),
     );

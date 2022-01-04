@@ -10,7 +10,9 @@ Future<Process> startClash() async {
   log.debug(clash);
   if (clash != null) clash!.kill();
 
-  clash = await Process.start(clashFile.path, ['-d', configDir.path, '-f', path.join(configDir.path, 'clash.yaml')], runInShell: true);
+  log.time('Start Clash Time');
+
+  clash = await Process.start(clashFile.path, ['-d', configDir.path, '-f', path.join(configDir.path, 'clash.yaml')], runInShell: false);
   clash!.stdout.listen((event) {
     List<String> strs = utf8.decode(event).trim().split('\n');
     for (var it in strs) {
@@ -22,5 +24,10 @@ Future<Process> startClash() async {
       log.log(msg, level: res[1] ?? 'info');
     }
   });
+
+  // Future.delayed(Duration(seconds: 5), () {
+  //   clash!.kill();
+  // });
+  log.timeEnd('Start Clash Time');
   return clash!;
 }

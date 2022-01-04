@@ -3,20 +3,24 @@ import 'dart:async';
 import 'package:clashf_pro/utils/utils.dart';
 import 'package:flutter/material.dart';
 
-class Logs extends StatefulWidget {
-  const Logs({Key? key}) : super(key: key);
+class ViewLogs extends StatefulWidget {
+  const ViewLogs({Key? key, this.show = false}) : super(key: key);
+  final bool show;
 
   @override
-  _LogsState createState() => _LogsState();
+  _ViewLogsState createState() => _ViewLogsState();
 }
 
-class _LogsState extends State<Logs> {
+class _ViewLogsState extends State<ViewLogs> {
   final List<Widget> _logs = [];
   final ScrollController _scrollController = ScrollController();
 
   Timer? _timer;
   bool _lockScrollToBottom = true;
   bool _notHandleScroll = false;
+
+  // @override
+  // bool get wantKeepAlive => true;
 
   @override
   void initState() {
