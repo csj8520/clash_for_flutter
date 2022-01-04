@@ -53,3 +53,5 @@ https://github.com/antler119/system_tray/issues/10#issuecomment-905212027
 
 ## issues
 https://github.com/flutter/flutter/issues/10437
+
+## macos dock auto hide

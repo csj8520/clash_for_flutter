@@ -19,6 +19,7 @@ void main() async {
   await windowManager.ensureInitialized();
   windowManager.waitUntilReadyToShow().then((_) async {
     // await windowManager.setAsFrameless();
+    if (Platform.isMacOS) await windowManager.setSkipTaskbar(true);
     await windowManager.setSize(const Size(950, 600));
     await windowManager.setMinimumSize(const Size(500, 400));
     // await windowManager.setPosition(Offset.zero);
@@ -127,10 +128,10 @@ class _MyHomePageState extends State<MyHomePage> with TrayListener, WindowListen
     super.onTrayMenuItemClick(menuItem);
     if (menuItem.key == 'show') {
       WindowManager.instance.show();
-      if (Platform.isMacOS) await windowManager.setSkipTaskbar(false);
+      // if (Platform.isMacOS) await windowManager.setSkipTaskbar(false);
     } else if (menuItem.key == 'hide') {
       WindowManager.instance.hide();
-      if (Platform.isMacOS) await windowManager.setSkipTaskbar(true);
+      // if (Platform.isMacOS) await windowManager.setSkipTaskbar(true);
     } else if (menuItem.key == 'exit') {
       clash?.kill();
       exit(0);
