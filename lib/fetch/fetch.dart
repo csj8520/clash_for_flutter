@@ -19,7 +19,7 @@ Future<ClashVersion> fetchClashVersion() async {
   return ClashVersion.buildFromJson(res.data);
 }
 
-Future fetchClashProxies() async {
+Future<ProxiesGroups> fetchClashProxies() async {
   final res = await dio.get('http://127.0.0.1:9090/proxies');
   return ProxiesGroups.buildFromJson(res.data['proxies']);
 }

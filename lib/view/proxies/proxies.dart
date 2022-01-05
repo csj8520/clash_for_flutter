@@ -13,6 +13,8 @@ class ViewProxies extends StatefulWidget {
 }
 
 class _ViewProxiesState extends State<ViewProxies> {
+  ProxiesGroups? _proxiesGroups;
+
   @override
   void initState() {
     super.initState();
@@ -36,15 +38,21 @@ class _ViewProxiesState extends State<ViewProxies> {
   }
 
   _update() async {
-    await fetchClashProxies();
+    _proxiesGroups = await fetchClashProxies();
+    setState(() {});
   }
 
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const PageHead(title: '策略组'),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: (_proxiesGroups?.groups.map((e) => Text(e.name)).toList() ?? [])..add(Text('data')),
+          ).width(double.infinity),
           Text(widget.show ? 'ViewProxies-show' : 'ViewProxies-hide'),
           const PageHead(title: '代理集'),
         ],
