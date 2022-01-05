@@ -1,11 +1,13 @@
 import 'package:clashf_pro/utils/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:styled_widget/styled_widget.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class ViewSideBar extends StatefulWidget {
-  const ViewSideBar({Key? key, required this.menus, this.index = 0, this.onChange}) : super(key: key);
+  const ViewSideBar({Key? key, required this.menus, this.index = 0, this.onChange, this.clashVersion}) : super(key: key);
   final List<SideBarMenu> menus;
   final int index;
+  final ClashVersion? clashVersion;
   final Function(SideBarMenu menu, int index)? onChange;
 
   @override
@@ -13,17 +15,9 @@ class ViewSideBar extends StatefulWidget {
 }
 
 class _ViewSideBarState extends State<ViewSideBar> {
-  ClashVersion? _clashVersion;
-
   @override
   void initState() {
     super.initState();
-    _init();
-  }
-
-  Future _init() async {
-    _clashVersion = await fetchClashVersion();
-    setState(() {});
   }
 
   @override
@@ -40,15 +34,22 @@ class _ViewSideBarState extends State<ViewSideBar> {
           ),
           itemCount: widget.menus.length,
         ).expanded(),
-        const Text('Clash 版本')
-            .textColor(const Color(0xff2c8af8))
-            .textShadow(color: const Color(0x662c8af8), blurRadius: 6, offset: const Offset(0, 2))
-            .fontSize(14),
-        Text(_clashVersion?.version ?? '').textColor(const Color(0xff54759a)).fontSize(14).padding(top: 8, bottom: 8),
-        const Text('Premium')
-            .textColor(const Color(0xff2c8af8))
-            .textShadow(color: const Color(0x662c8af8), blurRadius: 6, offset: const Offset(0, 2))
-            .fontSize(_clashVersion?.premium ?? false ? 14 : 0),
+        TextButton(
+          child: Column(
+            children: [
+              const Text('Clash 版本')
+                  .textColor(const Color(0xff2c8af8))
+                  .textShadow(color: const Color(0x662c8af8), blurRadius: 6, offset: const Offset(0, 2))
+                  .fontSize(14),
+              Text(widget.clashVersion?.version ?? '').textColor(const Color(0xff54759a)).fontSize(14).padding(top: 8, bottom: 8),
+              const Text('Premium')
+                  .textColor(const Color(0xff2c8af8))
+                  .textShadow(color: const Color(0x662c8af8), blurRadius: 6, offset: const Offset(0, 2))
+                  .fontSize(widget.clashVersion?.premium ?? false ? 14 : 0),
+            ],
+          ),
+          onPressed: () => launch('https://github.com/Dreamacro/clash/releases/tag/premium'),
+        )
       ],
     ).padding(top: 50, bottom: 20).width(160);
   }

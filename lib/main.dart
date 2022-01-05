@@ -1,8 +1,9 @@
 import 'dart:io';
+import 'package:bot_toast/bot_toast.dart';
 import 'package:clashf_pro/view/connections/connections.dart';
 import 'package:clashf_pro/view/logs/logs.dart';
 import 'package:clashf_pro/utils/clash.dart';
-import 'package:clashf_pro/view/proxies/proxy.dart';
+import 'package:clashf_pro/view/proxies/proxies.dart';
 import 'package:clashf_pro/view/rules/rules.dart';
 import 'package:clashf_pro/view/settings/settings.dart';
 import 'package:flutter/material.dart';
@@ -40,6 +41,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
+      builder: BotToastInit(),
       home: const MyHomePage(title: 'Flutter Demo Home Page'),
     );
   }
@@ -55,7 +57,9 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> with TrayListener, WindowListener {
   int _index = 0;
-  // final List<Widget> _views = const [ViewProxies(), ViewLogs(), ViewRules(), ViewConnections(), ViewSettings()];
+  bool _inited = false;
+  ClashVersion? _clashVersion;
+
   final _menus = [
     SideBarMenu('代理', 'proxies'),
     SideBarMenu('日志', 'logs'),
@@ -67,9 +71,16 @@ class _MyHomePageState extends State<MyHomePage> with TrayListener, WindowListen
   @override
   void initState() {
     super.initState();
+    _init();
+  }
+
+  void _init() async {
     _initTray();
     windowManager.addListener(this);
-    startClash();
+    await startClash();
+    _clashVersion = await fetchClashVersion();
+    _inited = true;
+    setState(() {});
   }
 
   void _initTray() async {
@@ -93,7 +104,8 @@ class _MyHomePageState extends State<MyHomePage> with TrayListener, WindowListen
     TrayManager.instance.addListener(this);
   }
 
-  void _onChange(menu, index) {
+  _onChange(menu, index) {
+    if (!_inited) return BotToast.showText(text: '请等待初始化！');
     setState(() => {_index = index});
     log.debug('Menu Changed: ', menu.label);
   }
@@ -144,18 +156,18 @@ class _MyHomePageState extends State<MyHomePage> with TrayListener, WindowListen
       body: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          ViewSideBar(menus: _menus, index: _index, onChange: _onChange),
+          ViewSideBar(menus: _menus, index: _index, onChange: _onChange, clashVersion: _clashVersion),
           Expanded(
             child: IndexedStack(
               children: [
-                ViewProxies(show: _index == 0),
+                ViewProxies(show: _index == 0, inited: _inited),
                 ViewLogs(show: _index == 1),
                 ViewRules(show: _index == 2),
                 ViewConnections(show: _index == 3),
                 ViewSettings(show: _index == 4),
               ],
               index: _index,
-            ),
+            ).padding(left: 10, right: 30),
           ),
         ],
       ).height(double.infinity).backgroundColor(const Color(0xfff4f5f6)),

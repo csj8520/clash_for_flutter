@@ -24,10 +24,13 @@ Future<Process> startClash() async {
       log.log(msg, level: res[1] ?? 'info');
     }
   });
+  clash?.exitCode.then((value) => log.debug('Clash Is Exit($value)'));
 
-  // Future.delayed(Duration(seconds: 5), () {
-  //   clash!.kill();
-  // });
+  while (true) {
+    if (await fetchClashHello()) break;
+    await Future.delayed(const Duration(milliseconds: 100));
+  }
+
   log.timeEnd('Start Clash Time');
   return clash!;
 }

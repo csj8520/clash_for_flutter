@@ -35,7 +35,7 @@ dependencies:
   cupertino_icons: ^1.0.2
   process_run: ^0.12.3+1
   styled_widget: ^0.4.0+3
-  path_provider: ^2.0.8
+  # path_provider: ^2.0.8
   # system_tray: ^0.0.7
   # bitsdojo_window: ^0.1.1+1
   # bitsdojo_window:
@@ -49,6 +49,8 @@ dependencies:
   window_manager: ^0.1.1
   tray_manager: ^0.1.2
   dio: ^4.0.4
+  bot_toast: ^4.0.1
+  url_launcher: ^6.0.17
 
 dev_dependencies:
   flutter_test:

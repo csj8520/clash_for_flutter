@@ -9,6 +9,15 @@ int APIENTRY wWinMain(_In_ HINSTANCE instance, _In_opt_ HINSTANCE prev,
                       _In_ wchar_t *command_line, _In_ int show_command) {
   // Attach to console when present (e.g., 'flutter run') or create a
   // new console when running with a debugger.
+
+  // https://github.com/biyidev/biyi/commit/66ad34c21c221460c0bd7c47a743259f5e15a38d
+  HWND hWnd = ::FindWindow(L"FLUTTER_RUNNER_WIN32_WINDOW", L"ClashF Pro");
+  if (hWnd != NULL) {
+    ::ShowWindow(hWnd, SW_NORMAL);
+    ::SetForegroundWindow(hWnd);
+    return EXIT_FAILURE;
+  }
+
   // https://github.com/flutter/flutter/issues/47891#issuecomment-708850435
   // https://github.com/flutter/flutter/issues/47891#issuecomment-869729956
   // https://github.com/dart-lang/sdk/issues/39945#issuecomment-870428151

@@ -1,6 +1,13 @@
+export './proxies.dart';
+
 class ClashVersion {
   bool premium;
   String version;
+
+  static ClashVersion buildFromJson(dynamic josn) {
+    return ClashVersion(premium: josn['premium'], version: josn['version']);
+  }
+
   ClashVersion({required this.premium, required this.version});
 }
 
