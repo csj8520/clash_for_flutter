@@ -1,7 +1,9 @@
-import 'package:clashf_pro/components/page_head.dart';
+import 'package:clashf_pro/components/card_head.dart';
+import 'package:clashf_pro/components/index.dart';
 import 'package:clashf_pro/utils/utils.dart';
+import 'package:clashf_pro/view/proxies/provider.dart';
+import 'package:clashf_pro/view/proxies/strategy_group.dart';
 import 'package:flutter/material.dart';
-import 'package:styled_widget/styled_widget.dart';
 
 class ViewProxies extends StatefulWidget {
   const ViewProxies({Key? key, this.show = false, this.inited = false}) : super(key: key);
@@ -13,7 +15,8 @@ class ViewProxies extends StatefulWidget {
 }
 
 class _ViewProxiesState extends State<ViewProxies> {
-  ProxiesGroups? _proxiesGroups;
+  Proxies? _proxies;
+  final ScrollController _scrollController = ScrollController();
 
   @override
   void initState() {
@@ -38,25 +41,25 @@ class _ViewProxiesState extends State<ViewProxies> {
   }
 
   _update() async {
-    _proxiesGroups = await fetchClashProxies();
+    _proxies = await fetchClashProxies();
+    log.debug(_proxies!.proxies.length);
+    log.debug(_proxies!.providers.length);
     setState(() {});
   }
 
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
+      controller: _scrollController,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const PageHead(title: '策略组'),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: (_proxiesGroups?.groups.map((e) => Text(e.name)).toList() ?? [])..add(Text('data')),
-          ).width(double.infinity),
-          Text(widget.show ? 'ViewProxies-show' : 'ViewProxies-hide'),
-          const PageHead(title: '代理集'),
-        ],
-      ),
+          const CardHead(title: '策略组'),
+          _proxies == null ? null : CardView(child: StrategyGroup(proxies: _proxies!)),
+          _proxies?.providers.isNotEmpty ?? false ? const CardHead(title: '代理集') : null,
+          ...((_proxies?.providers ?? []).map((it) => CardView(child: Provider(provider: it)))),
+        ].whereType<Widget>().toList(),
+      ).padding(top: 5, right: 20),
     );
   }
 }

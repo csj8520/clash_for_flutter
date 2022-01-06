@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:clashf_pro/components/page_head.dart';
+import 'package:clashf_pro/components/index.dart';
 import 'package:clashf_pro/utils/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:styled_widget/styled_widget.dart';
@@ -47,21 +47,16 @@ class _ViewLogsState extends State<ViewLogs> {
   @override
   Widget build(BuildContext context) {
     return Column(children: [
-      const PageHead(title: '日志'),
-      ListView.builder(
+      const CardHead(title: '日志'),
+      CardView(
+              child: ListView.builder(
         padding: const EdgeInsets.only(left: 10, top: 10, right: 10, bottom: 10),
         itemBuilder: (context, index) => _logs[index],
         itemCount: _logs.length,
         controller: _scrollController,
-      )
-          .backgroundColor(const Color(0xfff3f6f9))
-          .clipRRect(all: 4)
-          .padding(all: 15)
-          .backgroundColor(const Color(0xffffffff))
-          .clipRRect(all: 4)
-          .boxShadow(color: const Color(0x2e2c8af8), offset: const Offset(2, 5), blurRadius: 20, spreadRadius: -3)
-          .padding(bottom: 20)
+      ).backgroundColor(const Color(0xfff3f6f9)).clipRRect(all: 4).padding(all: 15))
+          .padding(bottom: 10)
           .expanded()
-    ]);
+    ]).padding(top: 5, right: 20);
   }
 }

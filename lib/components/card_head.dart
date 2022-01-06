@@ -1,17 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:styled_widget/styled_widget.dart';
 
-class PageHead extends StatefulWidget {
-  const PageHead({Key? key, required this.title, this.headPrefix, this.headSuffix}) : super(key: key);
+class CardHead extends StatefulWidget {
+  const CardHead({Key? key, required this.title, this.headPrefix, this.headSuffix}) : super(key: key);
   final String title;
   final Widget? headPrefix;
   final Widget? headSuffix;
 
   @override
-  _PageHeadState createState() => _PageHeadState();
+  _CardHeadState createState() => _CardHeadState();
 }
 
-class _PageHeadState extends State<PageHead> {
+class _CardHeadState extends State<CardHead> {
   @override
   Widget build(BuildContext context) {
     return Row(
@@ -24,6 +24,6 @@ class _PageHeadState extends State<PageHead> {
             .expanded(),
         widget.headPrefix,
       ].whereType<Widget>().toList(),
-    ).padding(top: 12, bottom: 12);
+    ).padding(top: 10, bottom: 10);
   }
 }

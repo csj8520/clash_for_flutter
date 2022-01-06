@@ -167,7 +167,7 @@ class _MyHomePageState extends State<MyHomePage> with TrayListener, WindowListen
                 ViewSettings(show: _index == 4),
               ],
               index: _index,
-            ).padding(left: 10, right: 30),
+            ),
           ),
         ],
       ).height(double.infinity).backgroundColor(const Color(0xfff4f5f6)),
