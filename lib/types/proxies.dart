@@ -79,7 +79,10 @@ class ProxiesProxy {
   String name;
   String type;
   bool udp;
-  ProxiesProxy({required this.history, required this.name, required this.type, required this.udp});
+  late int delay;
+  ProxiesProxy({required this.history, required this.name, required this.type, required this.udp}) {
+    delay = history.isEmpty ? 0 : history.last.delay;
+  }
 
   static ProxiesProxy buildFromJson(Map<String, dynamic> json) {
     return ProxiesProxy(
@@ -103,6 +106,12 @@ class ProxiesProviders {
   String updatedAt;
   String vehicleType;
   ProxiesProviders({required this.name, required this.proxies, required this.type, required this.updatedAt, required this.vehicleType});
+
+  ProxiesProviders sortProxies() {
+    proxies.sort((a, b) => ((a.delay == 0 ? 9999999 : a.delay) - (b.delay == 0 ? 9999999 : b.delay)));
+    return this;
+  }
+
   static ProxiesProviders buildFromJson(Map<String, dynamic> json) {
     return ProxiesProviders(
       name: json['name'],
@@ -127,7 +136,7 @@ class Proxies {
   Map<String, ProxiesProxy> allProxies;
   late List<String> timeoutProxies;
   Proxies({required this.global, required this.groups, required this.providers, required this.proxies, required this.allProxies}) {
-    timeoutProxies = allProxies.values.where((value) => value.history.isNotEmpty && value.history.last.delay == 0).map((e) => e.name).toList();
+    timeoutProxies = allProxies.values.where((value) => value.delay == 0).map((e) => e.name).toList();
   }
 
   static List<String> groupNames = [ProxiesGroupType.selector, ProxiesGroupType.urltest, ProxiesGroupType.fallback, ProxiesGroupType.loadbalance];
@@ -147,7 +156,8 @@ class Proxies {
         .map((e) => ProxiesProxy.buildFromJson(json[e]!))
         .toList();
 
-    final providers = json2.values.where((it) => it['vehicleType'] != 'Compatible').map((it) => ProxiesProviders.buildFromJson(it)).toList();
+    final providers =
+        json2.values.where((it) => it['vehicleType'] != 'Compatible').map((it) => ProxiesProviders.buildFromJson(it).sortProxies()).toList();
     Map<String, ProxiesProxy> allProxies = {};
     for (var it in providers) {
       for (var el in it.proxies) {

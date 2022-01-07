@@ -58,8 +58,10 @@ class _ViewProxiesState extends State<ViewProxies> {
           _proxies == null ? null : CardView(child: StrategyGroup(proxies: _proxies!)),
           _proxies?.providers.isNotEmpty ?? false ? const CardHead(title: '代理集') : null,
           ...((_proxies?.providers ?? []).map((it) => CardView(child: Provider(provider: it)))),
+          _proxies?.proxies.isNotEmpty ?? false ? const CardHead(title: '代理') : null,
+          ...((_proxies?.proxies ?? []).map((it) => ProviderProxies(proxie: it, clickable: true))),
         ].whereType<Widget>().toList(),
-      ).padding(top: 5, right: 20),
+      ).padding(top: 5, right: 20, bottom: 20),
     );
   }
 }
