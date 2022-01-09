@@ -7,7 +7,6 @@ import 'package:clashf_pro/view/proxies/proxies.dart';
 import 'package:clashf_pro/view/rules/rules.dart';
 import 'package:clashf_pro/view/settings/settings.dart';
 import 'package:flutter/material.dart';
-import 'package:styled_widget/styled_widget.dart';
 
 import 'package:clashf_pro/utils/utils.dart';
 import 'package:clashf_pro/view/sidebar/sidebar.dart';
@@ -163,8 +162,8 @@ class _MyHomePageState extends State<MyHomePage> with TrayListener, WindowListen
                 ViewProxies(show: _index == 0, inited: _inited),
                 ViewLogs(show: _index == 1),
                 ViewRules(show: _index == 2),
-                // ViewConnections(show: _index == 3),
-                // ViewSettings(show: _index == 4),
+                ViewConnections(show: _index == 3),
+                ViewSettings(show: _index == 4),
               ],
               index: _index,
             ),

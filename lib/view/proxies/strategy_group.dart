@@ -36,6 +36,7 @@ class _StrategyGroupItemState extends State<StrategyGroupItem> {
   // }
 
   _handleSelect(String label) async {
+    await fetchClashProxieSwitch(group: widget.group.name, value: label);
     setState(() => widget.group.now = label);
   }
 
@@ -59,6 +60,7 @@ class _StrategyGroupItemState extends State<StrategyGroupItem> {
                     text: e,
                     fail: widget.timeoutProxys.contains(e),
                     value: widget.group.now == e,
+                    disabled: widget.group.type != ProxiesGroupType.selector,
                     onClick: () => _handleSelect(e),
                   ))
               .toList(),

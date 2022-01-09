@@ -43,13 +43,15 @@ https://github.com/antler119/system_tray/issues/10#issuecomment-905212027
 
 https://github.com/biyidev/biyi/commit/66ad34c21c221460c0bd7c47a743259f5e15a38d
 
-### issues
+## TODO FIX
 
-https://github.com/flutter/flutter/issues/10437
+- [ ] macos 关闭窗口时隐藏 dock
 
-## TODO
+- [ ] hot restart 时重启 clash
+      https://github.com/flutter/flutter/issues/10437
 
-- [ ] macos dock auto hide
+- [ ] macos debug 模式下多次调用 Shell 会卡死
+      https://github.com/flutter/flutter/issues/95805
 
 ## Other Clash GUI
 
