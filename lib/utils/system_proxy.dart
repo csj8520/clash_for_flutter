@@ -51,17 +51,13 @@ class MacSystemProxy extends SystemProxyPlatform {
   static MacSystemProxy instance = MacSystemProxy();
 
   Future<List<String>> getNetworks() async {
-    log.time('getNetworks');
     final result = await Process.run('networksetup', ['-listallnetworkservices']);
-    log.timeEnd('getNetworks');
     return result.stdout.toString().trim().split('\n').sublist(1);
   }
 
   @override
   Future<void> setProxy(SystemProxyConfig conf) async {
     final networks = await getNetworks();
-    log.debug(networks);
-    log.time('setProxy');
     List<String> commands = [];
     for (var network in networks) {
       if (conf.http.enable) {
@@ -85,18 +81,23 @@ class MacSystemProxy extends SystemProxyPlatform {
     }
 
     log.debug(commands);
-    // TODO: Use bash -c '$command'
-    final out = await Process.run('bash', ['-c', commands.join(' && ')]);
-    // log.debug(out.stdout);
-    // log.error(out.stderr);
-    log.timeEnd('setProxy');
+    await Process.run('bash', ['-c', commands.join(' && ')]);
   }
 
   @override
   Future<SystemProxyConfig> getProxyState() async {
     final out = (await Process.run('scutil', ['--proxy'])).stdout.toString().trim();
-    // TODO
-    return SystemProxyConfig();
+    final states = ['HTTP', 'HTTPS', 'SOCKS'].map((it) {
+      final _enable = RegExp('(?<=${it}Enable\\s*:\\s*)([^\\s]+)').firstMatch(out);
+      final _host = RegExp('(?<=${it}Proxy\\s*:\\s*)([^\\s]+)').firstMatch(out);
+      final _port = RegExp('(?<=${it}Port\\s*:\\s*)([^\\s]+)').firstMatch(out);
+      final enable = _enable?.group(1);
+      final host = _host?.group(1);
+      final port = _port?.group(1);
+      if (enable == null || enable == '0' || host == null || port == null) return SystemProxyState(enable: false);
+      return SystemProxyState(enable: true, server: '$host:$port');
+    }).toList();
+    return SystemProxyConfig(http: states[0], https: states[1], socks: states[2]);
   }
 }
 
@@ -143,23 +144,36 @@ class SystemProxy extends SystemProxyPlatform {
 
   @override
   Future<void> setProxy(SystemProxyConfig conf) async {
-    if (Platform.isWindows) {
-      return WinSystemProxy.instance.setProxy(conf);
-    } else if (Platform.isMacOS) {
-      return MacSystemProxy.instance.setProxy(conf);
-    } else {
-      throw UnimplementedError();
+    try {
+      log.time('setProxy');
+      if (Platform.isWindows) {
+        return WinSystemProxy.instance.setProxy(conf);
+      } else if (Platform.isMacOS) {
+        return MacSystemProxy.instance.setProxy(conf);
+      } else {
+        throw UnimplementedError();
+      }
+    } catch (e) {
+      print(e);
+      rethrow;
+    } finally {
+      log.timeEnd('setProxy');
     }
   }
 
   @override
   Future<SystemProxyConfig> getProxyState() async {
-    if (Platform.isWindows) {
-      return WinSystemProxy.instance.getProxyState();
-    } else if (Platform.isMacOS) {
-      return MacSystemProxy.instance.getProxyState();
-    } else {
-      throw UnimplementedError();
+    try {
+      log.time('getProxyState');
+      if (Platform.isWindows) {
+        return WinSystemProxy.instance.getProxyState();
+      } else if (Platform.isMacOS) {
+        return MacSystemProxy.instance.getProxyState();
+      } else {
+        throw UnimplementedError();
+      }
+    } finally {
+      log.timeEnd('getProxyState');
     }
   }
 }
