@@ -38,12 +38,12 @@ class _ViewSideBarState extends State<ViewSideBar> {
           child: Column(
             children: [
               const Text('Clash 版本')
-                  .textColor(const Color(0xff2c8af8))
+                  .textColor(Theme.of(context).primaryColor)
                   .textShadow(color: const Color(0x662c8af8), blurRadius: 6, offset: const Offset(0, 2))
                   .fontSize(14),
               Text(widget.clashVersion?.version ?? '').textColor(const Color(0xff54759a)).fontSize(14).padding(top: 8, bottom: 8),
               const Text('Premium')
-                  .textColor(const Color(0xff2c8af8))
+                  .textColor(Theme.of(context).primaryColor)
                   .textShadow(color: const Color(0x662c8af8), blurRadius: 6, offset: const Offset(0, 2))
                   .fontSize(widget.clashVersion?.premium ?? false ? 14 : 0),
             ],

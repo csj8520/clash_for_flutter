@@ -18,7 +18,7 @@ class _CardHeadState extends State<CardHead> {
       children: [
         widget.headPrefix,
         Text(widget.title)
-            .textColor(const Color(0xff2c8af8))
+            .textColor(Theme.of(context).primaryColor)
             .fontSize(24)
             .textShadow(color: const Color(0x662c8af8), blurRadius: 6, offset: const Offset(0, 2))
             .expanded(),

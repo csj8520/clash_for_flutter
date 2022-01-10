@@ -40,10 +40,8 @@ class _ViewProxiesState extends State<ViewProxies> {
     _update();
   }
 
-  _update() async {
+  Future<void> _update() async {
     _proxies = await fetchClashProxies();
-    log.debug(_proxies!.proxies.length);
-    log.debug(_proxies!.providers.length);
     setState(() {});
   }
 
@@ -57,7 +55,7 @@ class _ViewProxiesState extends State<ViewProxies> {
           const CardHead(title: '策略组'),
           _proxies == null ? null : CardView(child: StrategyGroup(proxies: _proxies!)),
           _proxies?.providers.isNotEmpty ?? false ? const CardHead(title: '代理集') : null,
-          ...((_proxies?.providers ?? []).map((it) => CardView(child: Provider(provider: it)))),
+          ...((_proxies?.providers ?? []).map((it) => CardView(child: Provider(provider: it, onUpdate: _update)))),
           _proxies?.proxies.isNotEmpty ?? false ? const CardHead(title: '代理') : null,
           ...((_proxies?.proxies ?? []).map((it) => ProviderProxies(proxie: it, clickable: true))),
         ].whereType<Widget>().toList(),

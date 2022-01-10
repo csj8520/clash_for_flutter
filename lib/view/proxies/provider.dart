@@ -1,32 +1,77 @@
-import 'package:clashf_pro/components/index.dart';
-import 'package:clashf_pro/utils/utils.dart';
+import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter/material.dart';
 
+import 'package:day/day.dart';
+import 'package:day/i18n/zh_cn.dart';
+import 'package:day/plugins/relative_time.dart';
+
+import 'package:clashf_pro/components/index.dart';
+import 'package:clashf_pro/utils/utils.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:loader_overlay/loader_overlay.dart';
+
 class Provider extends StatefulWidget {
-  const Provider({Key? key, required this.provider}) : super(key: key);
+  const Provider({Key? key, required this.provider, required this.onUpdate}) : super(key: key);
   final ProxiesProviders provider;
+  final FutureFunc onUpdate;
 
   @override
   _ProviderState createState() => _ProviderState();
 }
 
 class _ProviderState extends State<Provider> {
+  double _height = 100;
+
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Row(
+    return LoaderOverlay(
+        useDefaultLoading: false,
+        overlayWidget: Center(
+          child: SpinKitPulse(color: Theme.of(context).primaryColor, size: 50.0),
+        ).height(_height).backgroundColor(const Color(0x66000000)),
+        child: Column(
           children: [
-            Row(children: [Text(widget.provider.name), Tag(widget.provider.vehicleType).padding(left: 10)]).expanded()
+            Row(
+              children: [
+                Row(children: [Text(widget.provider.name), Tag(widget.provider.vehicleType).padding(left: 10)]).expanded(),
+                Text(Day().useLocale(locale).from(Day.fromString(widget.provider.updatedAt))),
+                IconButton(
+                  icon: Icon(Icons.network_check, size: 20, color: Theme.of(context).primaryColor),
+                  onPressed: () async {
+                    setState(() => _height = context.size?.height ?? 100);
+                    context.loaderOverlay.show();
+                    try {
+                      await fetchClashProviderProxiesHealthCheck(widget.provider.name);
+                      await widget.onUpdate();
+                    } catch (e) {
+                      BotToast.showText(text: 'Updata Error');
+                    }
+                    context.loaderOverlay.hide();
+                  },
+                ),
+                IconButton(
+                  icon: Icon(Icons.refresh, size: 20, color: Theme.of(context).primaryColor),
+                  onPressed: () async {
+                    setState(() => _height = context.size?.height ?? 100);
+                    context.loaderOverlay.show();
+                    try {
+                      await fetchClashProviderProxiesUpdate(widget.provider.name);
+                      await widget.onUpdate();
+                    } catch (e) {
+                      BotToast.showText(text: 'Updata Error');
+                    }
+                    context.loaderOverlay.hide();
+                  },
+                )
+              ],
+            ).height(40),
+            Wrap(
+              spacing: 10,
+              runSpacing: 10,
+              children: widget.provider.proxies.map((e) => ProviderProxies(proxie: e)).toList(),
+            ).padding(top: 20)
           ],
-        ).height(30),
-        Wrap(
-          spacing: 10,
-          runSpacing: 10,
-          children: widget.provider.proxies.map((e) => ProviderProxies(proxie: e)).toList(),
-        ).padding(top: 20)
-      ],
-    ).width(double.infinity).padding(all: 15);
+        ).width(double.infinity).padding(all: 15));
   }
 }
 

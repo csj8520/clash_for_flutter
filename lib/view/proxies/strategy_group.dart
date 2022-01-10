@@ -93,11 +93,11 @@ class StrategyGroupItemTab extends StatelessWidget {
         .backgroundColor((fail && value)
             ? const Color(0xff8f7bb3)
             : fail
-                ? themColorRed
+                ? Theme.of(context).errorColor
                 : value
-                    ? themColorBlue
+                    ? Theme.of(context).primaryColor
                     : Colors.transparent)
-        .decorated(border: Border.all(width: 1, color: themColorBlue), borderRadius: BorderRadius.circular(12))
+        .decorated(border: Border.all(width: 1, color: Theme.of(context).primaryColor), borderRadius: BorderRadius.circular(12))
         .clipRRect(all: 12);
   }
 }

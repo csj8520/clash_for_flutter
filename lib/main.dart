@@ -39,6 +39,8 @@ class MyApp extends StatelessWidget {
       title: 'Flutter Demo',
       theme: ThemeData(
         primarySwatch: Colors.blue,
+        primaryColor: const Color(0xff2c8af8),
+        errorColor: const Color(0xfff56c6c),
       ),
       builder: BotToastInit(),
       home: const MyHomePage(title: 'Flutter Demo Home Page'),

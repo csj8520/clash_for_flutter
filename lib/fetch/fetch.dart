@@ -43,8 +43,14 @@ Future<int> fetchProxyDelay(String name) async {
   }
 }
 
-// http://127.0.0.1:9090/proxies/🔰 节点选择
-
 Future<void> fetchClashProxieSwitch({required String group, required String value}) async {
   await dio.put('/proxies/${Uri.encodeComponent(group)}', data: {'name': value});
+}
+
+Future<void> fetchClashProviderProxiesUpdate(String name) async {
+  await dio.put('/providers/proxies/${Uri.encodeComponent(name)}');
+}
+
+Future<void> fetchClashProviderProxiesHealthCheck(String name) async {
+  await dio.get('/providers/proxies/${Uri.encodeComponent(name)}/healthcheck');
 }
