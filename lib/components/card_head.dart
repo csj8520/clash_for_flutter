@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:styled_widget/styled_widget.dart';
 
 class CardHead extends StatefulWidget {
-  const CardHead({Key? key, required this.title, this.headPrefix, this.headSuffix}) : super(key: key);
+  const CardHead({Key? key, required this.title, this.prefix, this.suffix}) : super(key: key);
   final String title;
-  final Widget? headPrefix;
-  final Widget? headSuffix;
+  final Widget? prefix;
+  final Widget? suffix;
 
   @override
   _CardHeadState createState() => _CardHeadState();
@@ -16,13 +16,13 @@ class _CardHeadState extends State<CardHead> {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        widget.headPrefix,
+        widget.prefix,
         Text(widget.title)
             .textColor(Theme.of(context).primaryColor)
             .fontSize(24)
             .textShadow(color: const Color(0x662c8af8), blurRadius: 6, offset: const Offset(0, 2))
             .expanded(),
-        widget.headPrefix,
+        widget.suffix,
       ].whereType<Widget>().toList(),
     ).padding(top: 10, bottom: 10);
   }

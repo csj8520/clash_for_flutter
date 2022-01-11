@@ -2,29 +2,33 @@ import 'package:clashf_pro/components/index.dart';
 import 'package:clashf_pro/utils/utils.dart';
 import 'package:flutter/material.dart';
 
-class StrategyGroup extends StatelessWidget {
-  const StrategyGroup({Key? key, required this.proxies}) : super(key: key);
+class PageProxiesProxyGroup extends StatelessWidget {
+  const PageProxiesProxyGroup({Key? key, required this.proxies}) : super(key: key);
   final Proxies proxies;
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: proxies.groups.map((e) => StrategyGroupItem(group: e, timeoutProxys: proxies.timeoutProxies)).toList(),
-    ).width(double.infinity);
+    return Column(children: [
+      const CardHead(title: '策略组'),
+      CardView(
+          child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: proxies.groups.map((e) => _ProxyGroupItem(group: e, timeoutProxys: proxies.timeoutProxies)).toList(),
+      ).width(double.infinity))
+    ]);
   }
 }
 
-class StrategyGroupItem extends StatefulWidget {
-  const StrategyGroupItem({Key? key, required this.group, required this.timeoutProxys}) : super(key: key);
-  final ProxiesGroup group;
+class _ProxyGroupItem extends StatefulWidget {
+  const _ProxyGroupItem({Key? key, required this.group, required this.timeoutProxys}) : super(key: key);
+  final ProxiesProxyGroup group;
   final List<String> timeoutProxys;
 
   @override
-  _StrategyGroupItemState createState() => _StrategyGroupItemState();
+  _ProxyGroupItemState createState() => _ProxyGroupItemState();
 }
 
-class _StrategyGroupItemState extends State<StrategyGroupItem> {
+class _ProxyGroupItemState extends State<_ProxyGroupItem> {
   bool _expand = false;
   // final GlobalKey _globalKey = GlobalKey();
 
@@ -56,11 +60,11 @@ class _StrategyGroupItemState extends State<StrategyGroupItem> {
           spacing: 6,
           runSpacing: 6,
           children: widget.group.all
-              .map((e) => StrategyGroupItemTab(
+              .map((e) => _ProxyGroupItemTab(
                     text: e,
                     fail: widget.timeoutProxys.contains(e),
                     value: widget.group.now == e,
-                    disabled: widget.group.type != ProxiesGroupType.selector,
+                    disabled: widget.group.type != ProxiesProxyGroupType.selector,
                     onClick: () => _handleSelect(e),
                   ))
               .toList(),
@@ -74,8 +78,8 @@ class _StrategyGroupItemState extends State<StrategyGroupItem> {
   }
 }
 
-class StrategyGroupItemTab extends StatelessWidget {
-  const StrategyGroupItemTab({Key? key, required this.text, this.fail = false, this.value = false, this.disabled = false, this.onClick})
+class _ProxyGroupItemTab extends StatelessWidget {
+  const _ProxyGroupItemTab({Key? key, required this.text, this.fail = false, this.value = false, this.disabled = false, this.onClick})
       : super(key: key);
   final String text;
   final bool fail;

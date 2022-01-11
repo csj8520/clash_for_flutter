@@ -1,14 +1,15 @@
+import 'package:clashf_pro/utils/utils.dart';
 import 'package:flutter/material.dart';
 
-class ViewConnections extends StatefulWidget {
-  const ViewConnections({Key? key, this.show = false}) : super(key: key);
-  final bool show;
+class PageConnections extends StatefulWidget {
+  const PageConnections({Key? key, required this.pageVisibleEvent}) : super(key: key);
+  final PageVisibleEvent pageVisibleEvent;
 
   @override
-  _ViewConnectionsState createState() => _ViewConnectionsState();
+  _PageConnectionsState createState() => _PageConnectionsState();
 }
 
-class _ViewConnectionsState extends State<ViewConnections> {
+class _PageConnectionsState extends State<PageConnections> {
   @override
   Widget build(BuildContext context) {
     return Container(

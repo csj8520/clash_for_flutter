@@ -21,7 +21,7 @@ class ProxiesGroupHistory {
 //   List toString() => this;
 // }
 
-class ProxiesGroupType {
+class ProxiesProxyGroupType {
   static String selector = 'Selector';
   static String urltest = 'URLTest';
   static String fallback = 'Fallback';
@@ -30,14 +30,14 @@ class ProxiesGroupType {
   static String reject = 'Reject';
 }
 
-class ProxiesGroup {
+class ProxiesProxyGroup {
   String name;
   String type;
   String? now;
   bool udp;
   List<String> all;
   List<ProxiesGroupHistory> history;
-  ProxiesGroup({required this.name, required this.type, this.now, required this.udp, required this.all, required this.history});
+  ProxiesProxyGroup({required this.name, required this.type, this.now, required this.udp, required this.all, required this.history});
 
   // static Map<String, ProxiesGroupType> stringToType = {
   //   'Selector': ProxiesGroupType.selector,
@@ -57,8 +57,8 @@ class ProxiesGroup {
   //   ProxiesGroupType.reject: 'Reject',
   // };
 
-  static ProxiesGroup buildFromJson(Map<String, dynamic> json) {
-    return ProxiesGroup(
+  static ProxiesProxyGroup buildFromJson(Map<String, dynamic> json) {
+    return ProxiesProxyGroup(
       name: json['name'],
       type: json['type'],
       now: json['now'],
@@ -74,18 +74,18 @@ class ProxiesGroup {
   }
 }
 
-class ProxiesProxy {
+class ProxiesProxie {
   List<ProxiesGroupHistory> history;
   String name;
   String type;
   bool udp;
   late int delay;
-  ProxiesProxy({required this.history, required this.name, required this.type, required this.udp}) {
+  ProxiesProxie({required this.history, required this.name, required this.type, required this.udp}) {
     delay = history.isEmpty ? 0 : history.last.delay;
   }
 
-  static ProxiesProxy buildFromJson(Map<String, dynamic> json) {
-    return ProxiesProxy(
+  static ProxiesProxie buildFromJson(Map<String, dynamic> json) {
+    return ProxiesProxie(
       name: json['name'],
       type: json['type'],
       udp: json['udp'],
@@ -101,7 +101,7 @@ class ProxiesProxy {
 
 class ProxiesProviders {
   String name;
-  List<ProxiesProxy> proxies;
+  List<ProxiesProxie> proxies;
   String type;
   String updatedAt;
   String vehicleType;
@@ -115,7 +115,7 @@ class ProxiesProviders {
   static ProxiesProviders buildFromJson(Map<String, dynamic> json) {
     return ProxiesProviders(
       name: json['name'],
-      proxies: (json['proxies'] as List<dynamic>).map((e) => ProxiesProxy.buildFromJson(e)).toList(),
+      proxies: (json['proxies'] as List<dynamic>).map((e) => ProxiesProxie.buildFromJson(e)).toList(),
       type: json['type'],
       updatedAt: json['updatedAt'],
       vehicleType: json['vehicleType'],
@@ -129,36 +129,39 @@ class ProxiesProviders {
 }
 
 class Proxies {
-  ProxiesGroup global;
-  List<ProxiesGroup> groups;
+  ProxiesProxyGroup global;
+  List<ProxiesProxyGroup> groups;
   List<ProxiesProviders> providers;
-  List<ProxiesProxy> proxies;
-  Map<String, ProxiesProxy> allProxies;
+  List<ProxiesProxie> proxies;
+  Map<String, ProxiesProxie> allProxies;
   late List<String> timeoutProxies;
   Proxies({required this.global, required this.groups, required this.providers, required this.proxies, required this.allProxies}) {
     timeoutProxies = allProxies.values.where((value) => value.delay == 0).map((e) => e.name).toList();
   }
 
-  static List<String> groupNames = [ProxiesGroupType.selector, ProxiesGroupType.urltest, ProxiesGroupType.fallback, ProxiesGroupType.loadbalance];
+  static List<String> groupNames = [
+    ProxiesProxyGroupType.selector,
+    ProxiesProxyGroupType.urltest,
+    ProxiesProxyGroupType.fallback,
+    ProxiesProxyGroupType.loadbalance
+  ];
   static List<String> excludeNames = ['DIRECT', 'REJECT', 'GLOBAL'];
 
-  static updateGroup() {}
-
   static Proxies buildFromJson(Map<String, dynamic> json, Map<String, dynamic> json2) {
-    final global = ProxiesGroup.buildFromJson(json['GLOBAL']!);
+    final global = ProxiesProxyGroup.buildFromJson(json['GLOBAL']!);
     final groups = global.all
         .where((it) => !excludeNames.contains(it) && groupNames.contains(json[it]['type']))
-        .map((e) => ProxiesGroup.buildFromJson(json[e]!))
+        .map((e) => ProxiesProxyGroup.buildFromJson(json[e]!))
         .toList();
 
     final proxies = global.all
         .where((it) => !excludeNames.contains(it) && !groupNames.contains(json[it]['type']))
-        .map((e) => ProxiesProxy.buildFromJson(json[e]!))
+        .map((e) => ProxiesProxie.buildFromJson(json[e]!))
         .toList();
 
     final providers =
         json2.values.where((it) => it['vehicleType'] != 'Compatible').map((it) => ProxiesProviders.buildFromJson(it).sortProxies()).toList();
-    Map<String, ProxiesProxy> allProxies = {};
+    Map<String, ProxiesProxie> allProxies = {};
     for (var it in providers) {
       for (var el in it.proxies) {
         allProxies[el.name] = el;

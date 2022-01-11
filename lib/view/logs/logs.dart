@@ -3,17 +3,16 @@ import 'dart:async';
 import 'package:clashf_pro/components/index.dart';
 import 'package:clashf_pro/utils/utils.dart';
 import 'package:flutter/material.dart';
-import 'package:styled_widget/styled_widget.dart';
 
-class ViewLogs extends StatefulWidget {
-  const ViewLogs({Key? key, this.show = false}) : super(key: key);
-  final bool show;
+class PageLogs extends StatefulWidget {
+  const PageLogs({Key? key, required this.pageVisibleEvent}) : super(key: key);
+  final PageVisibleEvent pageVisibleEvent;
 
   @override
-  _ViewLogsState createState() => _ViewLogsState();
+  _PageLogsState createState() => _PageLogsState();
 }
 
-class _ViewLogsState extends State<ViewLogs> {
+class _PageLogsState extends State<PageLogs> {
   final List<Widget> _logs = [];
   final ScrollController _scrollController = ScrollController();
 

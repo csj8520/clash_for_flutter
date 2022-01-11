@@ -2,15 +2,15 @@ import 'package:clashf_pro/utils/system_proxy.dart';
 import 'package:clashf_pro/utils/utils.dart';
 import 'package:flutter/material.dart';
 
-class ViewSettings extends StatefulWidget {
-  const ViewSettings({Key? key, this.show = false}) : super(key: key);
-  final bool show;
+class PageSettings extends StatefulWidget {
+  const PageSettings({Key? key, required this.pageVisibleEvent}) : super(key: key);
+  final PageVisibleEvent pageVisibleEvent;
 
   @override
-  _ViewSettingsState createState() => _ViewSettingsState();
+  _PageSettingsState createState() => _PageSettingsState();
 }
 
-class _ViewSettingsState extends State<ViewSettings> {
+class _PageSettingsState extends State<PageSettings> {
   @override
   Widget build(BuildContext context) {
     return Column(

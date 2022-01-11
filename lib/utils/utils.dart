@@ -4,6 +4,8 @@ import 'logger.dart';
 export 'logger.dart';
 export 'const.dart';
 export 'them.dart';
+export 'events.dart';
+export 'event.dart';
 
 export '../fetch/fetch.dart';
 export '../types/types.dart';

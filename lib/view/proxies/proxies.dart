@@ -1,65 +1,33 @@
-import 'package:clashf_pro/components/card_head.dart';
 import 'package:clashf_pro/components/index.dart';
 import 'package:clashf_pro/utils/utils.dart';
-import 'package:clashf_pro/view/proxies/provider.dart';
-import 'package:clashf_pro/view/proxies/strategy_group.dart';
+import 'package:clashf_pro/view/proxies/components/proxie.dart';
 import 'package:flutter/material.dart';
 
-class ViewProxies extends StatefulWidget {
-  const ViewProxies({Key? key, this.show = false, this.inited = false}) : super(key: key);
-  final bool show;
-  final bool inited;
+class PageProxiesProxies extends StatefulWidget {
+  const PageProxiesProxies({Key? key, required this.proxies}) : super(key: key);
+  final List<ProxiesProxie> proxies;
 
   @override
-  _ViewProxiesState createState() => _ViewProxiesState();
+  _PageProxiesProxiesState createState() => _PageProxiesProxiesState();
 }
 
-class _ViewProxiesState extends State<ViewProxies> {
-  Proxies? _proxies;
-  final ScrollController _scrollController = ScrollController();
-
-  @override
-  void initState() {
-    super.initState();
-    _init();
-  }
-
-  @override
-  void didUpdateWidget(covariant ViewProxies oldWidget) {
-    if (!oldWidget.inited && widget.inited) {
-      super.didUpdateWidget(oldWidget);
-      _init();
-    } else if (!oldWidget.show && widget.show) {
-      super.didUpdateWidget(oldWidget);
-      _update();
+class _PageProxiesProxiesState extends State<PageProxiesProxies> {
+  _speedTest() async {
+    for (var it in widget.proxies) {
+      fetchProxyDelay(it.name).then((value) {
+        setState(() => it.delay = value);
+      });
     }
-  }
-
-  _init() async {
-    if (!widget.inited) return;
-    _update();
-  }
-
-  Future<void> _update() async {
-    _proxies = await fetchClashProxies();
-    setState(() {});
   }
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      controller: _scrollController,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const CardHead(title: '策略组'),
-          _proxies == null ? null : CardView(child: StrategyGroup(proxies: _proxies!)),
-          _proxies?.providers.isNotEmpty ?? false ? const CardHead(title: '代理集') : null,
-          ...((_proxies?.providers ?? []).map((it) => CardView(child: Provider(provider: it, onUpdate: _update)))),
-          _proxies?.proxies.isNotEmpty ?? false ? const CardHead(title: '代理') : null,
-          ...((_proxies?.proxies ?? []).map((it) => ProviderProxies(proxie: it, clickable: true))),
-        ].whereType<Widget>().toList(),
-      ).padding(top: 5, right: 20, bottom: 20),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        CardHead(title: '代理', suffix: IconButton(icon: Icon(Icons.speed, size: 20, color: Theme.of(context).primaryColor), onPressed: _speedTest)),
+        Wrap(spacing: 10, runSpacing: 10, children: widget.proxies.map((it) => BlockProxie(proxie: it)).toList()),
+      ],
     );
   }
 }

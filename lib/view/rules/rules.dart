@@ -1,18 +1,15 @@
-import 'package:flutter/widgets.dart';
+import 'package:flutter/material.dart';
 
-class ViewRules extends StatefulWidget {
-  const ViewRules({Key? key, this.show = false}) : super(key: key);
-  final bool show;
+class PageRulesRules extends StatefulWidget {
+  const PageRulesRules({Key? key}) : super(key: key);
 
   @override
-  _ViewRulesState createState() => _ViewRulesState();
+  _PageRulesRulesState createState() => _PageRulesRulesState();
 }
 
-class _ViewRulesState extends State<ViewRules> {
+class _PageRulesRulesState extends State<PageRulesRules> {
   @override
   Widget build(BuildContext context) {
-    return Container(
-      child: Text('ViewRules'),
-    );
+    return Container();
   }
 }

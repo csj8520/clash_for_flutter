@@ -3,8 +3,8 @@ import 'package:bot_toast/bot_toast.dart';
 import 'package:clashf_pro/view/connections/connections.dart';
 import 'package:clashf_pro/view/logs/logs.dart';
 import 'package:clashf_pro/utils/clash.dart';
-import 'package:clashf_pro/view/proxies/proxies.dart';
-import 'package:clashf_pro/view/rules/rules.dart';
+import 'package:clashf_pro/view/proxies/index.dart';
+import 'package:clashf_pro/view/rules/index.dart';
 import 'package:clashf_pro/view/settings/settings.dart';
 import 'package:flutter/material.dart';
 
@@ -60,6 +60,7 @@ class _MyHomePageState extends State<MyHomePage> with TrayListener, WindowListen
   int _index = 0;
   bool _inited = false;
   ClashVersion? _clashVersion;
+  final PageVisibleEvent _pageVisibleEvent = PageVisibleEvent();
 
   final _menus = [
     SideBarMenu('代理', 'proxies'),
@@ -81,6 +82,7 @@ class _MyHomePageState extends State<MyHomePage> with TrayListener, WindowListen
     await startClash();
     _clashVersion = await fetchClashVersion();
     _inited = true;
+    _pageVisibleEvent.show('proxies');
     setState(() {});
   }
 
@@ -105,10 +107,11 @@ class _MyHomePageState extends State<MyHomePage> with TrayListener, WindowListen
     TrayManager.instance.addListener(this);
   }
 
-  _onChange(menu, index) {
+  _onChange(SideBarMenu menu, int index) {
     if (!_inited) return BotToast.showText(text: '请等待初始化！');
     setState(() => {_index = index});
     log.debug('Menu Changed: ', menu.label);
+    _pageVisibleEvent.show(menu.type);
   }
 
   // @override
@@ -161,11 +164,11 @@ class _MyHomePageState extends State<MyHomePage> with TrayListener, WindowListen
           Expanded(
             child: IndexedStack(
               children: [
-                ViewProxies(show: _index == 0, inited: _inited),
-                ViewLogs(show: _index == 1),
-                ViewRules(show: _index == 2),
-                ViewConnections(show: _index == 3),
-                ViewSettings(show: _index == 4),
+                PageProxies(pageVisibleEvent: _pageVisibleEvent),
+                PageLogs(pageVisibleEvent: _pageVisibleEvent),
+                PageRules(pageVisibleEvent: _pageVisibleEvent),
+                PageConnections(pageVisibleEvent: _pageVisibleEvent),
+                PageSettings(pageVisibleEvent: _pageVisibleEvent),
               ],
               index: _index,
             ),

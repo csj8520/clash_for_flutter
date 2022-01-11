@@ -1,4 +1,5 @@
 export './proxies.dart';
+export './rules.dart';
 
 class ClashVersion {
   bool premium;

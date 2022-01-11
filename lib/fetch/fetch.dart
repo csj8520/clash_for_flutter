@@ -54,3 +54,8 @@ Future<void> fetchClashProviderProxiesUpdate(String name) async {
 Future<void> fetchClashProviderProxiesHealthCheck(String name) async {
   await dio.get('/providers/proxies/${Uri.encodeComponent(name)}/healthcheck');
 }
+
+Future<List<Rule>> fetchClashProviderRules(String provider) async {
+  final res = await dio.get('/providers/rules');
+  return (res.data['providers'] as List<Map<String, dynamic>>).map((e) => Rule.buildFromJson(e)).toList();
+}
