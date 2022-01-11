@@ -31,7 +31,10 @@ class _PageRulesState extends State<PageRules> {
       controller: _scrollController,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
-        children: const [PageRulesProviders(), PageRulesRules()],
+        children: [
+          PageRulesProviders(pageVisibleEvent: widget.pageVisibleEvent),
+          PageRulesRules(pageVisibleEvent: widget.pageVisibleEvent),
+        ],
       ).padding(top: 5, right: 20, bottom: 20),
     );
   }

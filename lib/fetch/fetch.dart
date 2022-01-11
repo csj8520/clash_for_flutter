@@ -55,7 +55,16 @@ Future<void> fetchClashProviderProxiesHealthCheck(String name) async {
   await dio.get('/providers/proxies/${Uri.encodeComponent(name)}/healthcheck');
 }
 
-Future<List<Rule>> fetchClashProviderRules(String provider) async {
+Future<List<Rule>> fetchClashProviderRules() async {
   final res = await dio.get('/providers/rules');
-  return (res.data['providers'] as List<Map<String, dynamic>>).map((e) => Rule.buildFromJson(e)).toList();
+  return (res.data['providers'] as Map<String, dynamic>).values.map((e) => Rule.buildFromJson(e)).toList();
+}
+
+Future<void> fetchClashProviderRulesUpdate(String name) async {
+  await dio.put('/providers/rules/${Uri.encodeComponent(name)}');
+}
+
+Future<List<RuleRule>> fetchClashRules() async {
+  final res = await dio.get('/rules');
+  return (res.data['rules'] as List<dynamic>).map((e) => RuleRule.buildFromJson(e)).toList();
 }

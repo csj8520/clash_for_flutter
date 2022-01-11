@@ -1,15 +1,15 @@
 import 'dart:io';
 import 'package:bot_toast/bot_toast.dart';
-import 'package:clashf_pro/view/connections/connections.dart';
-import 'package:clashf_pro/view/logs/logs.dart';
+import 'package:clashf_pro/view/connections/index.dart';
+import 'package:clashf_pro/view/logs/index.dart';
 import 'package:clashf_pro/utils/clash.dart';
 import 'package:clashf_pro/view/proxies/index.dart';
 import 'package:clashf_pro/view/rules/index.dart';
-import 'package:clashf_pro/view/settings/settings.dart';
+import 'package:clashf_pro/view/settings/index.dart';
 import 'package:flutter/material.dart';
 
 import 'package:clashf_pro/utils/utils.dart';
-import 'package:clashf_pro/view/sidebar/sidebar.dart';
+import 'package:clashf_pro/view/sidebar/index.dart';
 import 'package:tray_manager/tray_manager.dart';
 import 'package:window_manager/window_manager.dart';
 

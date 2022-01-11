@@ -6,7 +6,7 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:styled_widget/styled_widget.dart';
 
 class Loading extends StatefulWidget {
-  const Loading({Key? key, required this.child, required this.controller}) : super(key: key);
+  const Loading({Key? key, required this.controller, required this.child}) : super(key: key);
   final Widget child;
   final LoadingController controller;
 

@@ -30,3 +30,14 @@ class Rule {
     return '{"behavior": "$behavior", "name": "$name", "ruleCount": $ruleCount, "type": "$type", "updatedAt": "$updatedAt", "vehicleType": "$vehicleType"}';
   }
 }
+
+class RuleRule {
+  String payload;
+  String proxy;
+  String type;
+  RuleRule({required this.payload, required this.proxy, required this.type});
+
+  static RuleRule buildFromJson(Map<String, dynamic> json) {
+    return RuleRule(payload: json['payload'], proxy: json['proxy'], type: json['type']);
+  }
+}
