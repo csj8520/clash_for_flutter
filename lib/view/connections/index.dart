@@ -22,7 +22,11 @@ class TableItem {
 }
 
 final List<TableItem> tableItems = [
-  TableItem(head: '域名', width: 260, align: Alignment.centerLeft, getLabel: (c) => c.metadata.host),
+  TableItem(
+      head: '域名',
+      width: 260,
+      align: Alignment.centerLeft,
+      getLabel: (c) => '${c.metadata.host.isNotEmpty ? c.metadata.host : c.metadata.sourceIP}:${c.metadata.destinationPort}'),
   TableItem(head: '网络', width: 80, align: Alignment.center, getLabel: (c) => c.metadata.network),
   TableItem(head: '类型', width: 120, align: Alignment.center, getLabel: (c) => c.metadata.type),
   TableItem(head: '节点链', width: 200, align: Alignment.centerLeft, tooltip: true, getLabel: (c) => c.chains.reversed.join('/')),
