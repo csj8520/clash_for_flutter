@@ -52,9 +52,10 @@ dependencies:
   bot_toast: ^4.0.1
   url_launcher: ^6.0.17
   day: ^0.7.1
-  loader_overlay: ^2.0.4+3
-  loading_overlay_pro: ^2.1.1
+  # loader_overlay: ^2.0.4+3
+  # loading_overlay_pro: ^2.1.1
   flutter_spinkit: ^5.1.0
+  web_socket_channel: ^2.1.0
 
 dev_dependencies:
   flutter_test:

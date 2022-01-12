@@ -1,6 +1,6 @@
-import 'package:clashf_pro/utils/system_proxy.dart';
-import 'package:clashf_pro/utils/utils.dart';
 import 'package:flutter/material.dart';
+
+import 'package:clashf_pro/utils/index.dart';
 
 class PageSettings extends StatefulWidget {
   const PageSettings({Key? key, required this.pageVisibleEvent}) : super(key: key);

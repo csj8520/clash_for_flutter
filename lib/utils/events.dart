@@ -1,4 +1,4 @@
-import 'package:clashf_pro/utils/utils.dart';
+import 'package:clashf_pro/utils/index.dart';
 
 class PageVisibleEvent {
   String? _page;

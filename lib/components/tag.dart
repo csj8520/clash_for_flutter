@@ -1,5 +1,5 @@
-import 'package:clashf_pro/utils/utils.dart';
 import 'package:flutter/material.dart';
+import 'package:styled_widget/styled_widget.dart';
 
 class Tag extends StatelessWidget {
   const Tag(this.text, {Key? key, this.bgcolor = Colors.transparent, this.color, this.width}) : super(key: key);

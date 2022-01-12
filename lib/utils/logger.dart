@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:clashf_pro/utils/utils.dart';
+import 'package:clashf_pro/utils/index.dart';
 
 class Logger {
   final Map<String, int> _timeMap = {};

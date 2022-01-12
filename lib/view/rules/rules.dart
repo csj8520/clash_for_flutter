@@ -1,6 +1,10 @@
-import 'package:clashf_pro/components/index.dart';
-import 'package:clashf_pro/utils/utils.dart';
 import 'package:flutter/material.dart';
+import 'package:styled_widget/styled_widget.dart';
+
+import 'package:clashf_pro/fetch/index.dart';
+import 'package:clashf_pro/types/index.dart';
+import 'package:clashf_pro/utils/index.dart';
+import 'package:clashf_pro/components/index.dart';
 
 class PageRulesRules extends StatefulWidget {
   const PageRulesRules({Key? key, required this.pageVisibleEvent}) : super(key: key);
@@ -24,7 +28,6 @@ class _PageRulesRulesState extends State<PageRulesRules> {
 
   Future<void> _update() async {
     _rules = await fetchClashRules();
-    log.debug(_rules);
     setState(() {});
   }
 

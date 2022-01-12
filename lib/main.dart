@@ -1,17 +1,21 @@
 import 'dart:io';
-import 'package:bot_toast/bot_toast.dart';
-import 'package:clashf_pro/view/connections/index.dart';
-import 'package:clashf_pro/view/logs/index.dart';
-import 'package:clashf_pro/utils/clash.dart';
-import 'package:clashf_pro/view/proxies/index.dart';
-import 'package:clashf_pro/view/rules/index.dart';
-import 'package:clashf_pro/view/settings/index.dart';
-import 'package:flutter/material.dart';
 
-import 'package:clashf_pro/utils/utils.dart';
-import 'package:clashf_pro/view/sidebar/index.dart';
+import 'package:flutter/material.dart';
+import 'package:bot_toast/bot_toast.dart';
 import 'package:tray_manager/tray_manager.dart';
+import 'package:styled_widget/styled_widget.dart';
 import 'package:window_manager/window_manager.dart';
+
+import 'package:clashf_pro/fetch/index.dart';
+import 'package:clashf_pro/types/index.dart';
+import 'package:clashf_pro/utils/index.dart';
+
+import 'package:clashf_pro/view/sidebar/index.dart';
+import 'package:clashf_pro/view/proxies/index.dart';
+import 'package:clashf_pro/view/logs/index.dart';
+import 'package:clashf_pro/view/rules/index.dart';
+import 'package:clashf_pro/view/connections/index.dart';
+import 'package:clashf_pro/view/settings/index.dart';
 
 void main() async {
   log.time('Start Window Time');

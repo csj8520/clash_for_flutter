@@ -1,8 +1,13 @@
-import 'package:clashf_pro/utils/utils.dart';
-import 'package:clashf_pro/view/proxies/providers.dart';
-import 'package:clashf_pro/view/proxies/proxies.dart';
-import 'package:clashf_pro/view/proxies/proxy_group.dart';
 import 'package:flutter/material.dart';
+import 'package:styled_widget/styled_widget.dart';
+
+import 'package:clashf_pro/fetch/index.dart';
+import 'package:clashf_pro/types/index.dart';
+import 'package:clashf_pro/utils/index.dart';
+
+import 'proxies.dart';
+import 'proxy_group.dart';
+import 'providers.dart';
 
 class PageProxies extends StatefulWidget {
   const PageProxies({Key? key, required this.pageVisibleEvent}) : super(key: key);

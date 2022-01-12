@@ -29,13 +29,6 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "2.8.2"
-  back_button_interceptor:
-    dependency: transitive
-    description:
-      name: back_button_interceptor
-      url: "https://pub.flutter-io.cn"
-    source: hosted
-    version: "5.0.2"
   boolean_selector:
     dependency: transitive
     description:
@@ -184,20 +177,6 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "1.0.1"
-  loader_overlay:
-    dependency: "direct main"
-    description:
-      name: loader_overlay
-      url: "https://pub.flutter-io.cn"
-    source: hosted
-    version: "2.0.4+3"
-  loading_overlay_pro:
-    dependency: "direct main"
-    description:
-      name: loading_overlay_pro
-      url: "https://pub.flutter-io.cn"
-    source: hosted
-    version: "2.1.1"
   matcher:
     dependency: transitive
     description:
@@ -406,6 +385,13 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "2.1.1"
+  web_socket_channel:
+    dependency: "direct main"
+    description:
+      name: web_socket_channel
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "2.1.0"
   window_manager:
     dependency: "direct main"
     description:

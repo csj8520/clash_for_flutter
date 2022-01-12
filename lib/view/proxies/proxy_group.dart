@@ -1,6 +1,11 @@
-import 'package:clashf_pro/components/index.dart';
-import 'package:clashf_pro/utils/utils.dart';
+import 'dart:math';
+
 import 'package:flutter/material.dart';
+import 'package:styled_widget/styled_widget.dart';
+
+import 'package:clashf_pro/fetch/index.dart';
+import 'package:clashf_pro/types/index.dart';
+import 'package:clashf_pro/components/index.dart';
 
 class PageProxiesProxyGroup extends StatelessWidget {
   const PageProxiesProxyGroup({Key? key, required this.proxies}) : super(key: key);
@@ -46,6 +51,9 @@ class _ProxyGroupItemState extends State<_ProxyGroupItem> {
 
   @override
   Widget build(BuildContext context) {
+    // TODO: 临时解决卡顿问题
+    final tags = widget.group.all.sublist(0, _expand ? widget.group.all.length : min(widget.group.all.length, 10));
+
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -59,7 +67,7 @@ class _ProxyGroupItemState extends State<_ProxyGroupItem> {
           // key: _globalKey,
           spacing: 6,
           runSpacing: 6,
-          children: widget.group.all
+          children: tags
               .map((e) => _ProxyGroupItemTab(
                     text: e,
                     fail: widget.timeoutProxys.contains(e),
@@ -69,6 +77,7 @@ class _ProxyGroupItemState extends State<_ProxyGroupItem> {
                   ))
               .toList(),
         ).constrained(maxHeight: _expand ? double.infinity : 24).clipRect().expanded(),
+        // TODO: 无更多时不显示
         TextButton(
           child: Text(_expand ? '收起' : '展开').fontSize(14).textColor(const Color(0xff546b87)),
           onPressed: () => setState(() => _expand = !_expand),

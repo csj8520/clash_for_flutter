@@ -1,5 +1,7 @@
-import 'package:clashf_pro/utils/utils.dart';
 import 'package:dio/dio.dart';
+
+import 'package:clashf_pro/types/index.dart';
+import 'package:clashf_pro/utils/index.dart';
 
 Dio dio = Dio(BaseOptions(baseUrl: 'http://127.0.0.1:9090'));
 

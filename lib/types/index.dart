@@ -1,5 +1,6 @@
-export './proxies.dart';
-export './rules.dart';
+export 'proxies.dart';
+export 'rules.dart';
+export 'connections.dart';
 
 class ClashVersion {
   bool premium;

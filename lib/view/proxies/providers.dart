@@ -1,14 +1,16 @@
-import 'package:bot_toast/bot_toast.dart';
-import 'package:clashf_pro/components/loading.dart';
-import 'package:clashf_pro/view/proxies/components/proxie.dart';
 import 'package:flutter/material.dart';
+import 'package:bot_toast/bot_toast.dart';
+import 'package:styled_widget/styled_widget.dart';
 
 import 'package:day/day.dart';
 import 'package:day/i18n/zh_cn.dart';
 import 'package:day/plugins/relative_time.dart';
 
 import 'package:clashf_pro/components/index.dart';
-import 'package:clashf_pro/utils/utils.dart';
+import 'package:clashf_pro/fetch/index.dart';
+import 'package:clashf_pro/types/index.dart';
+
+import 'components/proxie.dart';
 
 class PageProxiesProviders extends StatelessWidget {
   const PageProxiesProviders({Key? key, required this.providers, required this.onUpdate}) : super(key: key);

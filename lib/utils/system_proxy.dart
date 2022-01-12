@@ -1,5 +1,6 @@
 import 'dart:io';
-import 'package:clashf_pro/utils/utils.dart';
+
+import 'package:clashf_pro/utils/index.dart';
 
 class SystemProxyState {
   bool enable;

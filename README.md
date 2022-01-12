@@ -53,6 +53,9 @@ https://github.com/biyidev/biyi/commit/66ad34c21c221460c0bd7c47a743259f5e15a38d
 - [ ] macos debug 模式下多次调用 Shell 会卡死
       https://github.com/flutter/flutter/issues/95805
 
+- [] clash pro 最新语法支持
+      https://github.com/tindy2013/subconverter/issues/442
+
 ## Other Clash GUI
 
 ### ClashX for mac

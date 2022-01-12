@@ -1,5 +1,3 @@
-import 'package:clashf_pro/utils/utils.dart';
-
 class ProxiesGroupHistory {
   String time;
   int delay;

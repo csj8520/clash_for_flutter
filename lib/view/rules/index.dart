@@ -1,7 +1,10 @@
-import 'package:clashf_pro/utils/utils.dart';
-import 'package:clashf_pro/view/rules/providers.dart';
-import 'package:clashf_pro/view/rules/rules.dart';
 import 'package:flutter/widgets.dart';
+import 'package:styled_widget/styled_widget.dart';
+
+import 'package:clashf_pro/utils/index.dart';
+
+import 'rules.dart';
+import 'providers.dart';
 
 class PageRules extends StatefulWidget {
   const PageRules({Key? key, required this.pageVisibleEvent}) : super(key: key);
@@ -17,12 +20,6 @@ class _PageRulesState extends State<PageRules> {
   @override
   void initState() {
     super.initState();
-    widget.pageVisibleEvent.onVisible('rules', (show) {
-      log.debug('rules', show);
-    });
-    widget.pageVisibleEvent.onVisible('rules', (show) {
-      log.debug('rules', show);
-    });
   }
 
   @override

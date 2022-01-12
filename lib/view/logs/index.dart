@@ -1,8 +1,10 @@
 import 'dart:async';
 
-import 'package:clashf_pro/components/index.dart';
-import 'package:clashf_pro/utils/utils.dart';
 import 'package:flutter/material.dart';
+import 'package:styled_widget/styled_widget.dart';
+
+import 'package:clashf_pro/utils/index.dart';
+import 'package:clashf_pro/components/index.dart';
 
 class PageLogs extends StatefulWidget {
   const PageLogs({Key? key, required this.pageVisibleEvent}) : super(key: key);
@@ -54,8 +56,7 @@ class _PageLogsState extends State<PageLogs> {
         itemCount: _logs.length,
         controller: _scrollController,
       ).backgroundColor(const Color(0xfff3f6f9)).clipRRect(all: 4).padding(all: 15))
-          .padding(bottom: 10)
           .expanded()
-    ]).padding(top: 5, right: 20);
+    ]).padding(top: 5, right: 20, bottom: 10);
   }
 }
