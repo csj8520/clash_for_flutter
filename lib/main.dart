@@ -61,10 +61,11 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> with TrayListener, WindowListener {
-  int _index = 0;
+  int _index = 1;
   bool _inited = false;
   ClashVersion? _clashVersion;
-  final PageVisibleEvent _pageVisibleEvent = PageVisibleEvent();
+  // final PageVisibleEvent _pageVisibleEvent = PageVisibleEvent();
+  final PageController _pageController = PageController(initialPage: 1);
 
   final _menus = [
     SideBarMenu('代理', 'proxies'),
@@ -81,13 +82,15 @@ class _MyHomePageState extends State<MyHomePage> with TrayListener, WindowListen
   }
 
   void _init() async {
-    _initTray();
-    windowManager.addListener(this);
-    await startClash();
-    _clashVersion = await fetchClashVersion();
-    _inited = true;
-    _pageVisibleEvent.show('proxies');
-    setState(() {});
+    await Config.instance.init();
+    // _initTray();
+    // windowManager.addListener(this);
+    // await startClash();
+    // _clashVersion = await fetchClashVersion();
+    // _inited = true;
+    // _pageController.jumpTo(0);
+    // // _pageVisibleEvent.show('proxies');
+    // setState(() => _index = 0);
   }
 
   void _initTray() async {
@@ -114,8 +117,9 @@ class _MyHomePageState extends State<MyHomePage> with TrayListener, WindowListen
   _onChange(SideBarMenu menu, int index) {
     if (!_inited) return BotToast.showText(text: '请等待初始化！');
     setState(() => {_index = index});
+    // _pageVisibleEvent.show(menu.type);
+    _pageController.jumpToPage(index);
     log.debug('Menu Changed: ', menu.label);
-    _pageVisibleEvent.show(menu.type);
   }
 
   // @override
@@ -165,18 +169,30 @@ class _MyHomePageState extends State<MyHomePage> with TrayListener, WindowListen
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           ViewSideBar(menus: _menus, index: _index, onChange: _onChange, clashVersion: _clashVersion),
-          Expanded(
-            child: IndexedStack(
-              children: [
-                PageProxies(pageVisibleEvent: _pageVisibleEvent),
-                PageLogs(pageVisibleEvent: _pageVisibleEvent),
-                PageRules(pageVisibleEvent: _pageVisibleEvent),
-                PageConnections(pageVisibleEvent: _pageVisibleEvent),
-                PageSettings(pageVisibleEvent: _pageVisibleEvent),
-              ],
-              index: _index,
-            ),
-          ),
+          // Expanded(
+          //   child: IndexedStack(
+          //     children: [
+          //       PageProxies(pageVisibleEvent: _pageVisibleEvent),
+          //       PageLogs(pageVisibleEvent: _pageVisibleEvent),
+          //       PageRules(pageVisibleEvent: _pageVisibleEvent),
+          //       PageConnections(pageVisibleEvent: _pageVisibleEvent),
+          //       PageSettings(pageVisibleEvent: _pageVisibleEvent),
+          //     ],
+          //     index: _index,
+          //   ),
+          // ),
+          PageView(
+            scrollDirection: Axis.vertical,
+            controller: _pageController,
+            physics: const NeverScrollableScrollPhysics(),
+            children: [
+              const PageProxies(),
+              const PageLogs(),
+              PageRules(),
+              const PageConnections(),
+              const PageSettings(),
+            ],
+          ).expanded()
         ],
       ).height(double.infinity).backgroundColor(const Color(0xfff4f5f6)),
       floatingActionButton: FloatingActionButton(

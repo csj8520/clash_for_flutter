@@ -1,12 +1,14 @@
 import 'dart:math' as math;
 
 import 'logger.dart';
+
 export 'logger.dart';
 export 'const.dart';
 export 'them.dart';
 export 'events.dart';
 export 'event.dart';
 export 'clash.dart';
+export 'config.dart';
 export 'system_proxy.dart';
 
 Logger log = Logger();

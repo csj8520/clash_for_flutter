@@ -57,6 +57,7 @@ dependencies:
   flutter_spinkit: ^5.1.0
   web_socket_channel: ^2.1.0
   yaml: ^3.1.0
+  yaml_edit: ^2.0.1
 
 dev_dependencies:
   flutter_test:

@@ -16,16 +16,10 @@ class Loading extends StatefulWidget {
 
 class _LoadingState extends State<Loading> {
   @override
-  void dispose() {
-    widget.controller.controller.close();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
     return Builder(
       builder: (context) => StreamBuilder<Map<String, dynamic>>(
-        stream: widget.controller.controller.stream,
+        stream: widget.controller.stream,
         initialData: const <String, dynamic>{
           'show': false,
           'size': Size(100, 100),
@@ -33,7 +27,7 @@ class _LoadingState extends State<Loading> {
         builder: (_, snapshot) {
           final bool show = snapshot.data?['show'] ?? false;
           final Size size = snapshot.data?['size'] ?? const Size(100, 100);
-          final double laodingSize = min(min(size.width, size.height) / 3, 80);
+          final double laodingSize = min(min(size.width, size.height) / 2, 80);
 
           return Stack(
             children: [
@@ -49,16 +43,29 @@ class _LoadingState extends State<Loading> {
       ),
     );
   }
+
+  @override
+  void dispose() {
+    widget.controller.dispose();
+    super.dispose();
+  }
 }
 
 class LoadingController {
-  StreamController<Map<String, dynamic>> controller = StreamController();
-  show(Size? size) {
-    controller.add({'show': true, 'size': size});
+  final StreamController<Map<String, dynamic>> _controller = StreamController();
+
+  Stream<Map<String, dynamic>> get stream => _controller.stream;
+
+  void show(Size? size) {
+    _controller.add({'show': true, 'size': size});
   }
 
-  hide() {
-    controller.add({'show': false});
+  void hide() {
+    _controller.add({'show': false});
+  }
+
+  void dispose() {
+    _controller.close();
   }
 }
 

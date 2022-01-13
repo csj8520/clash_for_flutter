@@ -39,8 +39,9 @@ final List<TableItem> tableItems = [
 ];
 
 class PageConnections extends StatefulWidget {
-  const PageConnections({Key? key, required this.pageVisibleEvent}) : super(key: key);
-  final PageVisibleEvent pageVisibleEvent;
+  const PageConnections({Key? key}) : super(key: key);
+  // const PageConnections({Key? key, required this.pageVisibleEvent}) : super(key: key);
+  // final PageVisibleEvent pageVisibleEvent;
 
   @override
   _PageConnectionsState createState() => _PageConnectionsState();
@@ -54,13 +55,14 @@ class _PageConnectionsState extends State<PageConnections> {
   @override
   void initState() {
     super.initState();
-    widget.pageVisibleEvent.onVisible('connections', (show) {
-      if (show) {
-        _openChannel();
-      } else {
-        _channel?.sink.close();
-      }
-    });
+    _openChannel();
+    // widget.pageVisibleEvent.onVisible('connections', (show) {
+    //   if (show) {
+    //     _openChannel();
+    //   } else {
+    //     _channel?.sink.close();
+    //   }
+    // });
   }
 
   _openChannel() async {
@@ -118,6 +120,14 @@ class _PageConnectionsState extends State<PageConnections> {
         ).padding(top: 5, right: 20, bottom: 10);
       },
     );
+  }
+
+  @override
+  void dispose() {
+    _horizontalScrollController.dispose();
+    _verticalScrollController.dispose();
+    _channel?.sink.close();
+    super.dispose();
   }
 }
 

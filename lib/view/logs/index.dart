@@ -7,14 +7,15 @@ import 'package:clashf_pro/utils/index.dart';
 import 'package:clashf_pro/components/index.dart';
 
 class PageLogs extends StatefulWidget {
-  const PageLogs({Key? key, required this.pageVisibleEvent}) : super(key: key);
-  final PageVisibleEvent pageVisibleEvent;
+  const PageLogs({Key? key}) : super(key: key);
+  // const PageLogs({Key? key, required this.pageVisibleEvent}) : super(key: key);
+  // final PageVisibleEvent pageVisibleEvent;
 
   @override
   _PageLogsState createState() => _PageLogsState();
 }
 
-class _PageLogsState extends State<PageLogs> {
+class _PageLogsState extends State<PageLogs> with AutomaticKeepAliveClientMixin {
   final List<Widget> _logs = [];
   final ScrollController _scrollController = ScrollController();
 
@@ -30,23 +31,26 @@ class _PageLogsState extends State<PageLogs> {
       if (_notHandleScroll) return;
       _lockScrollToBottom = _scrollController.position.maxScrollExtent - _scrollController.offset < 20;
     });
-    log.on(onLog: (event) {
-      setState(() {
-        _logs.add(Text(event));
-        if (_logs.length > 1000) _logs.removeAt(0);
-      });
-      _timer?.cancel();
-      WidgetsBinding.instance?.addPostFrameCallback((timeStamp) {
-        if (!_lockScrollToBottom) return;
-        _notHandleScroll = true;
-        _scrollController.position.moveTo(_scrollController.position.maxScrollExtent);
-        _notHandleScroll = false;
-      });
+    log.on(onLog: _onLog);
+  }
+
+  void _onLog(String event) {
+    setState(() {
+      _logs.add(Text(event));
+      if (_logs.length > 1000) _logs.removeAt(0);
+    });
+    _timer?.cancel();
+    WidgetsBinding.instance?.addPostFrameCallback((timeStamp) {
+      if (!_lockScrollToBottom) return;
+      _notHandleScroll = true;
+      _scrollController.position.moveTo(_scrollController.position.maxScrollExtent);
+      _notHandleScroll = false;
     });
   }
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     return Column(children: [
       const CardHead(title: '日志'),
       CardView(
@@ -58,5 +62,15 @@ class _PageLogsState extends State<PageLogs> {
       ).backgroundColor(const Color(0xfff3f6f9)).clipRRect(all: 4).padding(all: 15))
           .expanded()
     ]).padding(top: 5, right: 20, bottom: 10);
+  }
+
+  @override
+  bool get wantKeepAlive => true;
+
+  @override
+  void dispose() {
+    log.off(onLog: _onLog);
+    _scrollController.dispose();
+    super.dispose();
   }
 }

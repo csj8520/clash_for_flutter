@@ -84,4 +84,9 @@ class _ProviderState extends State<_Provider> {
       ),
     );
   }
+
+  @override
+  void dispose() {
+    super.dispose();
+  }
 }

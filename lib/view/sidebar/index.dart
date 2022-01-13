@@ -30,7 +30,7 @@ class _ViewSideBarState extends State<ViewSideBar> {
           padding: const EdgeInsets.only(top: 20, left: 20, right: 20),
           itemBuilder: (context, idx) => _SlideBarButton(
             label: widget.menus[idx].label,
-            selected: idx == widget.index,
+            value: idx == widget.index,
             onPressed: () => widget.onChange != null ? widget.onChange!(widget.menus[idx], idx) : null,
           ),
           itemCount: widget.menus.length,
@@ -57,10 +57,10 @@ class _ViewSideBarState extends State<ViewSideBar> {
 }
 
 class _SlideBarButton extends StatefulWidget {
-  const _SlideBarButton({Key? key, required this.label, this.onPressed, this.selected = false}) : super(key: key);
+  const _SlideBarButton({Key? key, required this.label, this.onPressed, this.value = false}) : super(key: key);
   final String label;
   final VoidCallback? onPressed;
-  final bool selected;
+  final bool value;
 
   @override
   _SlideBarButtonState createState() => _SlideBarButtonState();
@@ -72,23 +72,17 @@ class _SlideBarButtonState extends State<_SlideBarButton> with TickerProviderSta
   @override
   void initState() {
     super.initState();
-    _animationController = AnimationController(
-        duration: const Duration(milliseconds: 300),
-        reverseDuration: const Duration(milliseconds: 100),
-        vsync: this,
-        lowerBound: 0x00,
-        upperBound: 0xff)
-      ..addListener(() => setState(() {}));
-    if (widget.selected) _animationController.forward(from: 0);
+    _animationController = AnimationController(duration: const Duration(milliseconds: 300), vsync: this)..addListener(() => setState(() {}));
+    if (widget.value) _animationController.forward(from: 0);
   }
 
   @override
   void didUpdateWidget(covariant _SlideBarButton oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (!oldWidget.selected && widget.selected) {
-      _animationController.forward(from: 0x00);
-    } else if (oldWidget.selected && !widget.selected) {
-      _animationController.reverse(from: 0xff);
+    if (!oldWidget.value && widget.value) {
+      _animationController.forward(from: 0);
+    } else if (oldWidget.value && !widget.value) {
+      _animationController.reverse(from: 1);
     }
   }
 
@@ -98,18 +92,21 @@ class _SlideBarButtonState extends State<_SlideBarButton> with TickerProviderSta
       height: 36,
       decoration: BoxDecoration(
         shape: BoxShape.rectangle,
-        gradient: LinearGradient(colors: [
-          const Color(0x0057befc).withAlpha(_animationController.value.toInt()),
-          const Color(0x002c8af8).withAlpha(_animationController.value.toInt())
-        ], begin: Alignment.topLeft),
+        gradient: const LinearGradient(colors: [Color(0xff57befc), Color(0xff2c8af8)], begin: Alignment.topLeft).scale(_animationController.value),
       ),
       child: TextButton(
         onPressed: widget.onPressed,
         child: Text(
           widget.label,
-          style: TextStyle(color: Color(widget.selected ? 0xffffffff : 0xff909399)),
+          style: TextStyle(color: Color(widget.value ? 0xffffffff : 0xff909399)),
         ),
       ),
     ).clipRRect(all: 18).padding(top: 10, bottom: 10);
+  }
+
+  @override
+  void dispose() {
+    _animationController.dispose();
+    super.dispose();
   }
 }

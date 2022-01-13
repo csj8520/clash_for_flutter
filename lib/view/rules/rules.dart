@@ -7,8 +7,9 @@ import 'package:clashf_pro/utils/index.dart';
 import 'package:clashf_pro/components/index.dart';
 
 class PageRulesRules extends StatefulWidget {
-  const PageRulesRules({Key? key, required this.pageVisibleEvent}) : super(key: key);
-  final PageVisibleEvent pageVisibleEvent;
+  const PageRulesRules({Key? key}) : super(key: key);
+  // const PageRulesRules({Key? key, required this.pageVisibleEvent}) : super(key: key);
+  // final PageVisibleEvent pageVisibleEvent;
 
   @override
   _PageRulesRulesState createState() => _PageRulesRulesState();
@@ -21,9 +22,10 @@ class _PageRulesRulesState extends State<PageRulesRules> {
   @override
   void initState() {
     super.initState();
-    widget.pageVisibleEvent.onVisible('rules', (show) {
-      if (show) _update();
-    });
+    _update();
+    // widget.pageVisibleEvent.onVisible('rules', (show) {
+    //   if (show) _update();
+    // });
   }
 
   Future<void> _update() async {

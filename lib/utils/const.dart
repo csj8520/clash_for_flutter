@@ -1,21 +1,17 @@
 import 'dart:io';
+import 'package:process_run/shell.dart';
 import 'package:path/path.dart' as path;
-import 'package:process_run/shell_run.dart';
 
-String clashName = Platform.isWindows
-    ? 'clash-windows-amd64.exe'
-    : Platform.isMacOS
-        ? 'clash-darwin-arm64'
-        : '';
+class CONST {
+  static final String _clashBinName = Platform.isWindows ? 'clash-windows-amd64.exe' : 'clash-darwin-arm6';
+  static final String _assetsPath =
+      Platform.isWindows ? '../data/flutter_assets/assets' : '../../Frameworks/App.framework/Resources/flutter_assets/assets';
 
-File mainFile = File(Platform.resolvedExecutable);
-Directory assetsDir = Platform.isWindows
-    ? Directory(path.join(mainFile.parent.path, 'data', 'flutter_assets', 'assets'))
-    : Platform.isMacOS
-        ? Directory(path.join(mainFile.parent.parent.path, 'Frameworks', 'App.framework', 'Resources', 'flutter_assets', 'assets'))
-        : Directory('');
+  static File mainFile = File(Platform.resolvedExecutable);
 
-File clashFile = File(path.join(assetsDir.path, 'bin', clashName));
+  static Directory assetsDir = Directory(path.normalize(path.join(mainFile.path, _assetsPath)));
+  static Directory configDir = Directory(path.join(userHomePath, '.config', 'clash-pro'));
 
-Directory configDir = Directory(path.join(userHomePath, '.config', 'clash-pro'));
-File configFile = File(path.join(configDir.path, '.config.yaml'));
+  static File configFile = File(path.join(configDir.path, '.config.yaml'));
+  static File clashBinFile = File(path.join(assetsDir.path, 'bin', _clashBinName));
+}

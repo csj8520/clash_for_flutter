@@ -1,6 +1,5 @@
 import 'dart:io';
 import 'dart:convert';
-import 'package:path/path.dart' as path;
 
 import 'package:clashf_pro/utils/index.dart';
 import 'package:clashf_pro/fetch/index.dart';
@@ -13,7 +12,7 @@ Future<Process> startClash() async {
 
   log.time('Start Clash Time');
 
-  clash = await Process.start(clashFile.path, ['-d', configDir.path, '-f', path.join(configDir.path, 'clash.yaml')], runInShell: false);
+  clash = await Process.start(CONST.clashBinFile.path, ['-d', CONST.configDir.path, '-f', Config.instance.clashConfigFile.path], runInShell: false);
   clash!.stdout.listen((event) {
     List<String> strs = utf8.decode(event).trim().split('\n');
     for (var it in strs) {

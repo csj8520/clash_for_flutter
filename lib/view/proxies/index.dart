@@ -3,15 +3,16 @@ import 'package:styled_widget/styled_widget.dart';
 
 import 'package:clashf_pro/fetch/index.dart';
 import 'package:clashf_pro/types/index.dart';
-import 'package:clashf_pro/utils/index.dart';
+// import 'package:clashf_pro/utils/index.dart';
 
 import 'proxies.dart';
 import 'proxy_group.dart';
 import 'providers.dart';
 
 class PageProxies extends StatefulWidget {
-  const PageProxies({Key? key, required this.pageVisibleEvent}) : super(key: key);
-  final PageVisibleEvent pageVisibleEvent;
+  const PageProxies({Key? key}) : super(key: key);
+  // const PageProxies({Key? key, required this.pageVisibleEvent}) : super(key: key);
+  // final PageVisibleEvent pageVisibleEvent;
 
   @override
   _PageProxiesState createState() => _PageProxiesState();
@@ -24,9 +25,10 @@ class _PageProxiesState extends State<PageProxies> {
   @override
   void initState() {
     super.initState();
-    widget.pageVisibleEvent.onVisible('proxies', (show) {
-      if (show) _update();
-    });
+    // widget.pageVisibleEvent.onVisible('proxies', (show) {
+    //   if (show) _update();
+    // });
+    _update();
   }
 
   Future<void> _update() async {
@@ -48,5 +50,11 @@ class _PageProxiesState extends State<PageProxies> {
         children: children,
       ).padding(top: 5, right: 20, bottom: 20),
     );
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
   }
 }

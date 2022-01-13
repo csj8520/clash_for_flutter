@@ -5,8 +5,9 @@ import 'package:clashf_pro/utils/index.dart';
 import 'package:clashf_pro/components/index.dart';
 
 class PageSettings extends StatefulWidget {
-  const PageSettings({Key? key, required this.pageVisibleEvent}) : super(key: key);
-  final PageVisibleEvent pageVisibleEvent;
+  const PageSettings({Key? key}) : super(key: key);
+  // const PageSettings({Key? key, required this.pageVisibleEvent}) : super(key: key);
+  // final PageVisibleEvent pageVisibleEvent;
 
   @override
   _PageSettingsState createState() => _PageSettingsState();
@@ -15,6 +16,14 @@ class PageSettings extends StatefulWidget {
 class _PageSettingsState extends State<PageSettings> {
   final ScrollController _scrollController = ScrollController();
   int _selected = 0;
+
+  Future<void> _setProxy() async {
+    await SystemProxy.instance.setProxy(SystemProxyConfig(
+      http: SystemProxyState(enable: true, server: '127.0.0.1:7893'),
+      https: SystemProxyState(enable: true, server: '127.0.0.1:7893'),
+      socks: SystemProxyState(enable: true, server: '127.0.0.1:7893'),
+    ));
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -31,7 +40,11 @@ class _PageSettingsState extends State<PageSettings> {
                     Row(
                       children: [
                         const Text('开机启动').fontSize(14).textColor(const Color(0xff54859a)).expanded(),
-                        Switch(value: false, onChanged: (v) {})
+                        Switch(
+                            value: false,
+                            onChanged: (v) {
+                              _setProxy();
+                            })
                       ],
                     ).padding(left: 32, right: 32).expanded(),
                     Row(

@@ -1,0 +1,363 @@
+# HTTP 代理端口
+# port: 7890
+
+# SOCKS5 代理端口
+# socks-port: 7891
+
+# Linux 和 macOS 的 redir 代理端口
+redir-port: 7892
+mixed-port: 7893
+
+# 允许局域网的连接
+allow-lan: true
+
+# 规则模式：Rule（规则） / Global（全局代理）/ Direct（全局直连）
+# mode: rule
+mode: Rule
+
+# 设置日志输出级别 (默认级别：silent，即不输出任何内容，以避免因日志内容过大而导致程序内存溢出）。
+# 5 个级别：silent / info / warning / error / debug。级别越高日志输出量越大，越倾向于调试，若需要请自行开启。
+log-level: debug
+# Clash 的 RESTful API
+external-controller: "127.0.0.1:9090"
+
+# RESTful API 的口令
+secret: ""
+
+# 您可以将静态网页资源（如 clash-dashboard）放置在一个目录中，clash 将会服务于 `RESTful API/ui`
+# 参数应填写配置目录的相对路径或绝对路径。
+# external-ui: folder
+
+# DNS 设置
+
+dns:
+  enable: true
+  ipv6: false
+  listen: 0.0.0.0:53
+  enhanced-mode: redir-host
+  nameserver:
+    - 8.8.8.8
+    - 119.29.29.29
+    - 223.5.5.5
+    - https://rubyfish.cn/dns-query
+  fallback:
+    - https://cloudflare-dns.com/dns-query
+    - tls://1.0.0.1:853
+    - https://dns.google/dns-query#
+
+# 服务器节点订阅
+# proxy-providers:
+#   sspool:
+#     type: http
+#     url: "xxx"
+#     interval: 3600
+#     path: ./proxy/sspool.yaml
+#     health-check:
+#       enable: true
+#       interval: 600
+#       url: http://www.gstatic.com/generate_204
+
+# proxies:
+#   - name: "proxie"
+#     type: vmess
+#     server: xxx
+#     port: 8080
+#     uuid: xxx
+#     alterId: 1
+#     cipher: auto
+#     udp: true
+#     tls: false
+#     network: ws
+#     ws-opts:
+#       path: /y831
+
+proxy-groups:
+#   - name: 🔰 节点选择
+#     type: select
+#     proxies:
+#       - ♻️ 自动选择
+#       - 🔯 故障转移
+#       - 🔮 负载均衡
+#       - 🚀 手动切换
+#   - name: ♻️ 自动选择
+#     type: url-test
+#     url: "http://www.gstatic.com/generate_204"
+#     interval: 600
+#     use:
+#       - sspool
+#   - name: 🔯 故障转移
+#     type: fallback
+#     use:
+#       - sspool
+#   - name: 🔮 负载均衡
+#     type: load-balance
+#     use:
+#       - sspool
+#   - name: 🚀 手动切换
+#     type: select
+#     use:
+#       - sspool
+
+  - name: 🛑 广告拦截
+    type: select
+    proxies:
+      - REJECT
+      - DIRECT
+      # - 🔰 节点选择
+      # - ♻️ 自动选择
+      # - 🔯 故障转移
+      # - 🔮 负载均衡
+
+  - name: 🛑 隐私保护
+    type: select
+    proxies:
+      - REJECT
+      - DIRECT
+      # - 🔰 节点选择
+      # - ♻️ 自动选择
+      # - 🔯 故障转移
+      # - 🔮 负载均衡
+
+  - name: 🛑 网络劫持
+    type: select
+    proxies:
+      - REJECT
+      - DIRECT
+      # - 🔰 节点选择
+      # - ♻️ 自动选择
+      # - 🔯 故障转移
+      # - 🔮 负载均衡
+
+  - name: 🍎 苹果服务
+    type: select
+    proxies:
+      - DIRECT
+      - REJECT
+      # - 🔰 节点选择
+      # - ♻️ 自动选择
+      # - 🔯 故障转移
+      # - 🔮 负载均衡
+
+  - name: 🌏 国内网站
+    type: select
+    proxies:
+      - DIRECT
+      - REJECT
+      # - 🔰 节点选择
+      # - ♻️ 自动选择
+      # - 🔯 故障转移
+      # - 🔮 负载均衡
+
+  - name: 🎯 全球直连
+    type: select
+    proxies:
+      - DIRECT
+      - REJECT
+      # - 🔰 节点选择
+      # - ♻️ 自动选择
+      # - 🔯 故障转移
+      # - 🔮 负载均衡
+
+  - name: 📲 电报信息
+    type: select
+    proxies:
+      # - 🔰 节点选择
+      - DIRECT
+      - REJECT
+      # - ♻️ 自动选择
+      # - 🔯 故障转移
+      # - 🔮 负载均衡
+
+  - name: 🌎 国外网站
+    type: select
+    proxies:
+      # - 🔰 节点选择
+      - DIRECT
+      - REJECT
+      # - ♻️ 自动选择
+      # - 🔯 故障转移
+      # - 🔮 负载均衡
+
+  - name: 🐟 漏网之鱼
+    type: select
+    proxies:
+      - DIRECT
+      - REJECT
+      # - 🔰 节点选择
+      # - ♻️ 自动选择
+      # - 🔯 故障转移
+      # - 🔮 负载均衡
+
+rule-providers:
+  # name: # Provider 名称
+  #   type: http # http 或 file
+  #   behavior: classical # 或 ipcidr、domain
+  #   path: # 文件路径
+  #   url: # 只有当类型为 HTTP 时才可用，您不需要在本地空间中创建新文件。
+  #   interval: # 自动更新间隔，仅在类型为 HTTP 时可用
+  reject:
+    type: http
+    behavior: domain
+    url: "https://cdn.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/reject.txt"
+    path: ./ruleset/reject.yaml
+    interval: 86400
+
+  icloud:
+    type: http
+    behavior: domain
+    url: "https://cdn.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/icloud.txt"
+    path: ./ruleset/icloud.yaml
+    interval: 86400
+
+  apple:
+    type: http
+    behavior: domain
+    url: "https://cdn.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/apple.txt"
+    path: ./ruleset/apple.yaml
+    interval: 86400
+
+  google:
+    type: http
+    behavior: domain
+    url: "https://cdn.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/google.txt"
+    path: ./ruleset/google.yaml
+    interval: 86400
+
+  proxy:
+    type: http
+    behavior: domain
+    url: "https://cdn.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/proxy.txt"
+    path: ./ruleset/proxy.yaml
+    interval: 86400
+
+  direct:
+    type: http
+    behavior: domain
+    url: "https://cdn.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/direct.txt"
+    path: ./ruleset/direct.yaml
+    interval: 86400
+
+  private:
+    type: http
+    behavior: domain
+    url: "https://cdn.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/private.txt"
+    path: ./ruleset/private.yaml
+    interval: 86400
+
+  gfw:
+    type: http
+    behavior: domain
+    url: "https://cdn.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/gfw.txt"
+    path: ./ruleset/gfw.yaml
+    interval: 86400
+
+  greatfire:
+    type: http
+    behavior: domain
+    url: "https://cdn.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/greatfire.txt"
+    path: ./ruleset/greatfire.yaml
+    interval: 86400
+
+  cncidr:
+    type: http
+    behavior: ipcidr
+    url: "https://cdn.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/cncidr.txt"
+    path: ./ruleset/cncidr.yaml
+    interval: 86400
+
+  lancidr:
+    type: http
+    behavior: ipcidr
+    url: "https://cdn.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/lancidr.txt"
+    path: ./ruleset/lancidr.yaml
+    interval: 86400
+
+  applications:
+    type: http
+    behavior: classical
+    url: "https://cdn.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/applications.txt"
+    path: ./ruleset/applications.yaml
+    interval: 86400
+
+  china:
+    type: http
+    behavior: classical
+    url: "https://cdn.jsdelivr.net/gh/DivineEngine/Profiles@master/Clash/RuleSet/China.yaml"
+    path: ./ruleset/china.yaml
+    interval: 86400
+
+  streamingcn:
+    type: http
+    behavior: classical
+    url: "https://cdn.jsdelivr.net/gh/DivineEngine/Profiles@master/Clash/RuleSet/StreamingMedia/StreamingCN.yaml"
+    path: ./ruleset/streamingcn.yaml
+    interval: 86400
+
+  streaming:
+    type: http
+    behavior: classical
+    url: "https://cdn.jsdelivr.net/gh/DivineEngine/Profiles@master/Clash/RuleSet/StreamingMedia/Streaming.yaml"
+    path: ./ruleset/streaming.yaml
+    interval: 86400
+
+  telegram:
+    type: http
+    behavior: classical
+    url: "https://cdn.jsdelivr.net/gh/DivineEngine/Profiles@master/Clash/RuleSet/Extra/Telegram/Telegram.yaml"
+    path: ./ruleset/telegram.yaml
+    interval: 86400
+
+  privacy:
+    type: http
+    behavior: classical
+    url: "https://cdn.jsdelivr.net/gh/DivineEngine/Profiles@master/Clash/RuleSet/Guard/Privacy.yaml"
+    path: ./ruleset/hijacking.yaml
+    interval: 86400
+
+  hijacking:
+    type: http
+    behavior: classical
+    url: "https://cdn.jsdelivr.net/gh/DivineEngine/Profiles@master/Clash/RuleSet/Guard/Hijacking.yaml"
+    path: ./ruleset/hijacking.yaml
+    interval: 86400
+
+# 规则
+# rules:
+# Unbreak
+# - PROCESS-NAME,China,DIRECT
+# - PROCESS-NAME,google,DIRECT
+# - RULE-SET,"🎯 全球直连",DIRECT
+# - RULE-SET,China,DIRECT
+# - RULE-SET,google,DIRECT
+# - MATCH,MATCH
+# - GEOIP,CN,DIRECT
+rules:
+  - DOMAIN,pub.dev,🌎 国外网站
+  - DOMAIN,translate.googleapis.com,🌎 国外网站
+
+  - RULE-SET,private,DIRECT
+  - RULE-SET,lancidr,DIRECT,no-resolve
+  - RULE-SET,applications,DIRECT
+
+  - RULE-SET,reject,🛑 广告拦截
+  - RULE-SET,privacy,🛑 隐私保护
+  - RULE-SET,hijacking,🛑 网络劫持
+
+  - RULE-SET,icloud,🍎 苹果服务
+  - RULE-SET,apple,🍎 苹果服务
+
+  - RULE-SET,china,🌏 国内网站
+  - RULE-SET,streamingcn,🌏 国内网站
+  - GEOIP,CN,🌏 国内网站
+
+  - RULE-SET,google,🎯 全球直连
+  - RULE-SET,direct,🎯 全球直连
+
+  - RULE-SET,telegram,📲 电报信息
+
+  - RULE-SET,gfw,🌎 国外网站
+  - RULE-SET,proxy,🌎 国外网站
+  - RULE-SET,greatfire,🌎 国外网站
+  - RULE-SET,streaming,🌎 国外网站
+
+  - MATCH,🐟 漏网之鱼
