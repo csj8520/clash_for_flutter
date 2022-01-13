@@ -83,14 +83,20 @@ class _MyHomePageState extends State<MyHomePage> with TrayListener, WindowListen
 
   void _init() async {
     await Config.instance.init();
-    // _initTray();
-    // windowManager.addListener(this);
-    // await startClash();
-    // _clashVersion = await fetchClashVersion();
-    // _inited = true;
-    // _pageController.jumpTo(0);
-    // // _pageVisibleEvent.show('proxies');
-    // setState(() => _index = 0);
+    String extControl = Config.instance.clashConfig['external-controller'] ?? '127.0.0.1:9090';
+    String secret = Config.instance.clashConfig['secret'] ?? '';
+    extControl = extControl.replaceAll('0.0.0.0', '127.0.0.1');
+    dio.options.baseUrl = 'http://$extControl';
+    if (secret.isNotEmpty) dio.options.headers['Authorization'] = 'Bearer $secret';
+
+    _initTray();
+    windowManager.addListener(this);
+    await startClash();
+    _clashVersion = await fetchClashVersion();
+    _inited = true;
+    _pageController.jumpTo(0);
+    // _pageVisibleEvent.show('proxies');
+    setState(() => _index = 0);
   }
 
   void _initTray() async {

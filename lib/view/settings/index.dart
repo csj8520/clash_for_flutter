@@ -17,12 +17,25 @@ class _PageSettingsState extends State<PageSettings> {
   final ScrollController _scrollController = ScrollController();
   int _selected = 0;
 
-  Future<void> _setProxy() async {
-    await SystemProxy.instance.setProxy(SystemProxyConfig(
-      http: SystemProxyState(enable: true, server: '127.0.0.1:7893'),
-      https: SystemProxyState(enable: true, server: '127.0.0.1:7893'),
-      socks: SystemProxyState(enable: true, server: '127.0.0.1:7893'),
-    ));
+  Future<void> _setProxy(bool value) async {
+    if (value) {
+      await SystemProxy.instance.setProxy(SystemProxyConfig(
+        http: SystemProxyState(enable: true, server: '127.0.0.1:7893'),
+        https: SystemProxyState(enable: true, server: '127.0.0.1:7893'),
+        socks: SystemProxyState(enable: true, server: '127.0.0.1:7893'),
+      ));
+    } else {
+      await SystemProxy.instance.setProxy(SystemProxyConfig());
+    }
+    Config.instance.autoSetProxy = value;
+    Config.instance.saveConfig();
+    setState(() {});
+  }
+
+  Future<void> _setStartAtLogin(bool value) async {
+    Config.instance.startAtLogin = value;
+    Config.instance.saveConfig();
+    setState(() {});
   }
 
   @override
@@ -40,11 +53,7 @@ class _PageSettingsState extends State<PageSettings> {
                     Row(
                       children: [
                         const Text('开机启动').fontSize(14).textColor(const Color(0xff54859a)).expanded(),
-                        Switch(
-                            value: false,
-                            onChanged: (v) {
-                              _setProxy();
-                            })
+                        Switch(value: Config.instance.startAtLogin, onChanged: _setStartAtLogin)
                       ],
                     ).padding(left: 32, right: 32).expanded(),
                     Row(
@@ -68,7 +77,7 @@ class _PageSettingsState extends State<PageSettings> {
                     Row(
                       children: [
                         const Text('设置为系统代理').fontSize(14).textColor(const Color(0xff54859a)).expanded(),
-                        Switch(value: false, onChanged: (v) {})
+                        Switch(value: Config.instance.autoSetProxy, onChanged: _setProxy)
                       ],
                     ).padding(left: 32, right: 32).expanded(),
                     Row(
