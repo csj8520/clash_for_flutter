@@ -4,6 +4,12 @@
 
 ```
 flutter run -d windows
+
+# https://mobx.netlify.app/getting-started
+# generates *.g.dart
+flutter pub run build_runner build
+# or
+flutter pub run build_runner watch
 ```
 
 ### build

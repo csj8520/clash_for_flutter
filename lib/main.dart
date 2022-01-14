@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:bot_toast/bot_toast.dart';
 import 'package:tray_manager/tray_manager.dart';
 import 'package:styled_widget/styled_widget.dart';
@@ -9,6 +10,7 @@ import 'package:window_manager/window_manager.dart';
 import 'package:clashf_pro/fetch/index.dart';
 import 'package:clashf_pro/types/index.dart';
 import 'package:clashf_pro/utils/index.dart';
+import 'package:clashf_pro/store/index.dart';
 
 import 'package:clashf_pro/view/sidebar/index.dart';
 import 'package:clashf_pro/view/proxies/index.dart';
@@ -64,7 +66,6 @@ class _MyHomePageState extends State<MyHomePage> with TrayListener, WindowListen
   int _index = 1;
   bool _inited = false;
   ClashVersion? _clashVersion;
-  // final PageVisibleEvent _pageVisibleEvent = PageVisibleEvent();
   final PageController _pageController = PageController(initialPage: 1);
 
   final _menus = [
@@ -73,6 +74,7 @@ class _MyHomePageState extends State<MyHomePage> with TrayListener, WindowListen
     SideBarMenu('规则', 'rules'),
     SideBarMenu('连接', 'connections'),
     SideBarMenu('设置', 'settings'),
+    SideBarMenu('配置', 'profiles'),
   ];
 
   @override
@@ -83,19 +85,21 @@ class _MyHomePageState extends State<MyHomePage> with TrayListener, WindowListen
 
   void _init() async {
     await Config.instance.init();
-    String extControl = Config.instance.clashConfig['external-controller'] ?? '127.0.0.1:9090';
-    String secret = Config.instance.clashConfig['secret'] ?? '';
-    extControl = extControl.replaceAll('0.0.0.0', '127.0.0.1');
-    dio.options.baseUrl = 'http://$extControl';
-    if (secret.isNotEmpty) dio.options.headers['Authorization'] = 'Bearer $secret';
+    dio.options.baseUrl = 'http://${Config.instance.externalController}';
+    if (Config.instance.secret.isNotEmpty) dio.options.headers['Authorization'] = 'Bearer ${Config.instance.secret}';
 
     _initTray();
     windowManager.addListener(this);
+
+    if (kDebugMode) await forceKillClash();
     await startClash();
+
     _clashVersion = await fetchClashVersion();
+    await localConfigStore.readLocalConfig();
+    await clashConfigStore.updateConfig();
+
     _inited = true;
     _pageController.jumpTo(0);
-    // _pageVisibleEvent.show('proxies');
     setState(() => _index = 0);
   }
 
@@ -123,16 +127,20 @@ class _MyHomePageState extends State<MyHomePage> with TrayListener, WindowListen
   _onChange(SideBarMenu menu, int index) {
     if (!_inited) return BotToast.showText(text: '请等待初始化！');
     setState(() => {_index = index});
-    // _pageVisibleEvent.show(menu.type);
     _pageController.jumpToPage(index);
     log.debug('Menu Changed: ', menu.label);
   }
 
-  // @override
-  // void onWindowEvent(String eventName) {
-  //   super.onWindowEvent(eventName);
-  //   log.debug('onWindowEvent: ', eventName);
-  // }
+  @override
+  void onWindowEvent(String eventName) {
+    log.debug('onWindowEvent: ', eventName);
+  }
+
+  @override
+  void onWindowFocus() {
+    log.debug('onWindowFocus');
+    clashConfigStore.updateConfig();
+  }
 
   @override
   void onTrayIconMouseDown() {
@@ -175,18 +183,6 @@ class _MyHomePageState extends State<MyHomePage> with TrayListener, WindowListen
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           ViewSideBar(menus: _menus, index: _index, onChange: _onChange, clashVersion: _clashVersion),
-          // Expanded(
-          //   child: IndexedStack(
-          //     children: [
-          //       PageProxies(pageVisibleEvent: _pageVisibleEvent),
-          //       PageLogs(pageVisibleEvent: _pageVisibleEvent),
-          //       PageRules(pageVisibleEvent: _pageVisibleEvent),
-          //       PageConnections(pageVisibleEvent: _pageVisibleEvent),
-          //       PageSettings(pageVisibleEvent: _pageVisibleEvent),
-          //     ],
-          //     index: _index,
-          //   ),
-          // ),
           PageView(
             scrollDirection: Axis.vertical,
             controller: _pageController,
@@ -201,11 +197,6 @@ class _MyHomePageState extends State<MyHomePage> with TrayListener, WindowListen
           ).expanded()
         ],
       ).height(double.infinity).backgroundColor(const Color(0xfff4f5f6)),
-      floatingActionButton: FloatingActionButton(
-        tooltip: '关闭Clash主进程',
-        onPressed: clash?.kill,
-        child: const Icon(Icons.close),
-      ),
     );
   }
 }

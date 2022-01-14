@@ -34,3 +34,11 @@ Future<Process> startClash() async {
   log.timeEnd('Start Clash Time');
   return clash!;
 }
+
+Future<void> forceKillClash() async {
+  if (Platform.isWindows) {
+    await Process.run('taskkill', ["/F", "/FI", "IMAGENAME eq ${CONST.clashBinName}"]);
+  } else {
+    await Process.run('bash', ["-c", "ps -ef | grep ${CONST.clashBinName} | grep -v grep | awk '{print \$2}' | xargs kill -9"]);
+  }
+}

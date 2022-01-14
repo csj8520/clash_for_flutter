@@ -1,3 +1,4 @@
+// TODO: remove
 import 'dart:io';
 import 'package:yaml/yaml.dart';
 import 'package:yaml_edit/yaml_edit.dart';
@@ -20,9 +21,12 @@ class Config {
   static Config instance = Config();
 
   late File clashConfigFile;
-  late dynamic clashConfig;
+  // late dynamic clashConfig;
   late dynamic _config;
   late YamlEditor _configEdit;
+
+  late String externalController;
+  late String secret;
 
   Future<void> _loadConfig() async {
     final String config = await CONST.configFile.readAsString();
@@ -62,10 +66,13 @@ class Config {
   Future<void> _setClashConfigFile() async {
     clashConfigFile = File(path.join(CONST.configDir.path, _config['selected']));
     final config = await clashConfigFile.readAsString();
+    // https://github.com/dart-lang/yaml/issues/53
     // clashConfig = loadYaml(config, recover: true);
-    final extControl = RegExp(r'''external-controller:\s*['"]?(.+?)['"]?\n''').firstMatch(config)?.group(1);
-    final secret = RegExp(r'''secret:\s*['"]?(.+?)['"]?\n''').firstMatch(config)?.group(1);
-    clashConfig = {'external-controller': extControl, 'secret': secret};
+    final _extControl = RegExp(r'''[^#]\s+?external-controller:\s+['"]?(.+?)['"]?\n''').firstMatch(config)?.group(1);
+    final _secret = RegExp(r'''[^#]\s+?secret:\s+['"]?(.+?)['"]?\n''').firstMatch(config)?.group(1);
+    // clashConfig = {'external-controller': extControl, 'secret': secret};
+    externalController = (_extControl ?? '127.0.0.1:9090').replaceAll('0.0.0.0', '127.0.0.1');
+    secret = _secret ?? '';
   }
 
   Future<void> init() async {
@@ -103,11 +110,13 @@ class Config {
 
   void editList(int idx, Object value) {
     _configEdit.update(['list', idx], value);
+    _updateConfig();
   }
 
   void updateSelected(String name) {
     _configEdit.update(['selected'], name);
     _updateConfig();
+    _setClashConfigFile();
   }
 
   bool get startAtLogin => _config['startAtLogin'] ?? false;

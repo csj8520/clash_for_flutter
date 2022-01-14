@@ -1,3 +1,4 @@
+import 'package:clashf_pro/store/index.dart';
 import 'package:flutter/material.dart';
 import 'package:styled_widget/styled_widget.dart';
 
@@ -11,8 +12,6 @@ import 'providers.dart';
 
 class PageProxies extends StatefulWidget {
   const PageProxies({Key? key}) : super(key: key);
-  // const PageProxies({Key? key, required this.pageVisibleEvent}) : super(key: key);
-  // final PageVisibleEvent pageVisibleEvent;
 
   @override
   _PageProxiesState createState() => _PageProxiesState();
@@ -25,9 +24,6 @@ class _PageProxiesState extends State<PageProxies> {
   @override
   void initState() {
     super.initState();
-    // widget.pageVisibleEvent.onVisible('proxies', (show) {
-    //   if (show) _update();
-    // });
     _update();
   }
 

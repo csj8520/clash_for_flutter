@@ -40,8 +40,6 @@ final List<TableItem> tableItems = [
 
 class PageConnections extends StatefulWidget {
   const PageConnections({Key? key}) : super(key: key);
-  // const PageConnections({Key? key, required this.pageVisibleEvent}) : super(key: key);
-  // final PageVisibleEvent pageVisibleEvent;
 
   @override
   _PageConnectionsState createState() => _PageConnectionsState();
@@ -56,17 +54,10 @@ class _PageConnectionsState extends State<PageConnections> {
   void initState() {
     super.initState();
     _openChannel();
-    // widget.pageVisibleEvent.onVisible('connections', (show) {
-    //   if (show) {
-    //     _openChannel();
-    //   } else {
-    //     _channel?.sink.close();
-    //   }
-    // });
   }
 
   _openChannel() async {
-    _channel = IOWebSocketChannel.connect(Uri.parse('ws://127.0.0.1:9090/connections?token='));
+    _channel = IOWebSocketChannel.connect(Uri.parse('ws://${Config.instance.externalController}/connections?token=${Config.instance.secret}'));
   }
 
   @override

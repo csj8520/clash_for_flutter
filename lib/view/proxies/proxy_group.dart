@@ -1,6 +1,8 @@
 import 'dart:math';
 
+import 'package:clashf_pro/store/index.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:styled_widget/styled_widget.dart';
 
 import 'package:clashf_pro/fetch/index.dart';
@@ -15,11 +17,14 @@ class PageProxiesProxyGroup extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(children: [
       const CardHead(title: '策略组'),
-      CardView(
-          child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: proxies.groups.map((e) => _ProxyGroupItem(group: e, timeoutProxys: proxies.timeoutProxies)).toList(),
-      ).width(double.infinity))
+      Observer(
+          builder: (_) => CardView(
+                  child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: clashConfigStore.mode == 'global'
+                    ? [_ProxyGroupItem(group: proxies.global, timeoutProxys: proxies.timeoutProxies)]
+                    : proxies.groups.map((e) => _ProxyGroupItem(group: e, timeoutProxys: proxies.timeoutProxies)).toList(),
+              ).width(double.infinity)))
     ]);
   }
 }

@@ -70,3 +70,11 @@ Future<List<RuleRule>> fetchClashRules() async {
   final res = await dio.get('/rules');
   return (res.data['rules'] as List<dynamic>).map((e) => RuleRule.buildFromJson(e)).toList();
 }
+
+Future<Map<String, dynamic>> fetchClashConfig() async {
+  return (await dio.get('/configs')).data;
+}
+
+Future<void> fetchClashConfigUpdate(Map<String, dynamic> config) async {
+  await dio.patch('/configs', data: config);
+}
