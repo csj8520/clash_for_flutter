@@ -21,7 +21,7 @@ class PageProxiesProxyGroup extends StatelessWidget {
           builder: (_) => CardView(
                   child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
-                children: clashConfigStore.mode == 'global'
+                children: clashApiConfigStore.mode == 'global'
                     ? [_ProxyGroupItem(group: proxies.global, timeoutProxys: proxies.timeoutProxies)]
                     : proxies.groups.map((e) => _ProxyGroupItem(group: e, timeoutProxys: proxies.timeoutProxies)).toList(),
               ).width(double.infinity)))

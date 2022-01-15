@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:clashf_pro/store/index.dart';
 import 'package:flutter/material.dart';
 import 'package:styled_widget/styled_widget.dart';
 import 'package:web_socket_channel/io.dart';
@@ -57,7 +58,7 @@ class _PageConnectionsState extends State<PageConnections> {
   }
 
   _openChannel() async {
-    _channel = IOWebSocketChannel.connect(Uri.parse('ws://${Config.instance.externalController}/connections?token=${Config.instance.secret}'));
+    _channel = IOWebSocketChannel.connect(Uri.parse('ws://${localConfigStore.clashApiAddress}/connections?token=${localConfigStore.clashApiSecret}'));
   }
 
   @override

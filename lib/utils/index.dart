@@ -8,7 +8,6 @@ export 'them.dart';
 export 'events.dart';
 export 'event.dart';
 export 'clash.dart';
-export 'config.dart';
 export 'system_proxy.dart';
 
 Logger log = Logger();

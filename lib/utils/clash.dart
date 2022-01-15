@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'dart:convert';
 
+import 'package:clashf_pro/store/index.dart';
 import 'package:clashf_pro/utils/index.dart';
 import 'package:clashf_pro/fetch/index.dart';
 
@@ -8,11 +9,11 @@ Process? clash;
 
 Future<Process> startClash() async {
   log.debug(clash);
-  if (clash != null) clash!.kill();
+  clash?.kill();
 
   log.time('Start Clash Time');
 
-  clash = await Process.start(CONST.clashBinFile.path, ['-d', CONST.configDir.path, '-f', Config.instance.clashConfigFile.path], runInShell: false);
+  clash = await Process.start(CONST.clashBinFile.path, ['-d', CONST.configDir.path, '-f', localConfigStore.clashConfigFile.path], runInShell: false);
   clash!.stdout.listen((event) {
     List<String> strs = utf8.decode(event).trim().split('\n');
     for (var it in strs) {

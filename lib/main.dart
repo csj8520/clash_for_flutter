@@ -1,13 +1,12 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/foundation.dart';
 import 'package:bot_toast/bot_toast.dart';
+import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:tray_manager/tray_manager.dart';
 import 'package:styled_widget/styled_widget.dart';
 import 'package:window_manager/window_manager.dart';
 
-import 'package:clashf_pro/fetch/index.dart';
 import 'package:clashf_pro/types/index.dart';
 import 'package:clashf_pro/utils/index.dart';
 import 'package:clashf_pro/store/index.dart';
@@ -18,6 +17,7 @@ import 'package:clashf_pro/view/logs/index.dart';
 import 'package:clashf_pro/view/rules/index.dart';
 import 'package:clashf_pro/view/connections/index.dart';
 import 'package:clashf_pro/view/settings/index.dart';
+import 'package:clashf_pro/view/profiles/index.dart';
 
 void main() async {
   log.time('Start Window Time');
@@ -64,8 +64,6 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> with TrayListener, WindowListener {
   int _index = 1;
-  bool _inited = false;
-  ClashVersion? _clashVersion;
   final PageController _pageController = PageController(initialPage: 1);
 
   final _menus = [
@@ -84,21 +82,9 @@ class _MyHomePageState extends State<MyHomePage> with TrayListener, WindowListen
   }
 
   void _init() async {
-    await Config.instance.init();
-    dio.options.baseUrl = 'http://${Config.instance.externalController}';
-    if (Config.instance.secret.isNotEmpty) dio.options.headers['Authorization'] = 'Bearer ${Config.instance.secret}';
-
     _initTray();
     windowManager.addListener(this);
-
-    if (kDebugMode) await forceKillClash();
-    await startClash();
-
-    _clashVersion = await fetchClashVersion();
-    await localConfigStore.readLocalConfig();
-    await clashConfigStore.updateConfig();
-
-    _inited = true;
+    await globalStore.init();
     _pageController.jumpTo(0);
     setState(() => _index = 0);
   }
@@ -125,7 +111,7 @@ class _MyHomePageState extends State<MyHomePage> with TrayListener, WindowListen
   }
 
   _onChange(SideBarMenu menu, int index) {
-    if (!_inited) return BotToast.showText(text: '请等待初始化！');
+    if (!globalStore.inited && menu.type != 'logs') return BotToast.showText(text: '请等待初始化！');
     setState(() => {_index = index});
     _pageController.jumpToPage(index);
     log.debug('Menu Changed: ', menu.label);
@@ -139,7 +125,7 @@ class _MyHomePageState extends State<MyHomePage> with TrayListener, WindowListen
   @override
   void onWindowFocus() {
     log.debug('onWindowFocus');
-    clashConfigStore.updateConfig();
+    if (globalStore.inited) clashApiConfigStore.updateConfig();
   }
 
   @override
@@ -182,7 +168,7 @@ class _MyHomePageState extends State<MyHomePage> with TrayListener, WindowListen
       body: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          ViewSideBar(menus: _menus, index: _index, onChange: _onChange, clashVersion: _clashVersion),
+          Observer(builder: (_) => ViewSideBar(menus: _menus, index: _index, onChange: _onChange, clashVersion: globalStore.clashVersion)),
           PageView(
             scrollDirection: Axis.vertical,
             controller: _pageController,
@@ -193,6 +179,7 @@ class _MyHomePageState extends State<MyHomePage> with TrayListener, WindowListen
               PageRules(),
               const PageConnections(),
               const PageSettings(),
+              const PageProfiles(),
             ],
           ).expanded()
         ],
