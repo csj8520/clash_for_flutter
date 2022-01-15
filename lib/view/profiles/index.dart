@@ -1,3 +1,4 @@
+import 'package:clashf_pro/utils/index.dart';
 import 'package:clashf_pro/view/profiles/edit_profile.dart';
 import 'package:flutter/material.dart';
 import 'package:bot_toast/bot_toast.dart';
@@ -118,12 +119,22 @@ class _PageProfilesState extends State<PageProfiles> {
                               children: [
                                 IconButton(
                                   iconSize: 20,
+                                  tooltip: 'Open Config Folder',
+                                  icon: const Icon(Icons.folder_open),
+                                  padding: const EdgeInsets.all(0),
+                                  color: Theme.of(context).primaryColor,
+                                  constraints: const BoxConstraints(minHeight: 30, minWidth: 30),
+                                  onPressed: () => showItemInFolder(CONST.configDir.path),
+                                ),
+                                IconButton(
+                                  iconSize: 20,
+                                  tooltip: 'Add Config',
                                   icon: const Icon(Icons.add),
                                   padding: const EdgeInsets.all(0),
                                   color: Theme.of(context).primaryColor,
                                   constraints: const BoxConstraints(minHeight: 30, minWidth: 30),
                                   onPressed: _showAddProfileAlert,
-                                )
+                                ).paddingDirectional(start: 15, end: 3)
                               ],
                             ).padding(right: 10).width(_opWidth),
                           ],
@@ -214,20 +225,28 @@ class _SubState extends State<_Sub> {
             Row(
               children: [
                 IconButton(
-                    onPressed: sub['url'] == null || (sub['url'] as String).isEmpty ? null : _updateSub,
-                    color: Theme.of(context).primaryColor,
-                    icon: const Icon(Icons.refresh, size: 20)),
-                IconButton(
+                  tooltip: 'Refresh',
                   color: Theme.of(context).primaryColor,
-                  onPressed: _showAddProfileAlert,
+                  icon: const Icon(Icons.refresh, size: 20),
+                  onPressed: sub['url'] == null || (sub['url'] as String).isEmpty ? null : _updateSub,
+                ),
+                IconButton(
+                  tooltip: 'Edit',
+                  color: Theme.of(context).primaryColor,
                   icon: const Icon(Icons.edit_outlined, size: 20),
+                  onPressed: _showAddProfileAlert,
                 ),
                 IconButton(
+                  tooltip: 'Delete',
                   color: Theme.of(context).primaryColor,
-                  onPressed: localConfigStore.selected == sub['name'] ? null : _delSub,
                   icon: const Icon(Icons.delete_forever, size: 20),
+                  onPressed: localConfigStore.selected == sub['name'] ? null : _delSub,
                 ),
-                Radio(value: sub['name'] as String, groupValue: localConfigStore.selected, onChanged: _switchConfig)
+                Radio(
+                  value: sub['name'] as String,
+                  groupValue: localConfigStore.selected,
+                  onChanged: _switchConfig,
+                )
               ],
             ).width(_opWidth),
           ],

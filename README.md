@@ -19,6 +19,13 @@ flutter build windows
 flutter pub run msix:create
 ```
 
+#### build for mac
+```
+dart pub global activate flutter_distributor
+npm install -g appdmg
+flutter_distributor package --platform=macos --targets=dmg
+```
+
 ## Question Record
 
 ### Hide cmd window

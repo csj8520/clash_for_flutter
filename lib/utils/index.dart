@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'dart:math' as math;
 
 import 'logger.dart';
@@ -18,4 +19,14 @@ String bytesToSize(int bytes) {
   const sizes = ['B', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
   final i = (math.log(bytes) / math.log(k)).floor();
   return (bytes / math.pow(k, i)).toStringAsFixed(2) + ' ' + sizes[i];
+}
+
+Future<void> showItemInFolder(String path) async {
+  if (Platform.isWindows) {
+    await Process.run('explorer.exe', [path]);
+  } else if (Platform.isMacOS) {
+    await Process.run('open', [path]);
+  } else {
+    // TODO
+  }
 }

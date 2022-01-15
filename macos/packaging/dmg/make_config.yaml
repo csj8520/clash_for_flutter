@@ -1,0 +1,10 @@
+title: ClashF Pro
+contents:
+  - x: 448
+    y: 236
+    type: link
+    path: "/Applications"
+  - x: 192
+    y: 236
+    type: file
+    path: ClashF Pro.app

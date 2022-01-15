@@ -7,7 +7,6 @@ Dio clashDio = Dio(BaseOptions(baseUrl: 'http://127.0.0.1:9090'));
 Dio dio = Dio();
 
 Future<bool> fetchClashHello() async {
-  log.debug('fetchClashHello');
   try {
     final res = await clashDio.get('/');
     log.debug(res.data);

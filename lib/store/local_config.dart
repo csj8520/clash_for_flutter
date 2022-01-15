@@ -67,8 +67,8 @@ abstract class _LocalConfigStore with Store {
 
   @action
   Future<void> readLocalConfig() async {
-    if (await CONST.configFileJson.exists()) {
-      final localConfig = json.decode(await CONST.configFileJson.readAsString());
+    if (await CONST.configFile.exists()) {
+      final localConfig = json.decode(await CONST.configFile.readAsString());
       _config = {..._config, ...localConfig};
     }
     await _fixConfig();
@@ -76,6 +76,11 @@ abstract class _LocalConfigStore with Store {
   }
 
   Future<void> _fixConfig() async {
+    if (!(await CONST.configDir.exists())) await CONST.configDir.create(recursive: true);
+    final geoip = File(path.join(CONST.configDir.path, 'Country.mmdb'));
+    if (!(await geoip.exists())) {
+      await File(path.join(CONST.assetsDir.path, 'geoip', 'Country.mmdb')).copy(geoip.path);
+    }
     final configDirFileList = await CONST.configDir.list().toList();
     final localDirConfigs = configDirFileList.map((it) => path.basename(it.uri.path)).where((it) => configNameTest.hasMatch(it)).toList();
     List<dynamic> currentNames = subs.map((it) => it['name']).toList();
@@ -91,9 +96,8 @@ abstract class _LocalConfigStore with Store {
     }
 
     if (currentNames.isEmpty) {
-      final defExample = await File(path.join(CONST.assetsDir.path, 'example.yaml')).readAsString();
-      final example = File(path.join(CONST.configDir.path, 'example.yaml'));
-      await example.writeAsString(defExample);
+      final defExample = File(path.join(CONST.assetsDir.path, 'example', 'example.yaml'));
+      await defExample.copy(path.join(CONST.configDir.path, 'example.yaml'));
       currentNames.add('example.yaml');
       subs.add({'name': 'example.yaml'});
     }
@@ -114,7 +118,7 @@ abstract class _LocalConfigStore with Store {
 
   @action
   Future<void> saveLocalConfig() async {
-    await CONST.configFileJson.writeAsString(json.encode(_config));
+    await CONST.configFile.writeAsString(json.encode(_config));
   }
 
   @action

@@ -1,6 +1,8 @@
+import 'package:bot_toast/bot_toast.dart';
 import 'package:clashf_pro/types/index.dart';
 import 'package:clashf_pro/utils/index.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:mobx/mobx.dart';
 
 import 'package:clashf_pro/fetch/index.dart';
@@ -23,12 +25,22 @@ abstract class _GlobalStore with Store {
 
   @action
   Future<void> init() async {
-    await initConfig();
-    if (localConfigStore.updateSubsAtStart) await localConfigStore.updateSubs();
-    localConfigStore.regularlyUpdateSubs();
-    await initClash();
-    if (localConfigStore.autoSetProxy) await setProxy(true);
-    inited = true;
+    try {
+      await initConfig();
+      if (localConfigStore.updateSubsAtStart) await localConfigStore.updateSubs();
+      await initClash();
+      if (localConfigStore.autoSetProxy) await setProxy(true);
+      localConfigStore.regularlyUpdateSubs();
+      inited = true;
+    } catch (e) {
+      BotToast.showNotification(
+        title: (_) => const Text('Error'),
+        leading: (_) => const Icon(Icons.error_outline, color: Colors.red),
+        trailing: (cancel) => IconButton(icon: const Icon(Icons.cancel), onPressed: cancel),
+        subtitle: (_) => Text(e.toString()),
+        duration: null,
+      );
+    }
   }
 
   @action

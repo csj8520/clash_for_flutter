@@ -4,10 +4,12 @@ import 'dart:convert';
 import 'package:clashf_pro/store/index.dart';
 import 'package:clashf_pro/utils/index.dart';
 import 'package:clashf_pro/fetch/index.dart';
+import 'package:flutter/material.dart';
 
 Process? clash;
 
 Future<Process> startClash() async {
+  bool _success = true;
   log.debug(clash);
   clash?.kill();
 
@@ -25,11 +27,19 @@ Future<Process> startClash() async {
       log.log(msg, level: res[1] ?? 'info');
     }
   });
-  clash?.exitCode.then((value) => log.debug('Clash Is Exit($value)'));
+  clash?.exitCode.then((value) {
+    _success = false;
+    log.debug('Clash Core Is Exit($value)');
+  });
 
-  while (true) {
+  log.debug('Wating For Clash Core Start...');
+  while (_success) {
+    await Future.delayed(const Duration(milliseconds: 500));
     if (await fetchClashHello()) break;
-    await Future.delayed(const Duration(milliseconds: 100));
+  }
+
+  if (!_success) {
+    throw ErrorDescription('Start Clash Core failed! Please check your configuration.');
   }
 
   log.timeEnd('Start Clash Time');

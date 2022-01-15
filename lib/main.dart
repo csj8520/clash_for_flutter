@@ -71,8 +71,8 @@ class _MyHomePageState extends State<MyHomePage> with TrayListener, WindowListen
     SideBarMenu('日志', 'logs'),
     SideBarMenu('规则', 'rules'),
     SideBarMenu('连接', 'connections'),
-    SideBarMenu('设置', 'settings'),
     SideBarMenu('配置', 'profiles'),
+    SideBarMenu('设置', 'settings'),
   ];
 
   @override
@@ -85,6 +85,7 @@ class _MyHomePageState extends State<MyHomePage> with TrayListener, WindowListen
     _initTray();
     windowManager.addListener(this);
     await globalStore.init();
+    if (!globalStore.inited) return;
     _pageController.jumpTo(0);
     setState(() => _index = 0);
   }
@@ -111,7 +112,7 @@ class _MyHomePageState extends State<MyHomePage> with TrayListener, WindowListen
   }
 
   _onChange(SideBarMenu menu, int index) {
-    if (!globalStore.inited && menu.type != 'logs') return BotToast.showText(text: '请等待初始化！');
+    if (!globalStore.inited && !['logs', 'profiles'].contains(menu.type)) return BotToast.showText(text: '请等待初始化！');
     setState(() => {_index = index});
     _pageController.jumpToPage(index);
     log.debug('Menu Changed: ', menu.label);
@@ -178,8 +179,8 @@ class _MyHomePageState extends State<MyHomePage> with TrayListener, WindowListen
               const PageLogs(),
               PageRules(),
               const PageConnections(),
-              const PageSettings(),
               const PageProfiles(),
+              const PageSettings(),
             ],
           ).expanded()
         ],
