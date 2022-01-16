@@ -74,6 +74,7 @@ dev_dependencies:
   msix: ^2.6.7
   build_runner: ^2.1.7
   mobx_codegen: ^2.0.5+2
+  archive: ^3.1.8
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

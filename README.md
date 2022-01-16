@@ -2,25 +2,26 @@
 
 ### dev
 
-```
-flutter run -d windows
-
+``` bash
 # https://mobx.netlify.app/getting-started
 # generates *.g.dart
 flutter pub run build_runner build
 # or
 flutter pub run build_runner watch
+
+flutter run -d windows
 ```
 
 ### build
 
-```
+``` bash
 flutter build windows
 flutter pub run msix:create
 ```
 
 #### build for mac
-```
+
+``` bash
 dart pub global activate flutter_distributor
 npm install -g appdmg
 flutter_distributor package --platform=macos --targets=dmg
@@ -60,14 +61,11 @@ https://github.com/biyidev/biyi/commit/66ad34c21c221460c0bd7c47a743259f5e15a38d
 
 - [ ] macos 关闭窗口时隐藏 dock
 
-- [ ] hot restart 时重启 clash
+- [x] hot restart 时重启 clash
       https://github.com/flutter/flutter/issues/10437
 
 - [ ] macos debug 模式下多次调用 Shell 会卡死
       https://github.com/flutter/flutter/issues/95805
-
-- [ ] clash pro 最新语法支持
-  https://github.com/tindy2013/subconverter/issues/442
 
 ## Other Clash GUI
 
@@ -83,10 +81,14 @@ https://install.appcenter.ms/users/clashx/apps/clashx-pro/distribution_groups/pu
 
 https://github.com/Fndroid/clash_for_windows_pkg/
 
-## sub converter
+## subconverter
 
 https://github.com/tindy2013/subconverter
 
-### sub converter for web
+### subconverter web gui
 
 https://github.com/CareyWang/sub-web/
+
+### clash pro vmess 最新参数支持
+
+https://github.com/tindy2013/subconverter/issues/442

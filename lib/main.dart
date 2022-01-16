@@ -158,6 +158,7 @@ class _MyHomePageState extends State<MyHomePage> with TrayListener, WindowListen
       WindowManager.instance.hide();
       // if (Platform.isMacOS) await windowManager.setSkipTaskbar(true);
     } else if (menuItem.key == 'exit') {
+      await globalStore.setProxy(false);
       clash?.kill();
       exit(0);
     }
