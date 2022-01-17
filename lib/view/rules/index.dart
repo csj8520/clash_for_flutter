@@ -1,7 +1,7 @@
 import 'package:flutter/widgets.dart';
 import 'package:styled_widget/styled_widget.dart';
 
-// import 'package:clashf_pro/utils/index.dart';
+// import 'package:clash_pro_for_flutter/utils/index.dart';
 
 import 'rules.dart';
 import 'providers.dart';

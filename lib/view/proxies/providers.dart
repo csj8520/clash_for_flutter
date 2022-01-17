@@ -6,9 +6,9 @@ import 'package:day/day.dart';
 import 'package:day/i18n/zh_cn.dart';
 import 'package:day/plugins/relative_time.dart';
 
-import 'package:clashf_pro/components/index.dart';
-import 'package:clashf_pro/fetch/index.dart';
-import 'package:clashf_pro/types/index.dart';
+import 'package:clash_pro_for_flutter/components/index.dart';
+import 'package:clash_pro_for_flutter/fetch/index.dart';
+import 'package:clash_pro_for_flutter/types/index.dart';
 
 import 'components/proxie.dart';
 

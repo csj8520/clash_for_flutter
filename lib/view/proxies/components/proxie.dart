@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:styled_widget/styled_widget.dart';
 
-import 'package:clashf_pro/types/index.dart';
+import 'package:clash_pro_for_flutter/types/index.dart';
 
 final _colors = {
   const Color(0xff909399): 0,

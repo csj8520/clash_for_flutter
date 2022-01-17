@@ -11,7 +11,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE instance, _In_opt_ HINSTANCE prev,
   // new console when running with a debugger.
 
   // https://github.com/biyidev/biyi/commit/66ad34c21c221460c0bd7c47a743259f5e15a38d
-  HWND hWnd = ::FindWindow(L"FLUTTER_RUNNER_WIN32_WINDOW", L"ClashF Pro");
+  HWND hWnd = ::FindWindow(L"FLUTTER_RUNNER_WIN32_WINDOW", L"Clash Pro For Flutter");
   if (hWnd != NULL) {
     ::ShowWindow(hWnd, SW_NORMAL);
     ::SetForegroundWindow(hWnd);
@@ -42,7 +42,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE instance, _In_opt_ HINSTANCE prev,
   FlutterWindow window(project);
   Win32Window::Point origin(10, 10);
   Win32Window::Size size(950, 600);
-  if (!window.CreateAndShow(L"ClashF Pro", origin, size)) {
+  if (!window.CreateAndShow(L"Clash Pro For Flutter", origin, size)) {
     return EXIT_FAILURE;
   }
   window.SetQuitOnClose(false);

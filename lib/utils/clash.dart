@@ -1,9 +1,9 @@
 import 'dart:io';
 import 'dart:convert';
 
-import 'package:clashf_pro/store/index.dart';
-import 'package:clashf_pro/utils/index.dart';
-import 'package:clashf_pro/fetch/index.dart';
+import 'package:clash_pro_for_flutter/store/index.dart';
+import 'package:clash_pro_for_flutter/utils/index.dart';
+import 'package:clash_pro_for_flutter/fetch/index.dart';
 import 'package:flutter/material.dart';
 
 Process? clash;

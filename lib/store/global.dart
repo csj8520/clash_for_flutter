@@ -1,11 +1,11 @@
 import 'package:bot_toast/bot_toast.dart';
-import 'package:clashf_pro/types/index.dart';
-import 'package:clashf_pro/utils/index.dart';
+import 'package:clash_pro_for_flutter/types/index.dart';
+import 'package:clash_pro_for_flutter/utils/index.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:mobx/mobx.dart';
 
-import 'package:clashf_pro/fetch/index.dart';
+import 'package:clash_pro_for_flutter/fetch/index.dart';
 
 import 'index.dart';
 

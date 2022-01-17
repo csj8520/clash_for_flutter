@@ -2,12 +2,12 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'package:bot_toast/bot_toast.dart';
-import 'package:clashf_pro/fetch/index.dart';
+import 'package:clash_pro_for_flutter/fetch/index.dart';
 import 'package:path/path.dart' as path;
 
 import 'package:mobx/mobx.dart';
 
-import 'package:clashf_pro/utils/index.dart';
+import 'package:clash_pro_for_flutter/utils/index.dart';
 
 import 'index.dart';
 

@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.14)
-project("ClashF-Pro" LANGUAGES CXX)
+project("Clash-Pro-For-Flutter" LANGUAGES CXX)
 
-set(BINARY_NAME "ClashF-Pro")
+set(BINARY_NAME "Clash-Pro-For-Flutter")
 
 cmake_policy(SET CMP0063 NEW)
 

@@ -92,10 +92,10 @@ BEGIN
             VALUE "CompanyName", "csj8520" "\0"
             VALUE "FileDescription", "Clash Pro For Flutter" "\0"
             VALUE "FileVersion", VERSION_AS_STRING "\0"
-            VALUE "InternalName", "ClashF Pro" "\0"
+            VALUE "InternalName", "Clash Pro For Flutter" "\0"
             VALUE "LegalCopyright", "Copyright (C) 2022 csj8520. All rights reserved." "\0"
-            VALUE "OriginalFilename", "ClashF Pro.exe" "\0"
-            VALUE "ProductName", "ClashF Pro" "\0"
+            VALUE "OriginalFilename", "Clash Pro For Flutter.exe" "\0"
+            VALUE "ProductName", "Clash Pro For Flutter" "\0"
             VALUE "ProductVersion", VERSION_AS_STRING "\0"
         END
     END

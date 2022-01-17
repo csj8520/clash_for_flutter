@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:styled_widget/styled_widget.dart';
 
-import 'package:clashf_pro/fetch/index.dart';
-import 'package:clashf_pro/types/index.dart';
-import 'package:clashf_pro/utils/index.dart';
-import 'package:clashf_pro/components/index.dart';
+import 'package:clash_pro_for_flutter/fetch/index.dart';
+import 'package:clash_pro_for_flutter/types/index.dart';
+import 'package:clash_pro_for_flutter/utils/index.dart';
+import 'package:clash_pro_for_flutter/components/index.dart';
 
 class PageRulesRules extends StatefulWidget {
   const PageRulesRules({Key? key}) : super(key: key);

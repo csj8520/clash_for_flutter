@@ -7,17 +7,17 @@ import 'package:tray_manager/tray_manager.dart';
 import 'package:styled_widget/styled_widget.dart';
 import 'package:window_manager/window_manager.dart';
 
-import 'package:clashf_pro/types/index.dart';
-import 'package:clashf_pro/utils/index.dart';
-import 'package:clashf_pro/store/index.dart';
+import 'package:clash_pro_for_flutter/types/index.dart';
+import 'package:clash_pro_for_flutter/utils/index.dart';
+import 'package:clash_pro_for_flutter/store/index.dart';
 
-import 'package:clashf_pro/view/sidebar/index.dart';
-import 'package:clashf_pro/view/proxies/index.dart';
-import 'package:clashf_pro/view/logs/index.dart';
-import 'package:clashf_pro/view/rules/index.dart';
-import 'package:clashf_pro/view/connections/index.dart';
-import 'package:clashf_pro/view/settings/index.dart';
-import 'package:clashf_pro/view/profiles/index.dart';
+import 'package:clash_pro_for_flutter/view/sidebar/index.dart';
+import 'package:clash_pro_for_flutter/view/proxies/index.dart';
+import 'package:clash_pro_for_flutter/view/logs/index.dart';
+import 'package:clash_pro_for_flutter/view/rules/index.dart';
+import 'package:clash_pro_for_flutter/view/connections/index.dart';
+import 'package:clash_pro_for_flutter/view/settings/index.dart';
+import 'package:clash_pro_for_flutter/view/profiles/index.dart';
 
 void main() async {
   log.time('Start Window Time');

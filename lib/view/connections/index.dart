@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:clashf_pro/store/index.dart';
+import 'package:clash_pro_for_flutter/store/index.dart';
 import 'package:flutter/material.dart';
 import 'package:styled_widget/styled_widget.dart';
 import 'package:web_socket_channel/io.dart';
@@ -9,9 +9,9 @@ import 'package:day/day.dart';
 import 'package:day/i18n/zh_cn.dart';
 import 'package:day/plugins/relative_time.dart';
 
-import 'package:clashf_pro/types/index.dart';
-import 'package:clashf_pro/utils/index.dart';
-import 'package:clashf_pro/components/index.dart';
+import 'package:clash_pro_for_flutter/types/index.dart';
+import 'package:clash_pro_for_flutter/utils/index.dart';
+import 'package:clash_pro_for_flutter/components/index.dart';
 
 class TableItem {
   String head;

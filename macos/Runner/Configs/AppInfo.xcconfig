@@ -5,10 +5,10 @@
 // 'flutter create' template.
 
 // The application's name. By default this is also the title of the Flutter window.
-PRODUCT_NAME = ClashF Pro
+PRODUCT_NAME = Clash Pro For Flutter
 
 // The application's bundle identifier
-PRODUCT_BUNDLE_IDENTIFIER = com.example.clashfPro
+PRODUCT_BUNDLE_IDENTIFIER = csj8520.ClashProForFlutter
 
 // The copyright displayed in application information
-PRODUCT_COPYRIGHT = Copyright © 2021 com.example. All rights reserved.
+PRODUCT_COPYRIGHT = Copyright © 2021 csj8520. All rights reserved.
