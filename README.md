@@ -1,30 +1,31 @@
-# ClashF Pro
+# Clash Pro For Flutter
 
 ### dev
 
-``` bash
+```bash
 # https://mobx.netlify.app/getting-started
 # generates *.g.dart
-flutter pub run build_runner build
+flutter pub run build_runner build --delete-conflicting-outputs
 # or
-flutter pub run build_runner watch
+flutter pub run build_runner watch --delete-conflicting-outputs
 
 flutter run -d windows
 ```
 
-### build
-
-``` bash
-flutter build windows
-flutter pub run msix:create
-```
-
 #### build for mac
 
-``` bash
+```bash
 dart pub global activate flutter_distributor
 npm install -g appdmg
 flutter_distributor package --platform=macos --targets=dmg
+```
+
+#### build for window
+
+```bash
+dart pub global activate flutter_distributor
+# need install Inno https://jrsoftware.org/isdl.php#stable
+flutter_distributor package --platform windows --targets exe,zip
 ```
 
 ## Question Record

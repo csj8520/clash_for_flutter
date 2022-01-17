@@ -49,14 +49,13 @@ class MyApp extends StatelessWidget {
         errorColor: const Color(0xfff56c6c),
       ),
       builder: BotToastInit(),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      home: const MyHomePage(),
     );
   }
 }
 
 class MyHomePage extends StatefulWidget {
-  const MyHomePage({Key? key, required this.title}) : super(key: key);
-  final String title;
+  const MyHomePage({Key? key}) : super(key: key);
 
   @override
   State<MyHomePage> createState() => _MyHomePageState();
@@ -77,8 +76,8 @@ class _MyHomePageState extends State<MyHomePage> with TrayListener, WindowListen
 
   @override
   void initState() {
-    super.initState();
     _init();
+    super.initState();
   }
 
   void _init() async {
@@ -86,8 +85,8 @@ class _MyHomePageState extends State<MyHomePage> with TrayListener, WindowListen
     windowManager.addListener(this);
     await globalStore.init();
     if (!globalStore.inited) return;
-    _pageController.jumpTo(0);
-    setState(() => _index = 0);
+    // _pageController.jumpTo(0);
+    // setState(() => _index = 0);
   }
 
   void _initTray() async {
@@ -103,6 +102,10 @@ class _MyHomePageState extends State<MyHomePage> with TrayListener, WindowListen
       ),
       MenuItem.separator,
       MenuItem(
+        key: 'restart-clash-core',
+        title: '重启 Clash Core',
+      ),
+      MenuItem(
         key: 'exit',
         title: '退出',
       ),
@@ -111,21 +114,14 @@ class _MyHomePageState extends State<MyHomePage> with TrayListener, WindowListen
     TrayManager.instance.addListener(this);
   }
 
-  _onChange(SideBarMenu menu, int index) {
+  dynamic _onChange(SideBarMenu menu, int index) {
     if (!globalStore.inited && !['logs', 'profiles'].contains(menu.type)) return BotToast.showText(text: '请等待初始化！');
     setState(() => {_index = index});
     _pageController.jumpToPage(index);
-    log.debug('Menu Changed: ', menu.label);
-  }
-
-  @override
-  void onWindowEvent(String eventName) {
-    log.debug('onWindowEvent: ', eventName);
   }
 
   @override
   void onWindowFocus() {
-    log.debug('onWindowFocus');
     if (globalStore.inited) clashApiConfigStore.updateConfig();
   }
 
@@ -157,6 +153,8 @@ class _MyHomePageState extends State<MyHomePage> with TrayListener, WindowListen
     } else if (menuItem.key == 'hide') {
       WindowManager.instance.hide();
       // if (Platform.isMacOS) await windowManager.setSkipTaskbar(true);
+    } else if (menuItem.key == 'restart-clash-core') {
+      await globalStore.restartClash();
     } else if (menuItem.key == 'exit') {
       await globalStore.setProxy(false);
       clash?.kill();
@@ -187,5 +185,13 @@ class _MyHomePageState extends State<MyHomePage> with TrayListener, WindowListen
         ],
       ).height(double.infinity).backgroundColor(const Color(0xfff4f5f6)),
     );
+  }
+
+  @override
+  void dispose() async {
+    windowManager.removeListener(this);
+    TrayManager.instance.removeListener(this);
+    await TrayManager.instance.destroy();
+    super.dispose();
   }
 }

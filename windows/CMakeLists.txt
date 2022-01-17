@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.14)
-project(clashf_pro LANGUAGES CXX)
+project("ClashF-Pro" LANGUAGES CXX)
 
-set(BINARY_NAME "clashf_pro")
+set(BINARY_NAME "ClashF-Pro")
 
 cmake_policy(SET CMP0063 NEW)
 

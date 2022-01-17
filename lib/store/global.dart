@@ -45,11 +45,21 @@ abstract class _GlobalStore with Store {
 
   @action
   Future<void> restartClash() async {
-    inited = false;
-    await initConfig();
-    await initClash();
-    if (localConfigStore.autoSetProxy) await setProxy(true);
-    inited = true;
+    try {
+      inited = false;
+      await initConfig();
+      await initClash();
+      if (localConfigStore.autoSetProxy) await setProxy(true);
+      inited = true;
+    } catch (e) {
+      BotToast.showNotification(
+        title: (_) => const Text('Error'),
+        leading: (_) => const Icon(Icons.error_outline, color: Colors.red),
+        trailing: (cancel) => IconButton(icon: const Icon(Icons.cancel), onPressed: cancel),
+        subtitle: (_) => Text(e.toString()),
+        duration: null,
+      );
+    }
   }
 
   @action

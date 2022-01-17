@@ -11,7 +11,8 @@ final String clashCoreFileName = Platform.isWindows
         ? 'clash-darwin-amd64'
         : 'clash-linux-amd64';
 
-final assetsPath = path.normalize(path.join(Platform.script.path, '../../assets'));
+// https://github.com/dart-lang/sdk/issues/31610
+final assetsPath = path.normalize(path.join(Platform.script.toFilePath(), '../../assets'));
 final binDir = Directory(path.join(assetsPath, 'bin'));
 final geoipDir = Directory(path.join(assetsPath, 'geoip'));
 

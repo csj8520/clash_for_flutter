@@ -1,0 +1,7 @@
+# from https://blog.flutterando.com.br/dando-um-boost-no-mobx-e9eebcb4da6c
+targets:
+  $default:
+    builders:
+      mobx_codegen|mobx_generator:
+        generate_for:
+          - "lib/store/*.dart"
