@@ -64,6 +64,7 @@ class _ProviderState extends State<_Provider> {
 
   @override
   Widget build(BuildContext context) {
+    final provider = widget.provider;
     return Loading(
       controller: _loadingController,
       child: CardView(
@@ -72,13 +73,13 @@ class _ProviderState extends State<_Provider> {
           children: [
             Row(
               children: [
-                Row(children: [Text(widget.provider.name), Tag(widget.provider.vehicleType).padding(left: 10)]).expanded(),
-                Text(Day().useLocale(locale).from(Day.fromString(widget.provider.updatedAt))),
+                Row(children: [Text(provider.name), Tag(provider.vehicleType).padding(left: 10)]).expanded(),
+                Text(provider.updatedAt == null ? '' : '最后更新于：${Day().useLocale(locale).from(Day.fromString(provider.updatedAt!))}'),
                 IconButton(icon: Icon(Icons.network_check, size: 20, color: Theme.of(context).primaryColor), onPressed: _healthCheck),
                 IconButton(icon: Icon(Icons.refresh, size: 20, color: Theme.of(context).primaryColor), onPressed: _updateProvider)
               ],
             ).height(40),
-            Wrap(spacing: 10, runSpacing: 10, children: widget.provider.proxies.map((e) => BlockProxie(proxie: e)).toList()).padding(top: 20)
+            Wrap(spacing: 10, runSpacing: 10, children: provider.proxies.map((e) => BlockProxie(proxie: e)).toList()).padding(top: 20)
           ],
         ).width(double.infinity).padding(all: 15),
       ),

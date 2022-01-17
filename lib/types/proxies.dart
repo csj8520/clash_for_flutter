@@ -101,7 +101,7 @@ class ProxiesProviders {
   String name;
   List<ProxiesProxie> proxies;
   String type;
-  String updatedAt;
+  String? updatedAt;
   String vehicleType;
   ProxiesProviders({required this.name, required this.proxies, required this.type, required this.updatedAt, required this.vehicleType});
 
