@@ -50,3 +50,19 @@ Future<void> copyCommandLineProxy(String type, {String? http, String? https}) as
 
   if (commands.isNotEmpty) await Clipboard.setData(ClipboardData(text: commands.join(join)));
 }
+
+dynamic getValue(Map<String, dynamic> json, String? key) {
+  if (key == null) return json;
+  if (key.isEmpty) return json;
+  final List<dynamic> keys = key.split('.');
+  return [json, ...keys].reduce((value, key) => value[key]);
+}
+
+extension Get on Map {
+  dynamic get(String? key) {
+    if (key == null) return this;
+    if (key.isEmpty) return this;
+    final List<dynamic> keys = key.split('.');
+    return [this, ...keys].reduce((value, key) => value[key]);
+  }
+}
