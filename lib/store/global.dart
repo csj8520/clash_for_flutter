@@ -77,17 +77,21 @@ abstract class _GlobalStore with Store {
     await clashApiConfigStore.updateConfig();
   }
 
+  SystemProxyConfig get proxyConfig {
+    final httpPort = clashApiConfigStore.mixedPort ?? clashApiConfigStore.port;
+    final httpsPort = clashApiConfigStore.mixedPort ?? clashApiConfigStore.port;
+    final socksPort = clashApiConfigStore.mixedPort ?? clashApiConfigStore.socksPort;
+    return SystemProxyConfig(
+      http: httpPort == null ? null : SystemProxyState(enable: true, server: '127.0.0.1:$httpPort'),
+      https: httpsPort == null ? null : SystemProxyState(enable: true, server: '127.0.0.1:$httpsPort'),
+      socks: socksPort == null ? null : SystemProxyState(enable: true, server: '127.0.0.1:$socksPort'),
+    );
+  }
+
   @action
   Future<void> setProxy(bool value) async {
     if (value) {
-      final httpPort = clashApiConfigStore.mixedPort ?? clashApiConfigStore.port;
-      final httpsPort = clashApiConfigStore.mixedPort ?? clashApiConfigStore.port;
-      final socksPort = clashApiConfigStore.mixedPort ?? clashApiConfigStore.socksPort;
-      await SystemProxy.instance.setProxy(SystemProxyConfig(
-        http: httpPort == null ? null : SystemProxyState(enable: true, server: '127.0.0.1:$httpPort'),
-        https: httpsPort == null ? null : SystemProxyState(enable: true, server: '127.0.0.1:$httpsPort'),
-        socks: socksPort == null ? null : SystemProxyState(enable: true, server: '127.0.0.1:$socksPort'),
-      ));
+      await SystemProxy.instance.setProxy(proxyConfig);
     } else {
       await SystemProxy.instance.setProxy(SystemProxyConfig());
     }

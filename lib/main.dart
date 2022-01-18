@@ -10,6 +10,7 @@ import 'package:window_manager/window_manager.dart';
 import 'package:clash_pro_for_flutter/types/index.dart';
 import 'package:clash_pro_for_flutter/utils/index.dart';
 import 'package:clash_pro_for_flutter/store/index.dart';
+import 'package:clash_pro_for_flutter/mixins/index.dart';
 
 import 'package:clash_pro_for_flutter/view/sidebar/index.dart';
 import 'package:clash_pro_for_flutter/view/proxies/index.dart';
@@ -61,7 +62,7 @@ class MyHomePage extends StatefulWidget {
   State<MyHomePage> createState() => _MyHomePageState();
 }
 
-class _MyHomePageState extends State<MyHomePage> with TrayListener, WindowListener {
+class _MyHomePageState extends State<MyHomePage> with TrayListener, WindowListener, TrayMixin, WindowMixin {
   int _index = 1;
   final PageController _pageController = PageController(initialPage: 1);
 
@@ -81,85 +82,18 @@ class _MyHomePageState extends State<MyHomePage> with TrayListener, WindowListen
   }
 
   void _init() async {
-    _initTray();
-    windowManager.addListener(this);
+    initTray();
     await globalStore.init();
+    initWindow();
     if (!globalStore.inited) return;
     // _pageController.jumpTo(0);
     // setState(() => _index = 0);
-  }
-
-  void _initTray() async {
-    await TrayManager.instance.setIcon('assets/logo.ico');
-    List<MenuItem> items = [
-      MenuItem(
-        key: 'show',
-        title: '显示',
-      ),
-      MenuItem(
-        key: 'hide',
-        title: '隐藏',
-      ),
-      MenuItem.separator,
-      MenuItem(
-        key: 'restart-clash-core',
-        title: '重启 Clash Core',
-      ),
-      MenuItem(
-        key: 'exit',
-        title: '退出',
-      ),
-    ];
-    await TrayManager.instance.setContextMenu(items);
-    TrayManager.instance.addListener(this);
   }
 
   dynamic _onChange(SideBarMenu menu, int index) {
     if (!globalStore.inited && !['logs', 'profiles'].contains(menu.type)) return BotToast.showText(text: '请等待初始化！');
     setState(() => {_index = index});
     _pageController.jumpToPage(index);
-  }
-
-  @override
-  void onWindowFocus() {
-    if (globalStore.inited) clashApiConfigStore.updateConfig();
-  }
-
-  @override
-  void onTrayIconMouseDown() {
-    log.debug('Tray Click: onTrayIconMouseDown');
-    super.onTrayIconMouseDown();
-    if (Platform.isWindows) {
-      WindowManager.instance.show();
-    } else {
-      onTrayIconRightMouseDown();
-    }
-  }
-
-  @override
-  void onTrayIconRightMouseDown() {
-    log.debug('Tray Click: onTrayIconRightMouseDown');
-    super.onTrayIconRightMouseDown();
-    TrayManager.instance.popUpContextMenu();
-  }
-
-  @override
-  void onTrayMenuItemClick(MenuItem menuItem) async {
-    log.debug('Menu Item Click: ', menuItem.title);
-    super.onTrayMenuItemClick(menuItem);
-    if (menuItem.key == 'show') {
-      WindowManager.instance.show();
-      // if (Platform.isMacOS) await windowManager.setSkipTaskbar(false);
-    } else if (menuItem.key == 'hide') {
-      WindowManager.instance.hide();
-      // if (Platform.isMacOS) await windowManager.setSkipTaskbar(true);
-    } else if (menuItem.key == 'restart-clash-core') {
-      await globalStore.restartClash();
-    } else if (menuItem.key == 'exit') {
-      await globalStore.setProxy(false);
-      clash?.kill();
-      exit(0);
-    }
   }
 
   @override
