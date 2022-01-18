@@ -3,13 +3,10 @@ import 'package:styled_widget/styled_widget.dart';
 
 import 'package:clash_pro_for_flutter/fetch/index.dart';
 import 'package:clash_pro_for_flutter/types/index.dart';
-import 'package:clash_pro_for_flutter/utils/index.dart';
 import 'package:clash_pro_for_flutter/components/index.dart';
 
 class PageRulesRules extends StatefulWidget {
   const PageRulesRules({Key? key}) : super(key: key);
-  // const PageRulesRules({Key? key, required this.pageVisibleEvent}) : super(key: key);
-  // final PageVisibleEvent pageVisibleEvent;
 
   @override
   _PageRulesRulesState createState() => _PageRulesRulesState();
@@ -23,9 +20,6 @@ class _PageRulesRulesState extends State<PageRulesRules> {
   void initState() {
     super.initState();
     _update();
-    // widget.pageVisibleEvent.onVisible('rules', (show) {
-    //   if (show) _update();
-    // });
   }
 
   Future<void> _update() async {

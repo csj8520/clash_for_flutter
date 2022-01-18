@@ -9,5 +9,6 @@ mixin WindowMixin on WindowListener {
   @override
   void onWindowFocus() {
     clashApiConfigStore.updateConfig();
+    proxiesStore.update();
   }
 }

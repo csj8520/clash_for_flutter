@@ -5,34 +5,35 @@ import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:styled_widget/styled_widget.dart';
 
-import 'package:clash_pro_for_flutter/fetch/index.dart';
 import 'package:clash_pro_for_flutter/types/index.dart';
 import 'package:clash_pro_for_flutter/components/index.dart';
 
 class PageProxiesProxyGroup extends StatelessWidget {
-  const PageProxiesProxyGroup({Key? key, required this.proxies}) : super(key: key);
-  final Proxies proxies;
+  const PageProxiesProxyGroup({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Column(children: [
       const CardHead(title: '策略组'),
-      Observer(
-          builder: (_) => CardView(
-                  child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: clashApiConfigStore.mode == 'global'
-                    ? [_ProxyGroupItem(group: proxies.global, timeoutProxys: proxies.timeoutProxies)]
-                    : proxies.groups.map((e) => _ProxyGroupItem(group: e, timeoutProxys: proxies.timeoutProxies)).toList(),
-              ).width(double.infinity)))
+      Observer(builder: (_) {
+        final children = clashApiConfigStore.mode == 'global' && proxiesStore.global != null
+            ? [_ProxyGroupItem(group: proxiesStore.global!, onChange: (v) => proxiesStore.setProxieGroup(proxiesStore.global!.name, v))]
+            : proxiesStore.groups.map((e) => _ProxyGroupItem(group: e, onChange: (v) => proxiesStore.setProxieGroup(e.name, v))).toList();
+        return CardView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: children,
+          ).width(double.infinity),
+        );
+      })
     ]);
   }
 }
 
 class _ProxyGroupItem extends StatefulWidget {
-  const _ProxyGroupItem({Key? key, required this.group, required this.timeoutProxys}) : super(key: key);
+  const _ProxyGroupItem({Key? key, required this.group, required this.onChange}) : super(key: key);
   final ProxiesProxyGroup group;
-  final List<String> timeoutProxys;
+  final Function(String value) onChange;
 
   @override
   _ProxyGroupItemState createState() => _ProxyGroupItemState();
@@ -40,45 +41,32 @@ class _ProxyGroupItem extends StatefulWidget {
 
 class _ProxyGroupItemState extends State<_ProxyGroupItem> {
   bool _expand = false;
-  // final GlobalKey _globalKey = GlobalKey();
-
-  // @override
-  // void didUpdateWidget(covariant _Group oldWidget) {
-  //   super.didUpdateWidget(oldWidget);
-  //   print(_globalKey.currentContext?.findRenderObject()?.semanticBounds.size);
-  //   // print(_globalKey.currentContext?.findRenderObject()?.paintBounds);
-  // }
-
-  _handleSelect(String label) async {
-    await fetchClashProxieSwitch(group: widget.group.name, value: label);
-    setState(() => widget.group.now = label);
-  }
 
   @override
   Widget build(BuildContext context) {
+    final group = widget.group;
     // TODO: 临时解决卡顿问题
-    final tags = widget.group.all.sublist(0, _expand ? widget.group.all.length : min(widget.group.all.length, 10));
+    final tags = group.all.sublist(0, _expand ? group.all.length : min(group.all.length, 10));
 
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Row(
           children: [
-            Text(widget.group.name, overflow: TextOverflow.ellipsis).width(80),
-            Tag(widget.group.type).padding(left: 10),
+            Text(group.name, overflow: TextOverflow.ellipsis).width(80),
+            Tag(group.type).padding(left: 10),
           ],
         ).width(190),
         Wrap(
-          // key: _globalKey,
           spacing: 6,
           runSpacing: 6,
           children: tags
               .map((e) => _ProxyGroupItemTab(
                     text: e,
-                    fail: widget.timeoutProxys.contains(e),
-                    value: widget.group.now == e,
-                    disabled: widget.group.type != ProxiesProxyGroupType.selector,
-                    onClick: () => _handleSelect(e),
+                    fail: proxiesStore.timeoutProxies.contains(e),
+                    value: group.now == e,
+                    disabled: group.type != ProxiesProxyGroupType.selector,
+                    onClick: () => widget.onChange(e),
                   ))
               .toList(),
         ).constrained(maxHeight: _expand ? double.infinity : 24).clipRect().expanded(),

@@ -8,8 +8,6 @@ import 'providers.dart';
 
 class PageRules extends StatelessWidget {
   PageRules({Key? key}) : super(key: key);
-  // const PageRules({Key? key, required this.pageVisibleEvent}) : super(key: key);
-  // final PageVisibleEvent pageVisibleEvent;
 
   final ScrollController _scrollController = ScrollController();
 

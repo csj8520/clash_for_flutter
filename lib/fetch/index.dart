@@ -21,10 +21,14 @@ Future<ClashVersion> fetchClashVersion() async {
   return ClashVersion.buildFromJson(res.data);
 }
 
-Future<Proxies> fetchClashProxies() async {
-  final groups = await clashDio.get('/proxies');
-  final providers = await clashDio.get('/providers/proxies');
-  return Proxies.buildFromJson(groups.data['proxies'], providers.data['providers']);
+Future<dynamic> fetchClashProxies() async {
+  final res = await clashDio.get('/proxies');
+  return res.data;
+}
+
+Future<dynamic> fetchClashProvidersProxies() async {
+  final res = await clashDio.get('/providers/proxies');
+  return res.data;
 }
 
 Future<void> fetchClashProviderHealthCheck(String provider) async {

@@ -1,10 +1,7 @@
 import 'package:clash_pro_for_flutter/store/index.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:styled_widget/styled_widget.dart';
-
-import 'package:clash_pro_for_flutter/fetch/index.dart';
-import 'package:clash_pro_for_flutter/types/index.dart';
-// import 'package:clash_pro_for_flutter/utils/index.dart';
 
 import 'proxies.dart';
 import 'proxy_group.dart';
@@ -18,7 +15,6 @@ class PageProxies extends StatefulWidget {
 }
 
 class _PageProxiesState extends State<PageProxies> {
-  Proxies? _proxies;
   final ScrollController _scrollController = ScrollController();
 
   @override
@@ -28,23 +24,24 @@ class _PageProxiesState extends State<PageProxies> {
   }
 
   Future<void> _update() async {
-    _proxies = await fetchClashProxies();
+    await proxiesStore.update();
     setState(() {});
   }
 
   @override
   Widget build(BuildContext context) {
-    final List<Widget> children = [];
-    if (_proxies != null) children.add(PageProxiesProxyGroup(proxies: _proxies!));
-    if (_proxies?.providers.isNotEmpty ?? false) children.add(PageProxiesProviders(providers: _proxies!.providers, onUpdate: _update));
-    if (_proxies?.proxies.isNotEmpty ?? false) children.add(PageProxiesProxies(proxies: _proxies!.proxies));
-
     return SingleChildScrollView(
       controller: _scrollController,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: children,
-      ).padding(top: 5, right: 20, bottom: 20),
+      child: Observer(builder: (_) {
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            proxiesStore.groups.isEmpty ? null : const PageProxiesProxyGroup(),
+            proxiesStore.providers.isEmpty ? null : const PageProxiesProviders(),
+            proxiesStore.proxies.isEmpty ? null : const PageProxiesProxies(),
+          ].whereType<Widget>().toList(),
+        ).padding(top: 5, right: 20, bottom: 20);
+      }),
     );
   }
 

@@ -1,5 +1,7 @@
+import 'package:clash_pro_for_flutter/store/index.dart';
 import 'package:flutter/material.dart';
 import 'package:bot_toast/bot_toast.dart';
+import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:styled_widget/styled_widget.dart';
 
 import 'package:day/day.dart';
@@ -13,25 +15,24 @@ import 'package:clash_pro_for_flutter/types/index.dart';
 import 'components/proxie.dart';
 
 class PageProxiesProviders extends StatelessWidget {
-  const PageProxiesProviders({Key? key, required this.providers, required this.onUpdate}) : super(key: key);
-  final List<ProxiesProviders> providers;
-  final FutureFunc onUpdate;
+  const PageProxiesProviders({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        const CardHead(title: '代理集'),
-        ...providers.map((e) => _Provider(provider: e, onUpdate: onUpdate)),
-      ],
-    );
+    return Observer(builder: (_) {
+      return Column(
+        children: [
+          const CardHead(title: '代理集'),
+          ...proxiesStore.providers.map((e) => _Provider(provider: e)),
+        ],
+      );
+    });
   }
 }
 
 class _Provider extends StatefulWidget {
-  const _Provider({Key? key, required this.provider, required this.onUpdate}) : super(key: key);
+  const _Provider({Key? key, required this.provider}) : super(key: key);
   final ProxiesProviders provider;
-  final FutureFunc onUpdate;
 
   @override
   _ProviderState createState() => _ProviderState();
@@ -44,7 +45,7 @@ class _ProviderState extends State<_Provider> {
     _loadingController.show(context.size);
     try {
       await fetchClashProviderProxiesHealthCheck(widget.provider.name);
-      await widget.onUpdate();
+      await proxiesStore.update();
     } catch (e) {
       BotToast.showText(text: 'Health Check Error');
     }
@@ -55,7 +56,7 @@ class _ProviderState extends State<_Provider> {
     _loadingController.show(context.size);
     try {
       await fetchClashProviderProxiesUpdate(widget.provider.name);
-      await widget.onUpdate();
+      await proxiesStore.update();
     } catch (e) {
       BotToast.showText(text: 'Updata Error');
     }
