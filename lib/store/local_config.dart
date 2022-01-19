@@ -1,12 +1,13 @@
+import 'dart:io';
 import 'dart:async';
 import 'dart:convert';
-import 'dart:io';
+
+import 'package:dio/dio.dart';
+import 'package:mobx/mobx.dart';
 import 'package:bot_toast/bot_toast.dart';
-import 'package:clash_pro_for_flutter/fetch/index.dart';
 import 'package:path/path.dart' as path;
 
-import 'package:mobx/mobx.dart';
-
+import 'package:clash_pro_for_flutter/fetch/index.dart';
 import 'package:clash_pro_for_flutter/utils/index.dart';
 
 import 'index.dart';
@@ -172,16 +173,22 @@ abstract class _LocalConfigStore with Store {
 
   @action
   Future<void> updateSub(Map<String, dynamic> sub) async {
-    final String? url = sub['url'];
-    if (url == null) return;
-    log.info('Start Update Sub: ${sub['name']}');
-    log.time('Update Sub Success');
-    final res = await dio.get(url);
-    final file = File(path.join(CONST.configDir.path, sub['name']));
-    await file.writeAsString(res.data);
-    sub['updateTime'] = DateTime.now().millisecondsSinceEpoch ~/ 1000;
-    await setSub(sub['name'], sub);
-    log.timeEnd('Update Sub Success');
+    try {
+      final String? url = sub['url'];
+      if (url == null) return;
+      log.info('Start Update Sub: ${sub['name']}');
+      log.time('Update Sub Success');
+      final res = await dio.get(url);
+      final file = File(path.join(CONST.configDir.path, sub['name']));
+      await file.writeAsString(res.data);
+      sub['updateTime'] = DateTime.now().millisecondsSinceEpoch ~/ 1000;
+      await setSub(sub['name'], sub);
+      log.timeEnd('Update Sub Success');
+    } catch (e) {
+      log.error('Update Sub: ${sub['name']} Error');
+      log.error(e is DioError ? e.message : e);
+      rethrow;
+    }
   }
 
   @action
@@ -208,12 +215,14 @@ abstract class _LocalConfigStore with Store {
     _regularlyUpdateSubsTimer = Timer.periodic(Duration(seconds: updateInterval), (_) async {
       for (var it in subs) {
         if (it['url'] == null) continue;
-        await updateSub(it);
-        if (localConfigStore.selected == it['name']) {
-          BotToast.showText(text: '正在重启 Clash ……');
-          await globalStore.restartClash();
-          BotToast.showText(text: '重启成功');
-        }
+        try {
+          await updateSub(it);
+          if (localConfigStore.selected == it['name']) {
+            BotToast.showText(text: '正在重启 Clash ……');
+            await globalStore.restartClash();
+            BotToast.showText(text: '重启成功');
+          }
+        } catch (_) {}
       }
     });
   }
@@ -221,7 +230,9 @@ abstract class _LocalConfigStore with Store {
   @action
   Future<void> updateSubs() async {
     for (var it in subs) {
-      await updateSub(it);
+      try {
+        await updateSub(it);
+      } catch (_) {}
     }
   }
 }

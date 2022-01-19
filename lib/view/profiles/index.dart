@@ -1,5 +1,3 @@
-import 'package:clash_pro_for_flutter/utils/index.dart';
-import 'package:clash_pro_for_flutter/view/profiles/edit_profile.dart';
 import 'package:flutter/material.dart';
 import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
@@ -9,8 +7,11 @@ import 'package:day/day.dart';
 import 'package:day/i18n/zh_cn.dart';
 import 'package:day/plugins/relative_time.dart';
 
+import 'package:clash_pro_for_flutter/utils/index.dart';
 import 'package:clash_pro_for_flutter/components/index.dart';
 import 'package:clash_pro_for_flutter/store/index.dart';
+
+import 'edit_profile.dart';
 
 const double _opWidth = 160;
 
@@ -183,13 +184,17 @@ class _SubState extends State<_Sub> {
 
   Future<void> _updateSub() async {
     _loadingController.show(context.size);
-    await localConfigStore.updateSub(widget.sub);
-    _loadingController.hide();
-    if (localConfigStore.selected == widget.sub['name']) {
-      BotToast.showText(text: '正在重启 Clash ……');
-      await globalStore.restartClash();
-      BotToast.showText(text: '重启成功');
+    try {
+      await localConfigStore.updateSub(widget.sub);
+      if (localConfigStore.selected == widget.sub['name']) {
+        BotToast.showText(text: '正在重启 Clash ……');
+        await globalStore.restartClash();
+        BotToast.showText(text: '重启成功');
+      }
+    } catch (e) {
+      BotToast.showText(text: 'Update Sub: ${widget.sub['name']} Error');
     }
+    _loadingController.hide();
   }
 
   Future<void> _switchConfig(String? value) async {
