@@ -7,7 +7,7 @@ import 'package:window_manager/window_manager.dart';
 
 mixin TrayMixin on TrayListener {
   Future<void> initTray() async {
-    await TrayManager.instance.setIcon('assets/logo.ico');
+    await TrayManager.instance.setIcon('assets/logo/logo.ico');
     List<MenuItem> items = [
       MenuItem(
         key: 'show',

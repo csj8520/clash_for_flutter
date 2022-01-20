@@ -58,6 +58,10 @@ https://github.com/antler119/system_tray/issues/10#issuecomment-905212027
 
 https://github.com/biyidev/biyi/commit/66ad34c21c221460c0bd7c47a743259f5e15a38d
 
+### edit windows version
+
+https://github.com/flutter/flutter/issues/73652
+
 ## TODO FIX
 
 - [ ] macos 关闭窗口时隐藏 dock

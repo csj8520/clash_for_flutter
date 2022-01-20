@@ -25,7 +25,7 @@ class _ViewSideBarState extends State<ViewSideBar> {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        Image.asset('assets/logo.png', width: 60, height: 60, filterQuality: FilterQuality.medium),
+        Image.asset('assets/logo/logo_64.png', width: 64, height: 64, filterQuality: FilterQuality.medium),
         ListView.builder(
           padding: const EdgeInsets.only(top: 20, left: 20, right: 20),
           itemBuilder: (context, idx) => _SlideBarButton(
