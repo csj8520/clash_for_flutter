@@ -36,14 +36,15 @@ dns:
   listen: 0.0.0.0:53
   enhanced-mode: redir-host
   nameserver:
-    - 8.8.8.8
-    - 119.29.29.29
-    - 223.5.5.5
-    - https://rubyfish.cn/dns-query
+      - 114.114.114.114
+    # - 119.29.29.29
+    # - 223.5.5.5
+    # - https://rubyfish.cn/dns-query
   fallback:
-    - https://cloudflare-dns.com/dns-query
-    - tls://1.0.0.1:853
-    - https://dns.google/dns-query#
+    - 8.8.8.8
+    # - https://cloudflare-dns.com/dns-query
+    # - tls://1.0.0.1:853
+    # - https://dns.google/dns-query#
 
 # 服务器节点订阅
 # proxy-providers:

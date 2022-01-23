@@ -59,10 +59,9 @@ class _PageConnectionsState extends State<PageConnections> {
                                           overflow: TextOverflow.ellipsis)
                                       .textColor(const Color(0xff909399))
                                       .fontSize(14)
-                                      .alignment(Alignment.center)
-                                      .width(e.width),
+                                      .alignment(Alignment.center),
                                   onPressed: () => connectionsStore.setSortItem(e),
-                                ))
+                                ).width(e.width))
                             .toList(),
                       ).height(30).backgroundColor(const Color(0xfff3f6f9)),
                       ...connectionsStore.connections.map((it) => _ConnectingItem(connection: it)).toList(),

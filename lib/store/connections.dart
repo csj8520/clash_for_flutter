@@ -94,7 +94,7 @@ abstract class _ConnectionsStore with Store {
   @observable
   TableItem? sortBy;
   @observable
-  bool sortAscend = true;
+  bool sortAscend = false;
 
   @observable
   int downloadTotal = 0;
@@ -119,13 +119,13 @@ abstract class _ConnectionsStore with Store {
   setSortItem(TableItem item) {
     if (sortBy == item) {
       if (sortAscend) {
-        sortAscend = false;
-      } else {
         sortBy = null;
+      } else {
+        sortAscend = true;
       }
     } else {
       sortBy = item;
-      sortAscend = true;
+      sortAscend = false;
     }
     _handleSort();
   }

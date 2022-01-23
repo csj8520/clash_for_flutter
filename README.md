@@ -62,7 +62,7 @@ https://github.com/biyidev/biyi/commit/66ad34c21c221460c0bd7c47a743259f5e15a38d
 
 https://github.com/flutter/flutter/issues/73652
 
-## TODO FIX
+## TODO
 
 - [ ] macos 关闭窗口时隐藏 dock
 
@@ -71,6 +71,8 @@ https://github.com/flutter/flutter/issues/73652
 
 - [ ] macos debug 模式下多次调用 Shell 会卡死
       https://github.com/flutter/flutter/issues/95805
+
+- [ ] tun 模式
 
 ## Other Clash GUI
 

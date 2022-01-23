@@ -16,6 +16,29 @@ Future<Process> startClash() async {
   log.time('Start Clash Time');
 
   clash = await Process.start(CONST.clashBinFile.path, ['-d', CONST.configDir.path, '-f', localConfigStore.clashConfigFile.path], runInShell: false);
+
+  // TODO: tun
+  // clash = await Process.start(
+  //     'osascript',
+  //     [
+  //       '-e',
+  //       shellArguments([
+  //         'do',
+  //         'shell',
+  //         'script',
+  //         '${CONST.clashBinFile.path.replaceAll(' ', r'\\ ')} ${shellArguments([
+  //               '-d',
+  //               CONST.configDir.path,
+  //               '-f',
+  //               localConfigStore.clashConfigFile.path
+  //             ])}',
+  //         'with',
+  //         'administrator',
+  //         'privileges'
+  //       ])
+  //     ],
+  //     runInShell: false);
+
   clash!.stdout.listen((event) {
     List<String> strs = utf8.decode(event).trim().split('\n');
     for (var it in strs) {
@@ -26,6 +49,10 @@ Future<Process> startClash() async {
       if (msg == null) continue;
       log.log(msg, level: res[1] ?? 'info');
     }
+  });
+  clash!.stderr.listen((event) {
+    String str = utf8.decode(event).trim();
+    log.debug(str);
   });
   clash?.exitCode.then((value) {
     _success = false;
