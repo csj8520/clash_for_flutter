@@ -98,6 +98,15 @@ mixin _$ConnectionsStore on _ConnectionsStore, Store {
     return _$closeAsyncAction.run(() => super.close());
   }
 
+  final _$closeAllConnectionsAsyncAction =
+      AsyncAction('_ConnectionsStore.closeAllConnections');
+
+  @override
+  Future<void> closeAllConnections() {
+    return _$closeAllConnectionsAsyncAction
+        .run(() => super.closeAllConnections());
+  }
+
   final _$_ConnectionsStoreActionController =
       ActionController(name: '_ConnectionsStore');
 

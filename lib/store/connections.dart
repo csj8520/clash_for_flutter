@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:clash_pro_for_flutter/fetch/index.dart';
 import 'package:clash_pro_for_flutter/utils/index.dart';
 import 'package:day/day.dart';
 import 'package:day/i18n/zh_cn.dart';
@@ -128,6 +129,15 @@ abstract class _ConnectionsStore with Store {
       sortAscend = false;
     }
     _handleSort();
+  }
+
+  @action
+  Future<void> closeAllConnections() async {
+    final data = await fetchClashConnections();
+    final List<dynamic> connections = data['connections'];
+    for (var it in connections) {
+      await fetchClashCloseConnection(it['id']);
+    }
   }
 
   void _handleSort() {

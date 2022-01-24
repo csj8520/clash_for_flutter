@@ -183,7 +183,7 @@ class _SubState extends State<_Sub> {
   }
 
   Future<void> _updateSub() async {
-    _loadingController.show(context.size);
+    _loadingController.show();
     try {
       await localConfigStore.updateSub(widget.sub);
       if (localConfigStore.selected == widget.sub['name']) {

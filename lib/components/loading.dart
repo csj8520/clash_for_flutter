@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:styled_widget/styled_widget.dart';
@@ -22,20 +21,22 @@ class _LoadingState extends State<Loading> {
         stream: widget.controller.stream,
         initialData: const <String, dynamic>{
           'show': false,
-          'size': Size(100, 100),
         },
         builder: (_, snapshot) {
           final bool show = snapshot.data?['show'] ?? false;
-          final Size size = snapshot.data?['size'] ?? const Size(100, 100);
-          final double laodingSize = min(min(size.width, size.height) / 2, 80);
 
           return Stack(
             children: [
               widget.child,
               show
-                  ? Center(
-                      child: SpinKitPulse(color: Theme.of(context).primaryColor, size: laodingSize),
-                    ).backgroundColor(const Color(0x66000000)).constrained(width: size.width, height: size.height)
+                  ? Positioned.fill(
+                      child: Center(
+                        child: SpinKitPulse(
+                          color: Theme.of(context).primaryColor,
+                          size: 100,
+                        ).constrained(maxHeight: 100, maxWidth: 100).padding(all: 5),
+                      ).backgroundColor(const Color(0x66000000)),
+                    )
                   : const SizedBox.shrink(),
             ],
           );
@@ -56,8 +57,8 @@ class LoadingController {
 
   Stream<Map<String, dynamic>> get stream => _controller.stream;
 
-  void show(Size? size) {
-    _controller.add({'show': true, 'size': size});
+  void show() {
+    _controller.add({'show': true});
   }
 
   void hide() {

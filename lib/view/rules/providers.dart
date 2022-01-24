@@ -59,7 +59,7 @@ class _RulesProvidersItemState extends State<RulesProvidersItem> {
   final LoadingController _loadingController = LoadingController();
 
   _update() async {
-    _loadingController.show(context.size);
+    _loadingController.show();
     try {
       await fetchClashProviderRulesUpdate(widget.rule.name);
       await widget.onUpdate();

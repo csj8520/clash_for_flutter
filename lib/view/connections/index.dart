@@ -1,3 +1,4 @@
+import 'package:bot_toast/bot_toast.dart';
 import 'package:clash_pro_for_flutter/store/index.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
@@ -17,10 +18,35 @@ class _PageConnectionsState extends State<PageConnections> {
   final ScrollController _horizontalScrollController = ScrollController();
   final ScrollController _verticalScrollController = ScrollController();
 
+  bool _showDetail = false;
+
   @override
   void initState() {
     super.initState();
     connectionsStore.open();
+  }
+
+  void _closeAllConnections() async {
+    showDialog(
+      context: context,
+      builder: (_) => AlertDialog(
+        title: const Text('警告'),
+        content: const Text('将会关闭所有连接'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('取消'),
+          ),
+          TextButton(
+            onPressed: () async {
+              await connectionsStore.closeAllConnections();
+              Navigator.pop(context);
+            },
+            child: const Text('确定'),
+          ),
+        ],
+      ),
+    );
   }
 
   @override
@@ -37,37 +63,64 @@ class _PageConnectionsState extends State<PageConnections> {
                       .textColor(Theme.of(context).primaryColor)
                       .fontSize(14)
                       .padding(left: 10)
-                      .expanded()
+                      .expanded(),
+                  IconButton(
+                    icon: const Icon(Icons.close),
+                    iconSize: 20,
+                    tooltip: 'Close All Connections',
+                    onPressed: _closeAllConnections,
+                    constraints: const BoxConstraints(minHeight: 30, minWidth: 30),
+                    padding: EdgeInsets.zero,
+                  )
                 ],
               ).expanded(),
             ),
             CardView(
-              child: SingleChildScrollView(
-                scrollDirection: Axis.vertical,
-                controller: _verticalScrollController,
-                child: SingleChildScrollView(
-                  // TODO-FIX: 水平滚动条不显示
-                  scrollDirection: Axis.horizontal,
-                  controller: _horizontalScrollController,
-                  child: Column(
-                    children: [
-                      Row(
-                        children: connectionsStore.tableItems
-                            .map((e) => TextButton(
-                                  child: Text(
-                                          '${e.head}${e == connectionsStore.sortBy ? connectionsStore.sortAscend ? ' ↑' : ' ↓' : ''}',
-                                          overflow: TextOverflow.ellipsis)
-                                      .textColor(const Color(0xff909399))
-                                      .fontSize(14)
-                                      .alignment(Alignment.center),
-                                  onPressed: () => connectionsStore.setSortItem(e),
-                                ).width(e.width))
-                            .toList(),
-                      ).height(30).backgroundColor(const Color(0xfff3f6f9)),
-                      ...connectionsStore.connections.map((it) => _ConnectingItem(connection: it)).toList(),
-                    ],
+              child: Stack(
+                children: [
+                  SingleChildScrollView(
+                    scrollDirection: Axis.vertical,
+                    controller: _verticalScrollController,
+                    child: SingleChildScrollView(
+                        // TODO-FIX: 水平滚动条不显示
+                        scrollDirection: Axis.horizontal,
+                        controller: _horizontalScrollController,
+                        child: Column(
+                          children: [
+                            Row(
+                              children: connectionsStore.tableItems
+                                  .map((e) => TextButton(
+                                        child: Text(
+                                                '${e.head}${e == connectionsStore.sortBy ? connectionsStore.sortAscend ? ' ↑' : ' ↓' : ''}',
+                                                overflow: TextOverflow.ellipsis)
+                                            .textColor(const Color(0xff909399))
+                                            .fontSize(14)
+                                            .alignment(Alignment.center),
+                                        onPressed: () => connectionsStore.setSortItem(e),
+                                      ).width(e.width))
+                                  .toList(),
+                            ).height(30).backgroundColor(const Color(0xfff3f6f9)),
+                            ...connectionsStore.connections.map((it) => _ConnectingItem(connection: it)).toList(),
+                          ],
+                        )),
                   ),
-                ),
+                  _showDetail
+                      ? Positioned.directional(
+                          textDirection: TextDirection.ltr,
+                          top: 0,
+                          bottom: 0,
+                          end: 0,
+                          width: 450,
+                          child: Column(
+                            children: [Text('data')],
+                          ).decorated(
+                            color: Colors.white,
+                            boxShadow: [BoxShadow(color: Colors.grey.shade300, blurRadius: 5)],
+                            borderRadius: BorderRadius.circular(4),
+                          ),
+                        )
+                      : Container()
+                ],
               ),
             ).expanded(),
           ],

@@ -82,3 +82,11 @@ Future<Map<String, dynamic>> fetchClashConfig() async {
 Future<void> fetchClashConfigUpdate(Map<String, dynamic> config) async {
   await clashDio.patch('/configs', data: config);
 }
+
+Future<Map<String, dynamic>> fetchClashConnections() async {
+  return (await clashDio.get('/connections')).data;
+}
+
+Future<void> fetchClashCloseConnection(String id) async {
+  await clashDio.delete('/connections/${Uri.encodeComponent(id)}');
+}

@@ -42,7 +42,7 @@ class _ProviderState extends State<_Provider> {
   final LoadingController _loadingController = LoadingController();
 
   _healthCheck() async {
-    _loadingController.show(context.size);
+    _loadingController.show();
     try {
       await fetchClashProviderProxiesHealthCheck(widget.provider.name);
       await proxiesStore.update();
@@ -53,7 +53,7 @@ class _ProviderState extends State<_Provider> {
   }
 
   _updateProvider() async {
-    _loadingController.show(context.size);
+    _loadingController.show();
     try {
       await fetchClashProviderProxiesUpdate(widget.provider.name);
       await proxiesStore.update();
