@@ -84,6 +84,21 @@ mixin _$ConnectionsStore on _ConnectionsStore, Store {
     });
   }
 
+  final _$connectDetailAtom = Atom(name: '_ConnectionsStore.connectDetail');
+
+  @override
+  Map<String, dynamic>? get connectDetail {
+    _$connectDetailAtom.reportRead();
+    return super.connectDetail;
+  }
+
+  @override
+  set connectDetail(Map<String, dynamic>? value) {
+    _$connectDetailAtom.reportWrite(value, super.connectDetail, () {
+      super.connectDetail = value;
+    });
+  }
+
   final _$openAsyncAction = AsyncAction('_ConnectionsStore.open');
 
   @override
@@ -107,6 +122,14 @@ mixin _$ConnectionsStore on _ConnectionsStore, Store {
         .run(() => super.closeAllConnections());
   }
 
+  final _$closeConnectionAsyncAction =
+      AsyncAction('_ConnectionsStore.closeConnection');
+
+  @override
+  Future<void> closeConnection(String id) {
+    return _$closeConnectionAsyncAction.run(() => super.closeConnection(id));
+  }
+
   final _$_ConnectionsStoreActionController =
       ActionController(name: '_ConnectionsStore');
 
@@ -122,13 +145,36 @@ mixin _$ConnectionsStore on _ConnectionsStore, Store {
   }
 
   @override
+  void handleShowDetail(Map<String, dynamic> connect) {
+    final _$actionInfo = _$_ConnectionsStoreActionController.startAction(
+        name: '_ConnectionsStore.handleShowDetail');
+    try {
+      return super.handleShowDetail(connect);
+    } finally {
+      _$_ConnectionsStoreActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  void handleHideDetail() {
+    final _$actionInfo = _$_ConnectionsStoreActionController.startAction(
+        name: '_ConnectionsStore.handleHideDetail');
+    try {
+      return super.handleHideDetail();
+    } finally {
+      _$_ConnectionsStoreActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
   String toString() {
     return '''
 sortBy: ${sortBy},
 sortAscend: ${sortAscend},
 downloadTotal: ${downloadTotal},
 uploadTotal: ${uploadTotal},
-connections: ${connections}
+connections: ${connections},
+connectDetail: ${connectDetail}
     ''';
   }
 }

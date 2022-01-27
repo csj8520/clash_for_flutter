@@ -1,11 +1,13 @@
-import 'package:bot_toast/bot_toast.dart';
-import 'package:clash_pro_for_flutter/src/store/index.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:styled_widget/styled_widget.dart';
 
+import 'package:clash_pro_for_flutter/src/store/connections.dart';
+import 'package:clash_pro_for_flutter/src/store/index.dart';
 import 'package:clash_pro_for_flutter/src/utils/index.dart';
 import 'package:clash_pro_for_flutter/src/components/index.dart';
+
+import 'connect_detail.dart';
 
 class PageConnections extends StatefulWidget {
   const PageConnections({Key? key}) : super(key: key);
@@ -15,11 +17,6 @@ class PageConnections extends StatefulWidget {
 }
 
 class _PageConnectionsState extends State<PageConnections> {
-  final ScrollController _horizontalScrollController = ScrollController();
-  final ScrollController _verticalScrollController = ScrollController();
-
-  bool _showDetail = false;
-
   @override
   void initState() {
     super.initState();
@@ -49,8 +46,43 @@ class _PageConnectionsState extends State<PageConnections> {
     );
   }
 
+  Widget _buildHeader(TableItem e) {
+    return TextButton(
+      child: Text(
+        '${e.head}${e == connectionsStore.sortBy ? connectionsStore.sortAscend ? ' ↑' : ' ↓' : ''}',
+        overflow: TextOverflow.ellipsis,
+      ).textColor(const Color(0xff909399)).fontSize(14).alignment(Alignment.center),
+      onPressed: () => connectionsStore.setSortItem(e),
+    ).width(e.width);
+  }
+
+  Widget _buildTableRow(Map<String, dynamic> it) {
+    return TextButton(
+      child: Row(
+        children: connectionsStore.tableItems.map((e) {
+          String label = '';
+          if (e.getLabel != null) {
+            label = e.getLabel!(it.get(e.key)).toString();
+          } else {
+            label = it.get(e.key).toString();
+          }
+          final text = Text(
+            label,
+            overflow: TextOverflow.ellipsis,
+          ).textColor(const Color(0xff54759a)).fontSize(14).alignment(e.align).padding(left: 5, right: 5).width(e.width);
+          return e.tooltip ? Tooltip(child: text, message: label) : text;
+        }).toList(),
+      ),
+      onPressed: () => connectionsStore.handleShowDetail(it),
+    ).height(36);
+  }
+
   @override
   Widget build(BuildContext context) {
+    final Map<int, FixedColumnWidth> widths = {};
+    connectionsStore.tableItems.asMap().keys.forEach((key) {
+      widths[key] = FixedColumnWidth(connectionsStore.tableItems[key].width);
+    });
     return Observer(
       builder: (_) {
         return Column(
@@ -66,6 +98,7 @@ class _PageConnectionsState extends State<PageConnections> {
                       .expanded(),
                   IconButton(
                     icon: const Icon(Icons.close),
+                    color: Colors.red,
                     iconSize: 20,
                     tooltip: 'Close All Connections',
                     onPressed: _closeAllConnections,
@@ -78,48 +111,11 @@ class _PageConnectionsState extends State<PageConnections> {
             CardView(
               child: Stack(
                 children: [
-                  SingleChildScrollView(
-                    scrollDirection: Axis.vertical,
-                    controller: _verticalScrollController,
-                    child: SingleChildScrollView(
-                        // TODO-FIX: 水平滚动条不显示
-                        scrollDirection: Axis.horizontal,
-                        controller: _horizontalScrollController,
-                        child: Column(
-                          children: [
-                            Row(
-                              children: connectionsStore.tableItems
-                                  .map((e) => TextButton(
-                                        child: Text(
-                                                '${e.head}${e == connectionsStore.sortBy ? connectionsStore.sortAscend ? ' ↑' : ' ↓' : ''}',
-                                                overflow: TextOverflow.ellipsis)
-                                            .textColor(const Color(0xff909399))
-                                            .fontSize(14)
-                                            .alignment(Alignment.center),
-                                        onPressed: () => connectionsStore.setSortItem(e),
-                                      ).width(e.width))
-                                  .toList(),
-                            ).height(30).backgroundColor(const Color(0xfff3f6f9)),
-                            ...connectionsStore.connections.map((it) => _ConnectingItem(connection: it)).toList(),
-                          ],
-                        )),
+                  _ConnectionsTable(
+                    tableHeaders: connectionsStore.tableItems.map(_buildHeader).toList(),
+                    tableRows: connectionsStore.connections.map(_buildTableRow).toList(),
                   ),
-                  _showDetail
-                      ? Positioned.directional(
-                          textDirection: TextDirection.ltr,
-                          top: 0,
-                          bottom: 0,
-                          end: 0,
-                          width: 450,
-                          child: Column(
-                            children: [Text('data')],
-                          ).decorated(
-                            color: Colors.white,
-                            boxShadow: [BoxShadow(color: Colors.grey.shade300, blurRadius: 5)],
-                            borderRadius: BorderRadius.circular(4),
-                          ),
-                        )
-                      : Container()
+                  const ConnectDetail(),
                 ],
               ),
             ).expanded(),
@@ -131,33 +127,42 @@ class _PageConnectionsState extends State<PageConnections> {
 
   @override
   void dispose() {
-    _horizontalScrollController.dispose();
-    _verticalScrollController.dispose();
     connectionsStore.close();
     super.dispose();
   }
 }
 
-class _ConnectingItem extends StatelessWidget {
-  const _ConnectingItem({Key? key, required this.connection}) : super(key: key);
-  final Map<String, dynamic> connection;
+class _ConnectionsTable extends StatefulWidget {
+  const _ConnectionsTable({Key? key, required this.tableHeaders, required this.tableRows}) : super(key: key);
+  final List<Widget> tableHeaders;
+  final List<Widget> tableRows;
+
+  @override
+  State<_ConnectionsTable> createState() => _ConnectionsTableState();
+}
+
+class _ConnectionsTableState extends State<_ConnectionsTable> {
+  final ScrollController _horizontalScrollController = ScrollController();
+  final ScrollController _verticalScrollController = ScrollController();
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      children: connectionsStore.tableItems.map((e) {
-        String label = '';
-        if (e.getLabel != null) {
-          label = e.getLabel!(connection.get(e.key)).toString();
-        } else {
-          label = connection.get(e.key).toString();
-        }
-        final text = Text(
-          label,
-          overflow: TextOverflow.ellipsis,
-        ).textColor(const Color(0xff54759a)).fontSize(14).alignment(e.align).padding(left: 5, right: 5).width(e.width);
-        return e.tooltip ? Tooltip(child: text, message: label) : text;
-      }).toList(),
-    ).height(36);
+    return Scrollbar(
+      controller: _horizontalScrollController,
+      child: SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        controller: _horizontalScrollController,
+        child: Column(
+          children: [
+            Row(children: widget.tableHeaders),
+            SingleChildScrollView(
+              scrollDirection: Axis.vertical,
+              controller: _verticalScrollController,
+              child: Column(children: widget.tableRows),
+            ).expanded(),
+          ],
+        ),
+      ),
+    );
   }
 }

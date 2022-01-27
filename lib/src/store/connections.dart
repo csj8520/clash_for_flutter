@@ -1,13 +1,14 @@
 import 'dart:convert';
+import 'package:mobx/mobx.dart';
+import 'package:flutter/material.dart';
+import 'package:web_socket_channel/io.dart';
 
-import 'package:clash_pro_for_flutter/src/fetch/index.dart';
-import 'package:clash_pro_for_flutter/src/utils/index.dart';
 import 'package:day/day.dart';
 import 'package:day/i18n/zh_cn.dart';
 import 'package:day/plugins/relative_time.dart';
-import 'package:flutter/material.dart';
-import 'package:mobx/mobx.dart';
-import 'package:web_socket_channel/io.dart';
+
+import 'package:clash_pro_for_flutter/src/fetch/index.dart';
+import 'package:clash_pro_for_flutter/src/utils/index.dart';
 
 import 'index.dart';
 
@@ -44,7 +45,7 @@ abstract class _ConnectionsStore with Store {
       width: 260,
       key: 'metadata',
       align: Alignment.centerLeft,
-      getLabel: (m) => '${m['host'].isNotEmpty ? m['host'] : m['sourceIP']}:${m['destinationPort']}',
+      getLabel: (m) => '${m['host'].isNotEmpty ? m['host'] : m['destinationIP']}:${m['destinationPort']}',
     ),
     TableItem(head: '网络', width: 80, key: 'metadata.network', align: Alignment.center),
     TableItem(head: '类型', width: 120, key: 'metadata.type', align: Alignment.center),
@@ -104,6 +105,9 @@ abstract class _ConnectionsStore with Store {
   @observable
   List<Map<String, dynamic>> connections = [];
 
+  @observable
+  Map<String, dynamic>? connectDetail;
+
   @action
   Future<void> open() async {
     _channel = IOWebSocketChannel.connect(Uri.parse('ws://${localConfigStore.clashApiAddress}/connections?token=${localConfigStore.clashApiSecret}'));
@@ -140,6 +144,11 @@ abstract class _ConnectionsStore with Store {
     }
   }
 
+  @action
+  Future<void> closeConnection(String id) async {
+    await fetchClashCloseConnection(id);
+  }
+
   void _handleSort() {
     if (sortBy == null) return;
     final _sort = sortBy!.sort;
@@ -174,5 +183,18 @@ abstract class _ConnectionsStore with Store {
       return connect;
     }).toList();
     _handleSort();
+    if (connectDetail != null) {
+      connectDetail = connections.firstWhere((it) => it['id'] == connectDetail!['id'], orElse: () => ({...connectDetail!, 'closed': true}));
+    }
+  }
+
+  @action
+  void handleShowDetail(Map<String, dynamic> connect) {
+    connectDetail = connect;
+  }
+
+  @action
+  void handleHideDetail() {
+    connectDetail = null;
   }
 }
