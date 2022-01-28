@@ -41,6 +41,7 @@ abstract class _LocalConfigStore with Store {
     'updateSubsAtStart': false,
     'autoSetProxy': false,
     'startAtLogin': false,
+    'breakConnections': false,
     'subs': [],
   };
 
@@ -53,6 +54,8 @@ abstract class _LocalConfigStore with Store {
   bool get autoSetProxy => _config['autoSetProxy'];
 
   bool get startAtLogin => _config['startAtLogin'];
+
+  bool get breakConnections => _config['breakConnections'];
 
   List<dynamic> get subs => _config['subs'];
 
@@ -111,8 +114,8 @@ abstract class _LocalConfigStore with Store {
     final config = await clashConfigFile.readAsString();
     // https://github.com/dart-lang/yaml/issues/53
     // clashConfig = loadYaml(config, recover: true);
-    final _extControl = RegExp(r'''[^#]\s+?external-controller:\s+['"]?([^'"]+?)['"]?\n''').firstMatch(config)?.group(1);
-    final _secret = RegExp(r'''[^#]\s+?secret:\s+['"]?([^'"]+?)['"]?\n''').firstMatch(config)?.group(1);
+    final _extControl = RegExp(r'''(?<!#\s*)external-controller:\s+['"]?([^'"]+?)['"]?\s''').firstMatch(config)?.group(1);
+    final _secret = RegExp(r'''(?<!#\s*)secret:\s+['"]?([^'"]+?)['"]?\s''').firstMatch(config)?.group(1);
     clashApiAddress = (_extControl ?? '127.0.0.1:9090').replaceAll('0.0.0.0', '127.0.0.1');
     clashApiSecret = _secret ?? '';
   }
@@ -145,6 +148,13 @@ abstract class _LocalConfigStore with Store {
   }
 
   @action
+  Future<void> setBreakConnections(bool value) async {
+    _config['breakConnections'] = value;
+    _config = _config;
+    await saveLocalConfig();
+  }
+
+  @action
   Future<void> setUpdateInterval(int value) async {
     _config['updateInterval'] = value;
     _config = _config;
@@ -171,19 +181,22 @@ abstract class _LocalConfigStore with Store {
     await saveLocalConfig();
   }
 
+  /// @return changed
   @action
-  Future<void> updateSub(Map<String, dynamic> sub) async {
+  Future<bool> updateSub(Map<String, dynamic> sub) async {
     try {
       final String? url = sub['url'];
-      if (url == null) return;
+      if (url == null) return false;
       log.info('Start Update Sub: ${sub['name']}');
       log.time('Update Sub Success');
       final res = await dio.get(url);
       final file = File(path.join(CONST.configDir.path, sub['name']));
-      await file.writeAsString(res.data);
+      final oldConfig = await file.readAsString();
+      if (oldConfig != res.data) await file.writeAsString(res.data);
       sub['updateTime'] = DateTime.now().millisecondsSinceEpoch ~/ 1000;
       await setSub(sub['name'], sub);
       log.timeEnd('Update Sub Success');
+      return oldConfig != res.data;
     } catch (e) {
       log.error('Update Sub: ${sub['name']} Error');
       log.error(e is DioError ? e.message : e);
@@ -216,8 +229,8 @@ abstract class _LocalConfigStore with Store {
       for (var it in subs) {
         if (it['url'] == null) continue;
         try {
-          await updateSub(it);
-          if (localConfigStore.selected == it['name']) {
+          final chenged = await updateSub(it);
+          if (chenged && localConfigStore.selected == it['name']) {
             BotToast.showText(text: '正在重启 Clash ……');
             await globalStore.restartClash();
             BotToast.showText(text: '重启成功');

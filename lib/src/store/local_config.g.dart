@@ -93,6 +93,15 @@ mixin _$LocalConfigStore on _LocalConfigStore, Store {
     return _$setSelectedAsyncAction.run(() => super.setSelected(value));
   }
 
+  final _$setBreakConnectionsAsyncAction =
+      AsyncAction('_LocalConfigStore.setBreakConnections');
+
+  @override
+  Future<void> setBreakConnections(bool value) {
+    return _$setBreakConnectionsAsyncAction
+        .run(() => super.setBreakConnections(value));
+  }
+
   final _$setUpdateIntervalAsyncAction =
       AsyncAction('_LocalConfigStore.setUpdateInterval');
 
@@ -121,7 +130,7 @@ mixin _$LocalConfigStore on _LocalConfigStore, Store {
   final _$updateSubAsyncAction = AsyncAction('_LocalConfigStore.updateSub');
 
   @override
-  Future<void> updateSub(Map<String, dynamic> sub) {
+  Future<bool> updateSub(Map<String, dynamic> sub) {
     return _$updateSubAsyncAction.run(() => super.updateSub(sub));
   }
 

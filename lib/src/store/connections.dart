@@ -140,13 +140,22 @@ abstract class _ConnectionsStore with Store {
     final data = await fetchClashConnections();
     final List<dynamic> connections = data['connections'];
     for (var it in connections) {
-      await fetchClashCloseConnection(it['id']);
+      await closeConnection(it['id']);
     }
   }
 
   @action
   Future<void> closeConnection(String id) async {
     await fetchClashCloseConnection(id);
+  }
+
+  @action
+  Future<void> closeConnectionWith(bool Function(Map<String, dynamic>) test) async {
+    final data = await fetchClashConnections();
+    final List<dynamic> connections = data['connections'];
+    for (var it in connections) {
+      if (test(it)) await closeConnection(it['id']);
+    }
   }
 
   void _handleSort() {

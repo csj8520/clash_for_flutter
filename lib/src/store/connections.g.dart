@@ -130,6 +130,15 @@ mixin _$ConnectionsStore on _ConnectionsStore, Store {
     return _$closeConnectionAsyncAction.run(() => super.closeConnection(id));
   }
 
+  final _$closeConnectionWithAsyncAction =
+      AsyncAction('_ConnectionsStore.closeConnectionWith');
+
+  @override
+  Future<void> closeConnectionWith(bool Function(Map<String, dynamic>) test) {
+    return _$closeConnectionWithAsyncAction
+        .run(() => super.closeConnectionWith(test));
+  }
+
   final _$_ConnectionsStoreActionController =
       ActionController(name: '_ConnectionsStore');
 

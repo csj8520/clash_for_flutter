@@ -1,6 +1,8 @@
-import 'package:clash_pro_for_flutter/src/fetch/index.dart';
-import 'package:clash_pro_for_flutter/src/types/index.dart';
 import 'package:mobx/mobx.dart';
+
+import 'package:clash_pro_for_flutter/src/fetch/index.dart';
+import 'package:clash_pro_for_flutter/src/store/index.dart';
+import 'package:clash_pro_for_flutter/src/types/index.dart';
 
 part 'proxies.g.dart';
 
@@ -76,7 +78,12 @@ abstract class _ProxiesStore with Store {
 
   @action
   Future<void> setProxieGroup(String group, String value) async {
+    final now = groups.firstWhere((it) => it.name == group).now;
+    if (now == value) return;
     await fetchClashProxieSwitch(group: group, value: value);
     await updateGroup();
+    if (localConfigStore.breakConnections) {
+      await connectionsStore.closeConnectionWith((it) => (it['chains'] as List<dynamic>).contains(group));
+    }
   }
 }

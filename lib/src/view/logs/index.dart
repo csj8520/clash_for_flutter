@@ -54,13 +54,13 @@ class _PageLogsState extends State<PageLogs> with AutomaticKeepAliveClientMixin 
     return Column(children: [
       const CardHead(title: '日志'),
       CardView(
-              child: ListView.builder(
-        padding: const EdgeInsets.only(left: 10, top: 10, right: 10, bottom: 10),
-        itemBuilder: (context, index) => _logs[index],
-        itemCount: _logs.length,
-        controller: _scrollController,
-      ).backgroundColor(const Color(0xfff3f6f9)).clipRRect(all: 4).padding(all: 15))
-          .expanded()
+        child: ListView.builder(
+          padding: const EdgeInsets.only(left: 10, top: 10, right: 10, bottom: 10),
+          itemBuilder: (context, index) => _logs[index],
+          itemCount: _logs.length,
+          controller: _scrollController,
+        ).backgroundColor(const Color(0xfff3f6f9)).clipRRect(all: 4).padding(all: 15),
+      ).expanded()
     ]).padding(top: 5, right: 20, bottom: 10);
   }
 

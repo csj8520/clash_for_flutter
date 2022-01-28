@@ -182,10 +182,11 @@ class _SubState extends State<_Sub> {
     );
   }
 
-  Future<void> _updateSub() async {
+  Future<dynamic> _updateSub() async {
     _loadingController.show();
     try {
-      await localConfigStore.updateSub(widget.sub);
+      final changed = await localConfigStore.updateSub(widget.sub);
+      if (!changed) return BotToast.showText(text: '配置无变化');
       if (localConfigStore.selected == widget.sub['name']) {
         BotToast.showText(text: '正在重启 Clash ……');
         await globalStore.restartClash();
@@ -193,8 +194,9 @@ class _SubState extends State<_Sub> {
       }
     } catch (e) {
       BotToast.showText(text: 'Update Sub: ${widget.sub['name']} Error');
+    } finally {
+      _loadingController.hide();
     }
-    _loadingController.hide();
   }
 
   Future<void> _switchConfig(String? value) async {

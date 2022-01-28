@@ -13,20 +13,30 @@ class PageProxiesProxyGroup extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(children: [
-      const CardHead(title: '策略组'),
-      Observer(builder: (_) {
-        final children = clashApiConfigStore.mode == 'global' && proxiesStore.global != null
-            ? [_ProxyGroupItem(group: proxiesStore.global!, onChange: (v) => proxiesStore.setProxieGroup(proxiesStore.global!.name, v))]
-            : proxiesStore.groups.map((e) => _ProxyGroupItem(group: e, onChange: (v) => proxiesStore.setProxieGroup(e.name, v))).toList();
-        return CardView(
+    return Observer(builder: (_) {
+      final children = clashApiConfigStore.mode == 'global' && proxiesStore.global != null
+          ? [_ProxyGroupItem(group: proxiesStore.global!, onChange: (v) => proxiesStore.setProxieGroup(proxiesStore.global!.name, v))]
+          : proxiesStore.groups.map((e) => _ProxyGroupItem(group: e, onChange: (v) => proxiesStore.setProxieGroup(e.name, v))).toList();
+
+      return Column(children: [
+        CardHead(
+          title: '策略组',
+          suffix: Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              Checkbox(value: localConfigStore.breakConnections, onChanged: (v) => localConfigStore.setBreakConnections(v!)),
+              const Text('切换时打断包含策略组的连接').textColor(Theme.of(context).primaryColor)
+            ],
+          ).expanded(),
+        ),
+        CardView(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: children,
           ).width(double.infinity),
-        );
-      })
-    ]);
+        ),
+      ]);
+    });
   }
 }
 

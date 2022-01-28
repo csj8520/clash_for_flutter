@@ -1,10 +1,10 @@
+import 'package:mobx/mobx.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:bot_toast/bot_toast.dart';
+
 import 'package:clash_pro_for_flutter/src/types/index.dart';
 import 'package:clash_pro_for_flutter/src/utils/index.dart';
-import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
-import 'package:mobx/mobx.dart';
-
 import 'package:clash_pro_for_flutter/src/fetch/index.dart';
 
 import 'index.dart';
@@ -65,6 +65,7 @@ abstract class _GlobalStore with Store {
   @action
   Future<void> initConfig() async {
     await localConfigStore.readLocalConfig();
+    print(localConfigStore.clashApiAddress);
     clashDio.options.baseUrl = 'http://${localConfigStore.clashApiAddress}';
     if (localConfigStore.clashApiSecret.isNotEmpty) clashDio.options.headers['Authorization'] = 'Bearer ${localConfigStore.clashApiSecret}';
   }
