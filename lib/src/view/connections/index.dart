@@ -58,6 +58,7 @@ class _PageConnectionsState extends State<PageConnections> {
 
   Widget _buildTableRow(Map<String, dynamic> it) {
     return TextButton(
+      style: ButtonStyle(padding: MaterialStateProperty.all(EdgeInsets.zero)),
       child: Row(
         children: connectionsStore.tableItems.map((e) {
           String label = '';
@@ -154,7 +155,7 @@ class _ConnectionsTableState extends State<_ConnectionsTable> {
         controller: _horizontalScrollController,
         child: Column(
           children: [
-            Row(children: widget.tableHeaders),
+            Row(children: widget.tableHeaders).height(30).backgroundColor(const Color(0xfff3f6f9)),
             SingleChildScrollView(
               scrollDirection: Axis.vertical,
               controller: _verticalScrollController,
