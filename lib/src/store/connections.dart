@@ -60,8 +60,8 @@ abstract class _ConnectionsStore with Store {
         final download = c['download'];
         final upload = c['upload'];
         if (upload == 0 && download == 0) return '-';
-        if (upload == 0) return '↑ ${bytesToSize(download)}/s';
-        if (download == 0) return '↓ ${bytesToSize(upload)}/s';
+        if (upload == 0) return '↓ ${bytesToSize(download)}/s';
+        if (download == 0) return '↑ ${bytesToSize(upload)}/s';
         return '↑ ${bytesToSize(upload)}/s ↓ ${bytesToSize(download)}/s';
       },
       sort: (a, b) => (a['download'] + a['upload']) - (b['download'] + b['upload']),

@@ -28,6 +28,7 @@ void main() async {
     // await windowManager.setAsFrameless();
     if (Platform.isMacOS) await windowManager.setSkipTaskbar(true);
     await windowManager.setSize(const Size(950, 600));
+    await windowManager.center();
     await windowManager.setMinimumSize(const Size(500, 400));
     // await windowManager.setPosition(Offset.zero);
     windowManager.show();
