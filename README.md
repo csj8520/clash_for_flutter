@@ -30,6 +30,13 @@ flutter_distributor package --platform windows --targets exe,zip
 
 ## Question Record
 
+### MacOS tun 模式需要手动添加dns
+```bash
+networksetup -getdnsservers Wi-Fi # get
+networksetup -setdnsservers Wi-Fi 198.18.0.2 # set
+networksetup -setdnsservers Wi-Fi empty # del
+```
+
 ### Hide cmd window
 
 https://github.com/flutter/flutter/issues/47891#issuecomment-708850435
