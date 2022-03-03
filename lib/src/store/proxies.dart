@@ -78,7 +78,7 @@ abstract class _ProxiesStore with Store {
 
   @action
   Future<void> setProxieGroup(String group, String value) async {
-    final now = groups.firstWhere((it) => it.name == group).now;
+    final now = [global!, ...groups].firstWhere((it) => it.name == group).now;
     if (now == value) return;
     await fetchClashProxieSwitch(group: group, value: value);
     await updateGroup();
