@@ -108,13 +108,20 @@ class WinSystemProxy extends SystemProxyPlatform {
 
   @override
   Future<void> setProxy(SystemProxyConfig conf) async {
-    if (conf.https.enable || conf.http.enable) {
-      String server = conf.https.enable ? conf.https.server! : conf.http.server!;
+    // socks 会丢失域名信息 导致规则失效
+    // http://127.0.0.1:7893;https=127.0.0.1:7890;socks=127.0.0.1:7891; chrome use http; firefox use https
+    // http://127.0.0.1:7893;https=127.0.0.1:7890;                      chrome use http; firefox use https
+    // https=127.0.0.1:7890;socks=127.0.0.1:7891;                       chrome, firefox use https
+    // http://127.0.0.1:7893;socks=127.0.0.1:7891;                      chrome, firefox use http
+    // socks=127.0.0.1:7891;                                            chrome, firefox use socks4
+    // http=127.0.0.1:7893;                                             chrome, firefox not use
+    String servers = "";
+    if (conf.http.enable) servers += "http://${conf.http.server};";
+    if (conf.https.enable) servers += "https=${conf.https.server};";
+    if (conf.socks.enable) servers += "socks=${conf.socks.server};";
+    if (servers.isNotEmpty) {
       await Process.run('reg', ['add', regPath, '/v', 'ProxyEnable', '/t', 'REG_DWORD', '/d', '1', '/f']);
-      await Process.run('reg', ['add', regPath, '/v', 'ProxyServer', '/t', 'REG_SZ', '/d', ' http://$server', '/f']);
-    } else if (conf.socks.enable) {
-      await Process.run('reg', ['add', regPath, '/v', 'ProxyEnable', '/t', 'REG_DWORD', '/d', '1', '/f']);
-      await Process.run('reg', ['add', regPath, '/v', 'ProxyServer', '/t', 'REG_SZ', '/d', 'socks=${conf.socks.server}', '/f']);
+      await Process.run('reg', ['add', regPath, '/v', 'ProxyServer', '/t', 'REG_SZ', '/d', servers, '/f']);
     } else {
       await Process.run('reg', ['add', regPath, '/v', 'ProxyEnable', '/t', 'REG_DWORD', '/d', '0', '/f']);
       await Process.run('reg', ['add', regPath, '/v', 'ProxyServer', '/t', 'REG_SZ', '/d', '', '/f']);
@@ -125,18 +132,28 @@ class WinSystemProxy extends SystemProxyPlatform {
   Future<SystemProxyConfig> getProxyState() async {
     final enable = (await Process.run('reg', ['query', regPath, '/v', 'ProxyEnable'])).stdout.toString().contains('0x1');
     final out = await Process.run('reg', ['query', regPath, '/v', 'ProxyServer']);
-    final res = RegExp(r'(?<=ProxyServer\s+REG_SZ\s+)(?!\s)((?:http\:\/\/)|(?:socks=))?(.+)').firstMatch(out.stdout.toString().trim());
-    if (res == null) return SystemProxyConfig();
-    final group = res.groups([1, 2]);
-    String protocol = group[0] ?? 'http://';
-    String? host = group[1];
-    if (host == null) return SystemProxyConfig();
-    if (protocol == 'http://') {
-      return SystemProxyConfig(http: SystemProxyState(enable: enable, server: host), https: SystemProxyState(enable: enable, server: host));
-    } else if (protocol == 'socks=') {
-      return SystemProxyConfig(socks: SystemProxyState(enable: enable, server: host));
+    final outStr = out.stdout.toString().trim();
+    final serversStr = RegExp(r'(?<=ProxyServer\s+REG_SZ\s+)(?!\s+).+').firstMatch(outStr)?.group(0);
+    final result = SystemProxyConfig();
+    if (serversStr != null) {
+      final serverReg = RegExp(r"((?:https?)|(?:socks))(?:(?:\:\/\/)|(?:=))(\d+\.\d+\.\d+\.\d+\:\d+)");
+      final results = serversStr.split(";").where((it) => it.isNotEmpty).map((it) => serverReg.firstMatch(it)?.groups([1, 2])).whereType<List>();
+      for (var it in results) {
+        final state = SystemProxyState(enable: enable, server: it[1]);
+        switch (it[0]) {
+          case 'http':
+            result.http = state;
+            break;
+          case 'https':
+            result.https = state;
+            break;
+          case 'socks':
+            result.socks = state;
+            break;
+        }
+      }
     }
-    return SystemProxyConfig();
+    return result;
   }
 }
 
