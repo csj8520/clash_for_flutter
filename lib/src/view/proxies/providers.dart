@@ -1,4 +1,4 @@
-import 'package:clash_pro_for_flutter/src/store/index.dart';
+import 'package:clash_for_flutter/src/store/index.dart';
 import 'package:flutter/material.dart';
 import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
@@ -8,9 +8,9 @@ import 'package:day/day.dart';
 import 'package:day/i18n/zh_cn.dart';
 import 'package:day/plugins/relative_time.dart';
 
-import 'package:clash_pro_for_flutter/src/components/index.dart';
-import 'package:clash_pro_for_flutter/src/fetch/index.dart';
-import 'package:clash_pro_for_flutter/src/types/index.dart';
+import 'package:clash_for_flutter/src/components/index.dart';
+import 'package:clash_for_flutter/src/fetch/index.dart';
+import 'package:clash_for_flutter/src/types/index.dart';
 
 import 'components/proxie.dart';
 

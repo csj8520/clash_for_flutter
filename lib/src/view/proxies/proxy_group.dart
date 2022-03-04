@@ -1,12 +1,12 @@
 import 'dart:math';
 
-import 'package:clash_pro_for_flutter/src/store/index.dart';
+import 'package:clash_for_flutter/src/store/index.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:styled_widget/styled_widget.dart';
 
-import 'package:clash_pro_for_flutter/src/types/index.dart';
-import 'package:clash_pro_for_flutter/src/components/index.dart';
+import 'package:clash_for_flutter/src/types/index.dart';
+import 'package:clash_for_flutter/src/components/index.dart';
 
 class PageProxiesProxyGroup extends StatelessWidget {
   const PageProxiesProxyGroup({Key? key}) : super(key: key);

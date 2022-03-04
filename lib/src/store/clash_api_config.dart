@@ -1,4 +1,4 @@
-import 'package:clash_pro_for_flutter/src/fetch/index.dart';
+import 'package:clash_for_flutter/src/fetch/index.dart';
 import 'package:mobx/mobx.dart';
 
 // Include generated file

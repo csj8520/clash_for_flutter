@@ -7,8 +7,8 @@ import 'package:mobx/mobx.dart';
 import 'package:bot_toast/bot_toast.dart';
 import 'package:path/path.dart' as path;
 
-import 'package:clash_pro_for_flutter/src/fetch/index.dart';
-import 'package:clash_pro_for_flutter/src/utils/index.dart';
+import 'package:clash_for_flutter/src/fetch/index.dart';
+import 'package:clash_for_flutter/src/utils/index.dart';
 
 import 'index.dart';
 

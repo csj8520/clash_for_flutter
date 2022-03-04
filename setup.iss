@@ -7,8 +7,8 @@
 #define MyAppName "Clash For Flutter"
 #define MyAppVersion "0.0.1"
 #define MyAppPublisher "csj8520"
-#define MyAppURL "https://github.com/csj8520/clash_pro_for_flutter"
-#define MyAppExeName "Clash-Pro-For-Flutter.exe"
+#define MyAppURL "https://github.com/csj8520/clash_for_flutter"
+#define MyAppExeName "Clash-For-Flutter.exe"
 #define AssetsDir "data\flutter_assets\assets"
 #define ServicePath "data\flutter_assets\assets\bin\clash-for-flutter-service-windows-amd64.exe"
 
@@ -28,7 +28,7 @@ DisableProgramGroupPage=yes
 ; Uncomment the following line to run in non administrative install mode (install for current user only.)
 ;PrivilegesRequired=lowest
 OutputDir=dist\{#MyAppVersion}\
-OutputBaseFilename=clash_pro_for_flutter-{#MyAppVersion}-windows-setup
+OutputBaseFilename=clash_for_flutter-{#MyAppVersion}-windows-setup
 SetupIconFile=assets\logo\logo.ico
 Compression=lzma
 SolidCompression=yes

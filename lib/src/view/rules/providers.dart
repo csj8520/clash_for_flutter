@@ -6,9 +6,9 @@ import 'package:day/day.dart';
 import 'package:day/i18n/zh_cn.dart';
 import 'package:day/plugins/relative_time.dart';
 
-import 'package:clash_pro_for_flutter/src/fetch/index.dart';
-import 'package:clash_pro_for_flutter/src/types/index.dart';
-import 'package:clash_pro_for_flutter/src/components/index.dart';
+import 'package:clash_for_flutter/src/fetch/index.dart';
+import 'package:clash_for_flutter/src/types/index.dart';
+import 'package:clash_for_flutter/src/components/index.dart';
 
 class PageRulesProviders extends StatefulWidget {
   const PageRulesProviders({Key? key}) : super(key: key);

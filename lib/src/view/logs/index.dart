@@ -3,8 +3,8 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:styled_widget/styled_widget.dart';
 
-import 'package:clash_pro_for_flutter/src/utils/index.dart';
-import 'package:clash_pro_for_flutter/src/components/index.dart';
+import 'package:clash_for_flutter/src/utils/index.dart';
+import 'package:clash_for_flutter/src/components/index.dart';
 
 class PageLogs extends StatefulWidget {
   const PageLogs({Key? key}) : super(key: key);

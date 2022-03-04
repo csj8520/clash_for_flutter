@@ -1,4 +1,4 @@
-import 'package:clash_pro_for_flutter/src/store/index.dart';
+import 'package:clash_for_flutter/src/store/index.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:styled_widget/styled_widget.dart';

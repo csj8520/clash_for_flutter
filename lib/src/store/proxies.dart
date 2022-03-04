@@ -1,8 +1,8 @@
 import 'package:mobx/mobx.dart';
 
-import 'package:clash_pro_for_flutter/src/fetch/index.dart';
-import 'package:clash_pro_for_flutter/src/store/index.dart';
-import 'package:clash_pro_for_flutter/src/types/index.dart';
+import 'package:clash_for_flutter/src/fetch/index.dart';
+import 'package:clash_for_flutter/src/store/index.dart';
+import 'package:clash_for_flutter/src/types/index.dart';
 
 part 'proxies.g.dart';
 

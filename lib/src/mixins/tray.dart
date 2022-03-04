@@ -1,7 +1,7 @@
 import 'dart:io';
 
-import 'package:clash_pro_for_flutter/src/store/index.dart';
-import 'package:clash_pro_for_flutter/src/utils/index.dart';
+import 'package:clash_for_flutter/src/store/index.dart';
+import 'package:clash_for_flutter/src/utils/index.dart';
 import 'package:tray_manager/tray_manager.dart';
 import 'package:window_manager/window_manager.dart';
 

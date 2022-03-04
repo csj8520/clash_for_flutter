@@ -1,7 +1,7 @@
 import 'package:dio/dio.dart';
 
-import 'package:clash_pro_for_flutter/src/types/index.dart';
-import 'package:clash_pro_for_flutter/src/utils/index.dart';
+import 'package:clash_for_flutter/src/types/index.dart';
+import 'package:clash_for_flutter/src/utils/index.dart';
 
 Dio clashDio = Dio(BaseOptions(baseUrl: 'http://127.0.0.1:9090'));
 Dio dio = Dio();

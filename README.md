@@ -1,4 +1,4 @@
-# Clash Pro For Flutter
+# Clash For Flutter
 
 ### dev
 

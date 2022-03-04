@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:styled_widget/styled_widget.dart';
 
-import 'package:clash_pro_for_flutter/src/types/index.dart';
+import 'package:clash_for_flutter/src/types/index.dart';
 
 class ViewSideBar extends StatefulWidget {
   const ViewSideBar({Key? key, required this.menus, this.index = 0, this.onChange, this.clashVersion}) : super(key: key);

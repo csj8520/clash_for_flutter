@@ -3,8 +3,8 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:styled_widget/styled_widget.dart';
 
-import 'package:clash_pro_for_flutter/src/components/index.dart';
-import 'package:clash_pro_for_flutter/src/store/index.dart';
+import 'package:clash_for_flutter/src/components/index.dart';
+import 'package:clash_for_flutter/src/store/index.dart';
 
 class PageSettings extends StatefulWidget {
   const PageSettings({Key? key}) : super(key: key);

@@ -3,9 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 import 'package:bot_toast/bot_toast.dart';
 
-import 'package:clash_pro_for_flutter/src/types/index.dart';
-import 'package:clash_pro_for_flutter/src/utils/index.dart';
-import 'package:clash_pro_for_flutter/src/fetch/index.dart';
+import 'package:clash_for_flutter/src/types/index.dart';
+import 'package:clash_for_flutter/src/utils/index.dart';
+import 'package:clash_for_flutter/src/fetch/index.dart';
 
 import 'index.dart';
 
