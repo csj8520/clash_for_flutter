@@ -48,7 +48,5 @@ app.*.map.json
 
 assets/bin/
 assets/geoip/
-assets/service/windows/*
-!assets/service/windows/service.xml
 
 dist

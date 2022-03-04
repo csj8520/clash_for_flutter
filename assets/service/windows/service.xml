@@ -1,8 +1,0 @@
-<service>
-  <id>Clash Pro For Flutter Service</id>
-  <name>Clash Pro For Flutter Service</name>
-  <description>Clash Pro For Flutter Service.</description>
-  <executable>clash-pro-for-flutter-service.exe</executable>
-  <arguments>5099</arguments>
-  <log mode="roll"></log>
-</service>
