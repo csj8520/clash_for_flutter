@@ -2,6 +2,7 @@ import 'dart:io';
 import 'dart:math' as math;
 
 import 'package:flutter/services.dart';
+import 'package:process_run/shell.dart';
 
 import 'logger.dart';
 
@@ -64,5 +65,32 @@ extension Get on Map {
     if (key.isEmpty) return this;
     final List<dynamic> keys = key.split('.');
     return [this, ...keys].reduce((value, key) => value[key]);
+  }
+}
+
+Future<void> killProcess(String name) async {
+  log.debug("kill: ", name);
+  if (Platform.isWindows) {
+    await Process.run('taskkill', ["/F", "/FI", "IMAGENAME eq $name"]);
+  } else {
+    await Process.run('bash', ["-c", "ps -ef | grep $name | grep -v grep | awk '{print \$2}' | xargs kill -9"]);
+  }
+}
+
+Future<ProcessResult> processRunAdmin(String executable, List<String> arguments) async {
+  String path = shellArgument(executable).replaceAll(' ', r'\\ ');
+  path = path.substring(1, path.length - 1);
+  if (Platform.isMacOS) {
+    return await Process.run(
+      'osascript',
+      [
+        '-e',
+        shellArguments(['do', 'shell', 'script', '$path ${shellArguments(arguments)}', 'with', 'administrator', 'privileges']),
+      ],
+      runInShell: false,
+    );
+  } else {
+    UnimplementedError();
+    return await Process.run("", []);
   }
 }

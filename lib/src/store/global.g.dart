@@ -24,6 +24,21 @@ mixin _$GlobalStore on _GlobalStore, Store {
     });
   }
 
+  final _$serviceModeAtom = Atom(name: '_GlobalStore.serviceMode');
+
+  @override
+  bool get serviceMode {
+    _$serviceModeAtom.reportRead();
+    return super.serviceMode;
+  }
+
+  @override
+  set serviceMode(bool value) {
+    _$serviceModeAtom.reportWrite(value, super.serviceMode, () {
+      super.serviceMode = value;
+    });
+  }
+
   final _$clashVersionAtom = Atom(name: '_GlobalStore.clashVersion');
 
   @override
@@ -74,10 +89,19 @@ mixin _$GlobalStore on _GlobalStore, Store {
     return _$setProxyAsyncAction.run(() => super.setProxy(value));
   }
 
+  final _$setServiceModeAsyncAction =
+      AsyncAction('_GlobalStore.setServiceMode');
+
+  @override
+  Future<void> setServiceMode(bool value) {
+    return _$setServiceModeAsyncAction.run(() => super.setServiceMode(value));
+  }
+
   @override
   String toString() {
     return '''
 inited: ${inited},
+serviceMode: ${serviceMode},
 clashVersion: ${clashVersion}
     ''';
   }

@@ -67,6 +67,17 @@ class _PageSettingsState extends State<PageSettings> {
                             ).padding(left: 32, right: 32).height(46).expanded(),
                           ],
                         ),
+                        Row(
+                          children: [
+                            Row(
+                              children: [
+                                const Text('开启服务').fontSize(14).textColor(const Color(0xff54859a)).expanded(),
+                                Switch(value: globalStore.serviceMode, onChanged: globalStore.setServiceMode)
+                              ],
+                            ).padding(left: 32, right: 32).height(46).expanded(),
+                            Row().padding(left: 32, right: 32).height(46).expanded(),
+                          ],
+                        ),
                       ],
                     ).padding(top: 12, bottom: 12),
                   ),

@@ -1,3 +1,5 @@
+import 'package:clash_for_flutter/src/fetch/service.dart';
+import 'package:clash_for_flutter/src/utils/service.dart';
 import 'package:mobx/mobx.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
@@ -19,6 +21,9 @@ class GlobalStore = _GlobalStore with _$GlobalStore;
 abstract class _GlobalStore with Store {
   @observable
   bool inited = false;
+
+  @observable
+  bool serviceMode = false;
 
   @observable
   ClashVersion? clashVersion;
@@ -72,16 +77,34 @@ abstract class _GlobalStore with Store {
 
   @action
   Future<void> initClash() async {
-    if (kDebugMode) await forceKillClash();
-    await startClash();
+    clash?.kill();
+    try {
+      final status = await fetchClashServiceStatus();
+      if (status["status"] == 'running') await fetchClashServiceStop();
+      await fetchClashServiceStart({
+        "args": ['-d', CONST.configDir.path, '-f', localConfigStore.clashConfigFile.path]
+      });
+      while (true) {
+        await Future.delayed(const Duration(milliseconds: 200));
+        if (await fetchClashHello()) break;
+        final s = await fetchClashServiceStatus();
+        if (s["status"] == 'stopped') throw "Start Clash Failed";
+      }
+      serviceMode = true;
+    } catch (e) {
+      serviceMode = false;
+      if (kDebugMode) await killProcess(CONST.clashBinName);
+      await startClash();
+    }
     clashVersion = await fetchClashVersion();
     await clashApiConfigStore.updateConfig();
   }
 
   SystemProxyConfig get proxyConfig {
-    final httpPort = clashApiConfigStore.mixedPort ?? clashApiConfigStore.port;
-    final httpsPort = clashApiConfigStore.mixedPort ?? clashApiConfigStore.port;
-    final socksPort = clashApiConfigStore.mixedPort ?? clashApiConfigStore.socksPort;
+    final mixedPort = clashApiConfigStore.mixedPort == 0 ? null : clashApiConfigStore.mixedPort;
+    final httpPort = mixedPort ?? clashApiConfigStore.port;
+    final httpsPort = mixedPort ?? clashApiConfigStore.port;
+    final socksPort = mixedPort ?? clashApiConfigStore.socksPort;
     return SystemProxyConfig(
       http: httpPort == null ? null : SystemProxyState(enable: true, server: '127.0.0.1:$httpPort'),
       https: httpsPort == null ? null : SystemProxyState(enable: true, server: '127.0.0.1:$httpsPort'),
@@ -96,5 +119,16 @@ abstract class _GlobalStore with Store {
     } else {
       await SystemProxy.instance.setProxy(SystemProxyConfig());
     }
+  }
+
+  @action
+  Future<void> setServiceMode(bool value) async {
+    if (value) {
+      await installService();
+    } else {
+      await unInstallService();
+    }
+    await Future.delayed(Duration(seconds: 1));
+    await restartClash();
   }
 }
