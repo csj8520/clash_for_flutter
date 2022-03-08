@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:clash_for_flutter/src/fetch/service.dart';
 import 'package:clash_for_flutter/src/store/index.dart';
 import 'package:clash_for_flutter/src/utils/index.dart';
 import 'package:tray_manager/tray_manager.dart';
@@ -74,6 +75,7 @@ mixin TrayMixin on TrayListener {
       await copyCommandLineProxy(menuItem.title!, http: proxyConfig.http.server, https: proxyConfig.https.server);
     } else if (menuItem.key == 'exit') {
       await globalStore.setProxy(false);
+      await fetchClashServiceStop();
       clash?.kill();
       exit(0);
     }

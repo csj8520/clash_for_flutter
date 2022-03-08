@@ -1,9 +1,11 @@
 import 'dart:io';
 import 'dart:math' as math;
+import 'package:path/path.dart' as p;
 
 import 'package:flutter/services.dart';
 import 'package:process_run/shell.dart';
 
+import 'const.dart';
 import 'logger.dart';
 
 export 'logger.dart';
@@ -77,7 +79,7 @@ Future<void> killProcess(String name) async {
   }
 }
 
-Future<ProcessResult> processRunAdmin(String executable, List<String> arguments) async {
+Future<ProcessResult> runAsAdmin(String executable, List<String> arguments) async {
   String path = shellArgument(executable).replaceAll(' ', r'\\ ');
   path = path.substring(1, path.length - 1);
   if (Platform.isMacOS) {
@@ -87,6 +89,12 @@ Future<ProcessResult> processRunAdmin(String executable, List<String> arguments)
         '-e',
         shellArguments(['do', 'shell', 'script', '$path ${shellArguments(arguments)}', 'with', 'administrator', 'privileges']),
       ],
+      runInShell: false,
+    );
+  } else if (Platform.isWindows) {
+    return await Process.run(
+      p.join(CONST.assetsDir.path, 'bin', "run-as-admin.bat"),
+      [executable, ...arguments],
       runInShell: false,
     );
   } else {

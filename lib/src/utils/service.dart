@@ -1,9 +1,13 @@
 import 'index.dart';
 
 Future installService() async {
-  await processRunAdmin(CONST.clashServiceBinFile.path, ["install", "start"]);
+  await runAsAdmin(CONST.clashServiceBinFile.path, ["install", "start"]);
 }
 
 Future unInstallService() async {
-  await processRunAdmin(CONST.clashServiceBinFile.path, ["stop", "uninstall"]);
+  try {
+    await runAsAdmin(CONST.clashServiceBinFile.path, ["stop", "uninstall"]);
+  } catch (e) {
+    log.error(e);
+  }
 }

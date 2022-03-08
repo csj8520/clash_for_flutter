@@ -46,7 +46,8 @@ app.*.map.json
 /android/app/release
 
 
-assets/bin/
+assets/bin/*
+!assets/bin/run-as-admin*
 assets/geoip/
 
 dist

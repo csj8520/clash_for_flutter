@@ -81,6 +81,7 @@ abstract class _GlobalStore with Store {
     try {
       final status = await fetchClashServiceStatus();
       if (status["status"] == 'running') await fetchClashServiceStop();
+      if (kDebugMode) await killProcess(CONST.clashBinName);
       await fetchClashServiceStart({
         "args": ['-d', CONST.configDir.path, '-f', localConfigStore.clashConfigFile.path]
       });
@@ -92,6 +93,7 @@ abstract class _GlobalStore with Store {
       }
       serviceMode = true;
     } catch (e) {
+      log.error(e);
       serviceMode = false;
       if (kDebugMode) await killProcess(CONST.clashBinName);
       await startClash();
