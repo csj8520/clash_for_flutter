@@ -1,4 +1,6 @@
 set command=%1
+@REM remove: quotes
+set command=%command:"=%
 set args=%2
 
 :param
