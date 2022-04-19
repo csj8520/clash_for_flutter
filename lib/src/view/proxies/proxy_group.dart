@@ -14,9 +14,15 @@ class PageProxiesProxyGroup extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Observer(builder: (_) {
-      final children = clashApiConfigStore.mode == 'global' && proxiesStore.global != null
-          ? [_ProxyGroupItem(group: proxiesStore.global!, onChange: (v) => proxiesStore.setProxieGroup(proxiesStore.global!.name, v))]
-          : proxiesStore.groups.map((e) => _ProxyGroupItem(group: e, onChange: (v) => proxiesStore.setProxieGroup(e.name, v))).toList();
+      // final children = clashApiConfigStore.mode == 'global' && proxiesStore.global != null
+      //     ? [_ProxyGroupItem(group: proxiesStore.global!, onChange: (v) => proxiesStore.setProxieGroup(proxiesStore.global!.name, v))]
+      //     : proxiesStore.groups.map((e) => _ProxyGroupItem(group: e, onChange: (v) => proxiesStore.setProxieGroup(e.name, v))).toList();
+
+      final children = [
+        if (clashApiConfigStore.mode == 'global' && proxiesStore.global != null)
+          _ProxyGroupItem(group: proxiesStore.global!, onChange: (v) => proxiesStore.setProxieGroup(proxiesStore.global!.name, v)),
+        ...proxiesStore.groups.map((e) => _ProxyGroupItem(group: e, onChange: (v) => proxiesStore.setProxieGroup(e.name, v))).toList()
+      ];
 
       return Column(children: [
         CardHead(

@@ -28,9 +28,16 @@ dart pub global activate flutter_distributor
 flutter_distributor package --platform windows --targets exe,zip
 ```
 
+#### build for window use Inno Setup
+
+```
+start "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" .\setup.iss
+```
+
 ## Question Record
 
-### MacOS tun 模式需要手动添加dns
+### MacOS tun 模式需要手动添加 dns
+
 ```bash
 networksetup -getdnsservers Wi-Fi # get
 networksetup -setdnsservers Wi-Fi 198.18.0.2 # set
