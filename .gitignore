@@ -44,3 +44,11 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+
+
+assets/bin/*
+!assets/bin/run-as-admin*
+assets/dep/*
+!assets/dep/example.yaml
+
+dist
