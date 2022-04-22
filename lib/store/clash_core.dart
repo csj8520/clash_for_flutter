@@ -1,12 +1,12 @@
+import 'package:get/get.dart';
 import 'package:dio/dio.dart';
-import 'package:flutter/foundation.dart';
 
 import 'package:clash_for_flutter/types/clash_core.dart';
 
 final dio = Dio(BaseOptions(baseUrl: 'http://127.0.0.1:9090'));
 
-class StoreClashCore with ChangeNotifier {
-  late ClashCoreVersion version;
+class StoreClashCore extends GetxController {
+  Rx<ClashCoreVersion> version = ClashCoreVersion(premium: true, version: '').obs;
 
   Future waitStart() async {
     while (true) {
@@ -29,8 +29,8 @@ class StoreClashCore with ChangeNotifier {
     }
   }
 
-  Future<ClashCoreVersion> fetchVersion() async {
+  Future fetchVersion() async {
     final res = await dio.get('/version');
-    return version = ClashCoreVersion.fromJson(res.data);
+    version.value = ClashCoreVersion.fromJson(res.data);
   }
 }

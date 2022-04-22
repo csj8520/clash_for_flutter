@@ -1,6 +1,6 @@
 import 'dart:io';
-import 'package:bot_toast/bot_toast.dart';
 import 'package:dio/dio.dart';
+import 'package:get/get.dart';
 import 'package:path/path.dart' as path;
 import 'package:flutter/foundation.dart';
 
@@ -10,21 +10,20 @@ import 'package:clash_for_flutter/types/clash_service.dart';
 
 final dio = Dio(BaseOptions(baseUrl: 'http://127.0.0.1:9089', headers: {"User-Agent": "clash-for-flutter/0.0.1"}));
 
-class StoreClashService with ChangeNotifier {
-  bool serviceMode = false;
+class StoreClashService extends GetxController {
+  var serviceMode = false.obs;
   Process? clashServiceProcess;
 
   Future init() async {
     try {
       final data = await fetchInfo();
       if (data.code == 0) {
-        serviceMode = data.mode == 'service-mode';
+        serviceMode.value = data.mode == 'service-mode';
       }
     } catch (e) {
-      serviceMode = false;
+      serviceMode.value = false;
       clashServiceProcess = await Process.start(Files.assetsClashService.path, ['user-mode']);
     }
-    notifyListeners();
   }
 
   Future<ClashServiceInfo> fetchInfo() async {
@@ -54,13 +53,19 @@ class StoreClashService with ChangeNotifier {
       await killProcess(path.basename(Files.assetsClashService.path));
     }
     await runAsAdmin(Files.assetsClashService.path, ["install", "start"]);
-    await init();
   }
 
   Future uninstall() async {
     final info = await fetchInfo();
     if (info.status == 'running') await fetchStop();
     await runAsAdmin(Files.assetsClashService.path, ["stop", "uninstall"]);
-    await init();
+    while (true) {
+      try {
+        await Future.delayed(const Duration(milliseconds: 50));
+        await fetchInfo();
+      } catch (e) {
+        return;
+      }
+    }
   }
 }

@@ -1,0 +1,60 @@
+import 'package:clash_for_flutter/views/setting/setting.dart';
+import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:styled_widget/styled_widget.dart';
+
+import 'package:clash_for_flutter/views/home/sidebar.dart';
+
+class PageHome extends StatefulWidget {
+  const PageHome({Key? key}) : super(key: key);
+
+  @override
+  State<PageHome> createState() => _PageHomeState();
+}
+
+class _PageHomeState extends State<PageHome> {
+  final PageController _pageController = PageController(initialPage: 1);
+
+  int _index = 1;
+
+  dynamic _onChange(int index) {
+    setState(() => {_index = index});
+    _pageController.jumpToPage(index);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SideBar(
+            menus: [
+              'sidebar_proxies'.tr,
+              'sidebar_logs'.tr,
+              'sidebar_rules'.tr,
+              'sidebar_connections'.tr,
+              'sidebar_profiles'.tr,
+              'sidebar_settings'.tr
+            ],
+            index: _index,
+            onChange: _onChange,
+          ),
+          PageView(
+            scrollDirection: Axis.vertical,
+            controller: _pageController,
+            physics: const NeverScrollableScrollPhysics(),
+            children: const [
+              Text('coding'),
+              Text('coding'),
+              Text('coding'),
+              Text('coding'),
+              Text('coding'),
+              PageSetting(),
+            ],
+          ).expanded()
+        ],
+      ).height(double.infinity).backgroundColor(const Color(0xfff4f5f6)),
+    );
+  }
+}

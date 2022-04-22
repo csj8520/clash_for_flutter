@@ -7,6 +7,7 @@ class Config {
     required this.startAtLogin,
     required this.breakConnections,
     required this.subs,
+    required this.language,
   });
   late String selected;
   late int updateInterval;
@@ -14,6 +15,7 @@ class Config {
   late bool autoSetProxy;
   late bool startAtLogin;
   late bool breakConnections;
+  late String language;
   late List<ConfigSub> subs;
 
   Config.fromJson(Map<String, dynamic> json) {
@@ -23,6 +25,7 @@ class Config {
     autoSetProxy = json['autoSetProxy'];
     startAtLogin = json['startAtLogin'];
     breakConnections = json['breakConnections'];
+    language = json['language'];
     subs = List.from(json['subs']).map((e) => ConfigSub.fromJson(e)).toList();
   }
 
@@ -34,6 +37,7 @@ class Config {
     _data['autoSetProxy'] = autoSetProxy;
     _data['startAtLogin'] = startAtLogin;
     _data['breakConnections'] = breakConnections;
+    _data['language'] = language;
     _data['subs'] = subs.map((e) => e.toJson()).toList();
     return _data;
   }
