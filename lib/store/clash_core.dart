@@ -6,6 +6,8 @@ import 'package:clash_for_flutter/types/clash_core.dart';
 final dio = Dio(BaseOptions(baseUrl: 'http://127.0.0.1:9090'));
 
 class StoreClashCore with ChangeNotifier {
+  late ClashCoreVersion version;
+
   Future waitStart() async {
     while (true) {
       final hello = await fetchHello();
@@ -29,6 +31,6 @@ class StoreClashCore with ChangeNotifier {
 
   Future<ClashCoreVersion> fetchVersion() async {
     final res = await dio.get('/version');
-    return ClashCoreVersion.fromJson(res.data);
+    return version = ClashCoreVersion.fromJson(res.data);
   }
 }

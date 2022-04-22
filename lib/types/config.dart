@@ -47,12 +47,12 @@ class Config {
 class ConfigSub {
   ConfigSub({
     required this.name,
-    required this.url,
-    required this.updateTime,
+    this.url,
+    this.updateTime,
   });
   late String name;
-  late String url;
-  late int updateTime;
+  String? url;
+  int? updateTime;
 
   ConfigSub.fromJson(Map<String, dynamic> json) {
     name = json['name'];
