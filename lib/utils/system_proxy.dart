@@ -172,7 +172,6 @@ class SystemProxy extends SystemProxyPlatform {
         throw UnimplementedError();
       }
     } catch (e) {
-      print(e);
       rethrow;
     } finally {
       log.timeEnd('setProxy');

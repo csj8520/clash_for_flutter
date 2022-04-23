@@ -22,8 +22,8 @@ Future<void> copyCommandLineProxy(String type, {String? http, String? https}) as
   final quot = _types['quot']!;
   final join = _types['join']!;
   List<String> commands = [];
-  if (http != null) commands.add('${prefix}http_proxy=${quot}http://$http${quot}');
-  if (https != null) commands.add('${prefix}https_proxy=${quot}http://$https${quot}');
+  if (http != null) commands.add('${prefix}http_proxy=${quot}http://$http$quot');
+  if (https != null) commands.add('${prefix}https_proxy=${quot}http://$https$quot');
 
   if (commands.isNotEmpty) await Clipboard.setData(ClipboardData(text: commands.join(join)));
 }
