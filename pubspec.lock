@@ -78,6 +78,13 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "1.0.4"
+  day:
+    dependency: "direct main"
+    description:
+      name: day
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "0.8.0"
   dio:
     dependency: "direct main"
     description:
@@ -336,6 +343,20 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "2.1.1"
+  web_socket_channel:
+    dependency: "direct main"
+    description:
+      name: web_socket_channel
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "2.1.0"
+  window_manager:
+    dependency: "direct main"
+    description:
+      name: window_manager
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "0.2.1"
   yaml:
     dependency: transitive
     description:

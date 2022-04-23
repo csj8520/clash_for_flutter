@@ -12,10 +12,9 @@ class SideBarMenu {
 }
 
 class SideBar extends StatefulWidget {
-  const SideBar({Key? key, required this.menus, this.index = 0, this.onChange}) : super(key: key);
+  const SideBar({Key? key, required this.menus, required this.controller}) : super(key: key);
   final List<String> menus;
-  final int index;
-  final Function(int index)? onChange;
+  final PageController controller;
 
   @override
   _SideBarState createState() => _SideBarState();
@@ -27,6 +26,9 @@ class _SideBarState extends State<SideBar> {
   @override
   void initState() {
     super.initState();
+    widget.controller.addListener(() {
+      setState(() {});
+    });
   }
 
   @override
@@ -38,8 +40,8 @@ class _SideBarState extends State<SideBar> {
           padding: const EdgeInsets.only(top: 10, left: 20, right: 20),
           itemBuilder: (context, idx) => _SlideBarButton(
             label: widget.menus[idx],
-            value: idx == widget.index,
-            onPressed: () => widget.onChange != null ? widget.onChange!(idx) : null,
+            value: idx == widget.controller.page,
+            onPressed: () => widget.controller.jumpToPage(idx),
           ),
           itemCount: widget.menus.length,
         ).expanded(),

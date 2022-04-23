@@ -5,7 +5,7 @@ import 'package:process_run/shell_run.dart';
 class ClashName {
   static String get platform {
     if (Platform.isWindows) return 'windows';
-    if (Platform.isMacOS) return 'macos';
+    if (Platform.isMacOS) return 'darwin';
     if (Platform.isLinux) return 'linux';
     return 'unknown';
   }

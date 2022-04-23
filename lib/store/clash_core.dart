@@ -8,7 +8,7 @@ final dio = Dio(BaseOptions(baseUrl: 'http://127.0.0.1:9090'));
 class StoreClashCore extends GetxController {
   Rx<ClashCoreVersion> version = ClashCoreVersion(premium: true, version: '').obs;
 
-  Future waitStart() async {
+  Future waitCoreStart() async {
     while (true) {
       final hello = await fetchHello();
       if (hello) return;

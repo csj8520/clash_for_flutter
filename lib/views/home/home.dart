@@ -1,9 +1,10 @@
-import 'package:clash_for_flutter/views/setting/setting.dart';
-import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:flutter/material.dart';
 import 'package:styled_widget/styled_widget.dart';
 
+import 'package:clash_for_flutter/views/log/log.dart';
 import 'package:clash_for_flutter/views/home/sidebar.dart';
+import 'package:clash_for_flutter/views/setting/setting.dart';
 
 class PageHome extends StatefulWidget {
   const PageHome({Key? key}) : super(key: key);
@@ -14,13 +15,6 @@ class PageHome extends StatefulWidget {
 
 class _PageHomeState extends State<PageHome> {
   final PageController _pageController = PageController(initialPage: 1);
-
-  int _index = 1;
-
-  dynamic _onChange(int index) {
-    setState(() => {_index = index});
-    _pageController.jumpToPage(index);
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -37,8 +31,7 @@ class _PageHomeState extends State<PageHome> {
               'sidebar_profiles'.tr,
               'sidebar_settings'.tr
             ],
-            index: _index,
-            onChange: _onChange,
+            controller: _pageController,
           ),
           PageView(
             scrollDirection: Axis.vertical,
@@ -46,7 +39,7 @@ class _PageHomeState extends State<PageHome> {
             physics: const NeverScrollableScrollPhysics(),
             children: const [
               Text('coding'),
-              Text('coding'),
+              PageLog(),
               Text('coding'),
               Text('coding'),
               Text('coding'),

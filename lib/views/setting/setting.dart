@@ -1,9 +1,9 @@
-import 'package:clash_for_flutter/i18n/i18n.dart';
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:styled_widget/styled_widget.dart';
 
+import 'package:clash_for_flutter/i18n/i18n.dart';
 import 'package:clash_for_flutter/store/config.dart';
 import 'package:clash_for_flutter/store/clash_core.dart';
 import 'package:clash_for_flutter/widgets/card_head.dart';
@@ -18,13 +18,18 @@ class PageSetting extends StatefulWidget {
   _PageSettingState createState() => _PageSettingState();
 }
 
-class _PageSettingState extends State<PageSetting> {
+class _PageSettingState extends State<PageSetting> with AutomaticKeepAliveClientMixin {
   final StoreConfig storeConfig = Get.find();
   final StoreClashService storeClashService = Get.find();
   final StoreClashCore storeClashCore = Get.find();
 
   final ScrollController _scrollController = ScrollController();
   final List<String> _modes = ['global', 'rule', 'direct', 'script'];
+
+  bool _serviceSwitching = false;
+
+  @override
+  bool get wantKeepAlive => true;
 
   void launchWebGui() {
     final address = storeConfig.clashCoreApiAddress.value.split(':');
@@ -34,10 +39,20 @@ class _PageSettingState extends State<PageSetting> {
   }
 
   Future clashServiceSwitch(bool open) async {
-    open ? await storeClashService.install() : await storeClashService.uninstall();
+    setState(() {
+      _serviceSwitching = true;
+    });
+    if (open) {
+      await storeClashService.install();
+    } else {
+      await storeClashService.uninstall();
+    }
     await storeClashService.init();
     await storeClashService.fetchStart(storeConfig.config.value.selected);
-    await storeClashCore.waitStart();
+    await storeClashCore.waitCoreStart();
+    setState(() {
+      _serviceSwitching = false;
+    });
   }
 
   Future languageSwitch(int idx) async {
@@ -47,6 +62,7 @@ class _PageSettingState extends State<PageSetting> {
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     return SingleChildScrollView(
       controller: _scrollController,
       child: Obx(() => Column(
@@ -63,7 +79,7 @@ class _PageSettingState extends State<PageSetting> {
                       _SettingItem(
                         title: 'setting_language'.tr,
                         child: ButtonSelect(
-                          value: I18n.locales.indexWhere((it) => it.toLanguageTag() == Get.locale!.toLanguageTag()),
+                          value: I18n.locales.indexWhere((it) => '${it.languageCode}_${it.countryCode}' == storeConfig.config.value.language),
                           labels: I18n.localeSwitchs,
                           onSelect: languageSwitch,
                         ),
@@ -86,7 +102,10 @@ class _PageSettingState extends State<PageSetting> {
                     children: [
                       _SettingItem(
                         title: 'setting_service_open'.tr,
-                        child: Switch(value: storeClashService.serviceMode.value, onChanged: clashServiceSwitch),
+                        child: Switch(
+                          value: storeClashService.serviceMode.value,
+                          onChanged: _serviceSwitching ? null : clashServiceSwitch,
+                        ),
                       ),
                       const _SettingItem(),
                     ],

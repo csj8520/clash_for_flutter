@@ -26,9 +26,9 @@ class StoreConfig extends GetxController {
   Future init() async {
     if (!await Paths.config.exists()) await Paths.config.create(recursive: true);
     if (!await Files.configCountryMmdb.exists()) await Files.assetsCountryMmdb.copy(Files.configCountryMmdb.path);
-    if (!await Files.configWintun.exists()) await Files.assetsWintun.copy(Files.configWintun.path);
-
-    _defaultConfig['language'] = Get.deviceLocale.toString();
+    if (Platform.isWindows && !await Files.configWintun.exists()) await Files.assetsWintun.copy(Files.configWintun.path);
+    final locale = Get.deviceLocale!;
+    _defaultConfig['language'] = '${locale.languageCode}_${locale.countryCode}';
 
     if (await Files.configConfig.exists()) {
       final local = json.decode(await Files.configConfig.readAsString());

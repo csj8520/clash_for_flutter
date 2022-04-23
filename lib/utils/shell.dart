@@ -25,13 +25,11 @@ Future<ProcessResult> runAsAdmin(String executable, List<String> arguments) asyn
         '-e',
         shellArguments(['do', 'shell', 'script', '$_path ${shellArguments(arguments)}', 'with', 'administrator', 'privileges']),
       ],
-      runInShell: false,
     );
   } else if (Platform.isWindows) {
     return await Process.run(
       path.join(Paths.assetsBin.path, "run-as-admin.bat"),
       [executable, ...arguments],
-      runInShell: false,
     );
   } else {
     UnimplementedError();
