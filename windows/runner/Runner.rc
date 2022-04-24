@@ -52,7 +52,8 @@ END
 
 // Icon with lowest ID value placed first to ensure application icon
 // remains consistent on all systems.
-IDI_APP_ICON            ICON                    "resources\\app_icon.ico"
+// IDI_APP_ICON            ICON                    "resources\\app_icon.ico"
+IDI_APP_ICON            ICON                    "../../assets/logo/logo.ico"
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -63,13 +64,13 @@ IDI_APP_ICON            ICON                    "resources\\app_icon.ico"
 #ifdef FLUTTER_BUILD_NUMBER
 #define VERSION_AS_NUMBER FLUTTER_BUILD_NUMBER
 #else
-#define VERSION_AS_NUMBER 1,0,0
+#define VERSION_AS_NUMBER 0,0,1
 #endif
 
 #ifdef FLUTTER_BUILD_NAME
 #define VERSION_AS_STRING #FLUTTER_BUILD_NAME
 #else
-#define VERSION_AS_STRING "1.0.0"
+#define VERSION_AS_STRING "0.0.1"
 #endif
 
 VS_VERSION_INFO VERSIONINFO
@@ -89,13 +90,13 @@ BEGIN
     BEGIN
         BLOCK "040904e4"
         BEGIN
-            VALUE "CompanyName", "com.example" "\0"
-            VALUE "FileDescription", "clash_for_flutter" "\0"
+            VALUE "CompanyName", "csj8520" "\0"
+            VALUE "FileDescription", "Clash For Flutter" "\0"
             VALUE "FileVersion", VERSION_AS_STRING "\0"
-            VALUE "InternalName", "clash_for_flutter" "\0"
-            VALUE "LegalCopyright", "Copyright (C) 2022 com.example. All rights reserved." "\0"
-            VALUE "OriginalFilename", "clash_for_flutter.exe" "\0"
-            VALUE "ProductName", "clash_for_flutter" "\0"
+            VALUE "InternalName", "Clash For Flutter" "\0"
+            VALUE "LegalCopyright", "Copyright (C) 2022 csj8520. All rights reserved." "\0"
+            VALUE "OriginalFilename", "Clash For Flutter.exe" "\0"
+            VALUE "ProductName", "Clash For Flutter" "\0"
             VALUE "ProductVersion", VERSION_AS_STRING "\0"
         END
     END

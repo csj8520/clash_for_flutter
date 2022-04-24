@@ -6,9 +6,11 @@ import 'package:bot_toast/bot_toast.dart';
 import 'package:window_manager/window_manager.dart';
 
 import 'package:clash_for_flutter/i18n/i18n.dart';
+import 'package:clash_for_flutter/store/tray.dart';
 import 'package:clash_for_flutter/store/config.dart';
 import 'package:clash_for_flutter/views/home/home.dart';
 import 'package:clash_for_flutter/store/clash_core.dart';
+import 'package:clash_for_flutter/utils/system_proxy.dart';
 import 'package:clash_for_flutter/store/clash_service.dart';
 
 void main() async {
@@ -22,6 +24,7 @@ void main() async {
   await windowManager.setMinimumSize(const Size(500, 400));
   windowManager.show();
   // init store
+  Get.put(StoreTray());
   Get.put(StoreConfig());
   Get.put(StoreClashService());
   Get.put(StoreClashCore());
@@ -40,6 +43,7 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
+  final StoreTray storeTray = Get.find();
   final StoreConfig storeConfig = Get.find();
   final StoreClashService storeClashService = Get.find();
   final StoreClashCore storeClashCore = Get.find();
@@ -51,14 +55,18 @@ class _MyAppState extends State<MyApp> {
   }
 
   Future init() async {
+    await storeTray.init();
     await storeConfig.init();
     await storeClashService.init();
     await storeClashService.fetchStart(storeConfig.config.value.selected);
     storeClashCore.setApi(storeConfig.clashCoreApiAddress.value, storeConfig.clashCoreApiSecret.value);
     await storeClashCore.waitCoreStart();
+    // TODO: macos set dns
     await storeClashCore.fetchVersion();
+    await storeClashCore.fetchConfig();
     final language = storeConfig.config.value.language.split('_');
-    Get.updateLocale(Locale(language[0], language[1]));
+    await Get.updateLocale(Locale(language[0], language[1]));
+    if (storeConfig.config.value.setSystemProxy) await SystemProxy.instance.set(storeClashCore.proxyConfig);
   }
 
   @override

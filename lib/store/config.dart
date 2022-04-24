@@ -10,7 +10,7 @@ final Map<String, dynamic> _defaultConfig = {
   'selected': 'example.yaml',
   'updateInterval': 86400,
   'updateSubsAtStart': false,
-  'autoSetProxy': false,
+  'setSystemProxy': false,
   'startAtLogin': false,
   'breakConnections': false,
   'language': 'zh_CN',
@@ -59,6 +59,13 @@ class StoreConfig extends GetxController {
 
   Future setLanguage(String language) async {
     config.value.language = language;
+    config.refresh();
+    await save();
+  }
+
+  Future setSystemProxy(bool open) async {
+    config.value.setSystemProxy = open;
+    config.refresh();
     await save();
   }
 }

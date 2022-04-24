@@ -3,7 +3,7 @@ class Config {
     required this.selected,
     required this.updateInterval,
     required this.updateSubsAtStart,
-    required this.autoSetProxy,
+    required this.setSystemProxy,
     required this.startAtLogin,
     required this.breakConnections,
     required this.subs,
@@ -12,7 +12,7 @@ class Config {
   late String selected;
   late int updateInterval;
   late bool updateSubsAtStart;
-  late bool autoSetProxy;
+  late bool setSystemProxy;
   late bool startAtLogin;
   late bool breakConnections;
   late String language;
@@ -22,7 +22,7 @@ class Config {
     selected = json['selected'];
     updateInterval = json['updateInterval'];
     updateSubsAtStart = json['updateSubsAtStart'];
-    autoSetProxy = json['autoSetProxy'];
+    setSystemProxy = json['setSystemProxy'];
     startAtLogin = json['startAtLogin'];
     breakConnections = json['breakConnections'];
     language = json['language'];
@@ -34,7 +34,7 @@ class Config {
     _data['selected'] = selected;
     _data['updateInterval'] = updateInterval;
     _data['updateSubsAtStart'] = updateSubsAtStart;
-    _data['autoSetProxy'] = autoSetProxy;
+    _data['setSystemProxy'] = setSystemProxy;
     _data['startAtLogin'] = startAtLogin;
     _data['breakConnections'] = breakConnections;
     _data['language'] = language;

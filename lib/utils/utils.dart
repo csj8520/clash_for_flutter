@@ -10,13 +10,14 @@ String bytesToSize(int bytes) {
   return (bytes / math.pow(k, i)).toStringAsFixed(2) + ' ' + sizes[i];
 }
 
+final Map<String, Map<String, String>> _copyCommandLineProxyTypes = {
+  'cmd': {'prefix': 'set ', 'quot': '', 'join': '&&'},
+  'bash': {'prefix': 'export ', 'quot': '"', 'join': ' && '},
+  'powershell': {'prefix': '\$env:', 'quot': '"', 'join': ';'},
+};
+
 Future<void> copyCommandLineProxy(String type, {String? http, String? https}) async {
-  final Map<String, Map<String, String>> types = {
-    'cmd': {'prefix': 'set ', 'quot': '', 'join': '&&'},
-    'bash': {'prefix': 'export ', 'quot': '"', 'join': ' && '},
-    'powershell': {'prefix': '\$env:', 'quot': '"', 'join': ';'},
-  };
-  final _types = types[type];
+  final _types = _copyCommandLineProxyTypes[type];
   if (_types == null) return;
   final prefix = _types['prefix']!;
   final quot = _types['quot']!;

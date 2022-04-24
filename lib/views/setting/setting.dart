@@ -8,6 +8,7 @@ import 'package:clash_for_flutter/store/config.dart';
 import 'package:clash_for_flutter/store/clash_core.dart';
 import 'package:clash_for_flutter/widgets/card_head.dart';
 import 'package:clash_for_flutter/widgets/card_view.dart';
+import 'package:clash_for_flutter/utils/system_proxy.dart';
 import 'package:clash_for_flutter/store/clash_service.dart';
 import 'package:clash_for_flutter/widgets/button_select.dart';
 
@@ -60,6 +61,11 @@ class _PageSettingState extends State<PageSetting> with AutomaticKeepAliveClient
     storeConfig.setLanguage(I18n.locales[idx].toString());
   }
 
+  Future systemProxySwitch(bool open) async {
+    await SystemProxy.instance.set(open ? storeClashCore.proxyConfig : SystemProxyConfig());
+    await storeConfig.setSystemProxy(open);
+  }
+
   @override
   Widget build(BuildContext context) {
     super.build(context);
@@ -70,101 +76,81 @@ class _PageSettingState extends State<PageSetting> with AutomaticKeepAliveClient
               CardHead(title: 'setting_title'.tr),
               _SettingBlock(
                 children: [
-                  _SettingLine(
-                    children: [
-                      _SettingItem(
-                        title: 'setting_start_at_login'.tr,
-                        child: Switch(value: storeConfig.config.value.startAtLogin, onChanged: (v) => {}),
+                  [
+                    _SettingItem(
+                      title: 'setting_start_at_login'.tr,
+                      child: Switch(value: storeConfig.config.value.startAtLogin, onChanged: (v) => {}),
+                    ),
+                    _SettingItem(
+                      title: 'setting_language'.tr,
+                      child: ButtonSelect(
+                        value: I18n.locales.indexWhere((it) => '${it.languageCode}_${it.countryCode}' == storeConfig.config.value.language),
+                        labels: I18n.localeSwitchs,
+                        onSelect: languageSwitch,
                       ),
-                      _SettingItem(
-                        title: 'setting_language'.tr,
-                        child: ButtonSelect(
-                          value: I18n.locales.indexWhere((it) => '${it.languageCode}_${it.countryCode}' == storeConfig.config.value.language),
-                          labels: I18n.localeSwitchs,
-                          onSelect: languageSwitch,
-                        ),
+                    ),
+                  ],
+                  [
+                    _SettingItem(
+                      title: 'setting_set_as_system_proxy'.tr,
+                      child: Switch(
+                        value: storeConfig.config.value.setSystemProxy,
+                        onChanged: systemProxySwitch,
                       ),
-                    ],
-                  ),
-                  _SettingLine(
-                    children: [
-                      _SettingItem(
-                        title: 'setting_set_as_system_proxy'.tr,
-                        child: Switch(value: storeConfig.config.value.autoSetProxy, onChanged: (v) => {}),
+                    ),
+                    _SettingItem(
+                      title: 'setting_allow_connect_from_lan'.tr,
+                      child: Switch(
+                        value: storeClashCore.config.value.allowLan,
+                        onChanged: (v) => storeClashCore.fetchConfigUpdate({'allow-lan': v}),
                       ),
-                      _SettingItem(
-                        title: 'setting_allow_connect_from_lan'.tr,
-                        // child: Switch(value: clashApiConfigStore.allowLan, onChanged: clashApiConfigStore.setAllowLan)
+                    ),
+                  ],
+                  [
+                    _SettingItem(
+                      title: 'setting_service_open'.tr,
+                      child: Switch(
+                        value: storeClashService.serviceMode.value,
+                        onChanged: _serviceSwitching ? null : clashServiceSwitch,
                       ),
-                    ],
-                  ),
-                  _SettingLine(
-                    children: [
-                      _SettingItem(
-                        title: 'setting_service_open'.tr,
-                        child: Switch(
-                          value: storeClashService.serviceMode.value,
-                          onChanged: _serviceSwitching ? null : clashServiceSwitch,
-                        ),
-                      ),
-                      const _SettingItem(),
-                    ],
-                  ),
+                    ),
+                    const _SettingItem(),
+                  ],
                 ],
               ),
               _SettingBlock(
                 children: [
-                  _SettingLine(
-                    children: [
-                      _SettingItem(
-                        title: 'setting_proxy_mode'.tr,
-                        // child: ButtonSelect(
-                        //     labels: const ['全局', '规则', '直连', '脚本'],
-                        //     value: _modes.indexOf(clashApiConfigStore.mode),
-                        //     onSelect: (idx) => clashApiConfigStore.setMode(_modes[idx])),
+                  [
+                    _SettingItem(
+                      title: 'setting_proxy_mode'.tr,
+                      child: ButtonSelect(
+                        labels: ['setting_mode_global'.tr, 'setting_mode_rules'.tr, 'setting_mode_direct'.tr, 'setting_mode_script'.tr],
+                        value: _modes.indexOf(storeClashCore.config.value.mode),
+                        onSelect: (idx) => storeClashCore.fetchConfigUpdate({'mode': _modes[idx]}),
                       ),
-                      _SettingItem(
-                        title: 'setting_socks5_proxy_port'.tr,
-                        // child: Text(clashApiConfigStore.socksPort.toString())
-                        //     .textColor(Colors.grey.shade800)
-                        //     .alignment(Alignment.center)
-                        //     .padding(all: 5)
-                        //     .decorated(border: Border.all(width: 1, color: Colors.grey.shade300), borderRadius: BorderRadius.circular(4))
-                        //     .constrained(width: 100, height: 30),
-                      ),
-                    ],
-                  ),
-                  _SettingLine(
-                    children: [
-                      _SettingItem(
-                        title: 'setting_http_proxy_port'.tr,
-                        // child: Text(clashApiConfigStore.port.toString())
-                        //     .textColor(Colors.grey.shade800)
-                        //     .alignment(Alignment.center)
-                        //     .padding(all: 5)
-                        //     .decorated(border: Border.all(width: 1, color: Colors.grey.shade300), borderRadius: BorderRadius.circular(4))
-                        //     .constrained(width: 100, height: 30),
-                      ),
-                      _SettingItem(
-                        title: 'setting_mixed_proxy_port'.tr,
-                        // child: Text(clashApiConfigStore.mixedPort.toString())
-                        //     .textColor(Colors.grey.shade800)
-                        //     .alignment(Alignment.center)
-                        //     .padding(all: 5)
-                        //     .decorated(border: Border.all(width: 1, color: Colors.grey.shade300), borderRadius: BorderRadius.circular(4))
-                        //     .constrained(width: 100, height: 30),
-                      ),
-                    ],
-                  ),
-                  _SettingLine(
-                    children: [
-                      _SettingItem(
-                        title: 'setting_external_controller'.tr,
-                        child: TextButton(child: Text(storeConfig.clashCoreApiAddress.value), onPressed: launchWebGui),
-                      ),
-                      const _SettingItem()
-                    ],
-                  ),
+                    ),
+                    _SettingItem(
+                      title: 'setting_socks5_proxy_port'.tr,
+                      child: _SettingPort(text: storeClashCore.config.value.socksPort.toString()),
+                    ),
+                  ],
+                  [
+                    _SettingItem(
+                      title: 'setting_http_proxy_port'.tr,
+                      child: _SettingPort(text: storeClashCore.config.value.port.toString()),
+                    ),
+                    _SettingItem(
+                      title: 'setting_mixed_proxy_port'.tr,
+                      child: _SettingPort(text: storeClashCore.config.value.mixedPort.toString()),
+                    ),
+                  ],
+                  [
+                    _SettingItem(
+                      title: 'setting_external_controller'.tr,
+                      child: TextButton(child: Text(storeConfig.clashCoreApiAddress.value), onPressed: launchWebGui),
+                    ),
+                    const _SettingItem()
+                  ],
                 ],
               ),
             ],
@@ -175,26 +161,16 @@ class _PageSettingState extends State<PageSetting> with AutomaticKeepAliveClient
 
 class _SettingBlock extends StatelessWidget {
   const _SettingBlock({Key? key, required this.children}) : super(key: key);
-  final List<Widget> children;
+  final List<List<Widget>> children;
 
   @override
   Widget build(BuildContext context) {
     return CardView(
-      child: Column(
-        children: children,
-      ).padding(top: 12, bottom: 12),
-    );
-  }
-}
-
-class _SettingLine extends StatelessWidget {
-  const _SettingLine({Key? key, required this.children}) : super(key: key);
-  final List<Widget> children;
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      children: children.map((e) => e.padding(left: 32, right: 32).height(46).expanded()).toList(),
+      child: children
+          .map((it) => it.map((e) => e.padding(left: 32, right: 32).height(46).expanded()).toList().toRow())
+          .toList()
+          .toColumn()
+          .padding(top: 12, bottom: 12),
     );
   }
 }
@@ -206,13 +182,25 @@ class _SettingItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      children: title == null
-          ? []
-          : [
-              Text(title!).fontSize(14).textColor(const Color(0xff54859a)).expanded(),
-              child ?? Container().expanded(),
-            ],
-    );
+    if (title == null && child == null) return Row();
+    return [
+      Text(title ?? '').fontSize(14).textColor(const Color(0xff54859a)).expanded(),
+      child ?? Container().expanded(),
+    ].toRow();
+  }
+}
+
+class _SettingPort extends StatelessWidget {
+  const _SettingPort({Key? key, required this.text}) : super(key: key);
+  final String text;
+
+  @override
+  Widget build(BuildContext context) {
+    return Text(text)
+        .textColor(Colors.grey.shade800)
+        .alignment(Alignment.center)
+        .padding(all: 5)
+        .decorated(border: Border.all(width: 1, color: Colors.grey.shade300), borderRadius: BorderRadius.circular(4))
+        .constrained(width: 100, height: 30);
   }
 }

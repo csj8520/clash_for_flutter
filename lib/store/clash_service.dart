@@ -39,14 +39,13 @@ class StoreClashService extends GetxController {
     wsChannelLogs!.stream.listen((event) {
       for (final it in (event as String).split('\n')) {
         final matchs = RegExp(r'^time="([\d-T:+]+)" level=(\w+) msg="(.+)"$').firstMatch(it.trim());
-        if (matchs == null) continue;
-        final res = matchs.groups([1, 2, 3]);
-        final time = res[0];
-        final type = res[1] ?? 'info';
-        final msg = res[2];
-        if (msg == null) continue;
 
-        logs.add(ClashServiceLog(time: Day.fromString(time!).format('YYYY-MM-DD HH:mm:ss'), type: type, msg: msg));
+        final res = matchs?.groups([1, 2, 3]);
+        final time = res?[0] ?? '1970-01-01T00:00:00+00:00';
+        final type = res?[1] ?? 'debug';
+        final msg = res?[2] ?? it;
+
+        logs.add(ClashServiceLog(time: Day.fromString(time).format('YYYY-MM-DD HH:mm:ss'), type: type, msg: msg));
         if (logs.length > 1000) logs.removeAt(0);
       }
     });

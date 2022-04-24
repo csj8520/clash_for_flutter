@@ -1,5 +1,5 @@
-import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
+import 'package:flutter/cupertino.dart';
 
 // 大部分翻译来自：
 // https://github.com/Dreamacro/clash-dashboard/blob/master/src/i18n/en_US.ts
@@ -39,6 +39,10 @@ class I18n extends Translations {
           "setting_mixed_proxy_port": "Mixed proxy port",
           "setting_external_controller": "External controller",
           "setting_service_open": "Open Service",
+          "setting_mode_global": "Global",
+          "setting_mode_rules": "Rules",
+          "setting_mode_direct": "Direct",
+          "setting_mode_script": "Script",
         },
         'zh_CN': {
           "clash_core_version": "Clash 内核 版本",
@@ -61,6 +65,10 @@ class I18n extends Translations {
           "setting_mixed_proxy_port": "混合代理端口",
           "setting_external_controller": "外部控制设置",
           "setting_service_open": "开启服务",
+          "setting_mode_global": "全局",
+          "setting_mode_rules": "规则",
+          "setting_mode_direct": "直连",
+          "setting_mode_script": "脚本",
         }
       };
 }
