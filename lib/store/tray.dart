@@ -1,13 +1,15 @@
 import 'dart:io';
 
-import 'package:clash_for_flutter/store/clash_core.dart';
-import 'package:clash_for_flutter/store/clash_service.dart';
-import 'package:clash_for_flutter/store/config.dart';
-import 'package:clash_for_flutter/utils/system_proxy.dart';
-import 'package:clash_for_flutter/utils/utils.dart';
 import 'package:get/get.dart';
 import 'package:tray_manager/tray_manager.dart';
 import 'package:window_manager/window_manager.dart';
+
+import 'package:clash_for_flutter/utils/utils.dart';
+import 'package:clash_for_flutter/store/config.dart';
+import 'package:clash_for_flutter/utils/system_dns.dart';
+import 'package:clash_for_flutter/store/clash_core.dart';
+import 'package:clash_for_flutter/utils/system_proxy.dart';
+import 'package:clash_for_flutter/store/clash_service.dart';
 
 class StoreTray extends GetxController with TrayListener {
   Future<void> init() async {
@@ -77,8 +79,8 @@ class StoreTray extends GetxController with TrayListener {
       await copyCommandLineProxy(menuItem.title!, http: proxyConfig.http, https: proxyConfig.https);
     } else if (menuItem.key == 'exit') {
       await storeClashService.exit();
-      await SystemProxy.instance.set(SystemProxyConfig());
-      // TODO: mac unset dns
+      if (storeConfig.clashCoreDns.isNotEmpty) await MacSystemDns.instance.set([]);
+      if (storeConfig.config.value.setSystemProxy) await SystemProxy.instance.set(SystemProxyConfig());
       exit(0);
     }
   }

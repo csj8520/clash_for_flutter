@@ -1,8 +1,8 @@
-import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-
 import 'package:styled_widget/styled_widget.dart';
+
 import 'package:clash_for_flutter/widgets/card_head.dart';
 import 'package:clash_for_flutter/widgets/card_view.dart';
 import 'package:clash_for_flutter/store/clash_service.dart';

@@ -59,7 +59,7 @@ class _SideBarState extends State<SideBar> {
                       .fontSize(storeClashCore.version.value.premium ? 14 : 0),
                 ],
               )),
-          onPressed: () => launch('https://github.com/Dreamacro/clash/releases/tag/premium'),
+          onPressed: () => launchUrl(Uri.parse('https://github.com/Dreamacro/clash/releases/tag/premium')),
         )
       ],
     ).padding(top: 50, bottom: 20).width(160);

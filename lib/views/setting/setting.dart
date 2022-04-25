@@ -36,7 +36,8 @@ class _PageSettingState extends State<PageSetting> with AutomaticKeepAliveClient
     final address = storeConfig.clashCoreApiAddress.value.split(':');
     final host = address[0];
     final port = address[1];
-    launch('http${host == '127.0.0.1' ? 's' : ''}://clash.razord.top/?host=$host&port=$port&secret=${storeConfig.clashCoreApiSecret.value}');
+    final url = 'http${host == '127.0.0.1' ? 's' : ''}://clash.razord.top/?host=$host&port=$port&secret=${storeConfig.clashCoreApiSecret.value}';
+    launchUrl(Uri.parse(url));
   }
 
   Future<void> clashServiceSwitch(bool open) async {

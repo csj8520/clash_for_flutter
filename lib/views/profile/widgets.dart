@@ -8,8 +8,8 @@ import 'package:day/plugins/relative_time.dart';
 import 'package:clash_for_flutter/types/config.dart';
 import 'package:clash_for_flutter/widgets/loading.dart';
 
-class PageProfileSubItem extends StatelessWidget {
-  PageProfileSubItem({
+class PageProfileSubItem extends StatefulWidget {
+  const PageProfileSubItem({
     Key? key,
     required this.sub,
     required this.value,
@@ -26,11 +26,16 @@ class PageProfileSubItem extends StatelessWidget {
   final void Function(ConfigSub) onDelete;
   final Future<void> Function(ConfigSub) onUpdate;
 
+  @override
+  State<PageProfileSubItem> createState() => _PageProfileSubItemState();
+}
+
+class _PageProfileSubItemState extends State<PageProfileSubItem> {
   final LoadingController _loadingController = LoadingController();
 
   Future<void> _onUpdate() async {
     _loadingController.show();
-    await onUpdate(sub);
+    await widget.onUpdate(widget.sub);
     _loadingController.hide();
   }
 
@@ -40,33 +45,35 @@ class PageProfileSubItem extends StatelessWidget {
         controller: _loadingController,
         child: Row(
           children: [
-            Text(sub.name).padding(right: 5).expanded(),
-            Text(sub.url ?? '-').padding(right: 5).expanded(),
-            Text(sub.updateTime == null ? '-' : Day().useLocale(locale).from(Day.fromUnix(sub.updateTime! * 1000))).padding(right: 5).expanded(),
+            Text(widget.sub.name).padding(right: 5).expanded(),
+            Text(widget.sub.url ?? '-').padding(right: 5).expanded(),
+            Text(widget.sub.updateTime == null ? '-' : Day().useLocale(locale).from(Day.fromUnix(widget.sub.updateTime! * 1000)))
+                .padding(right: 5)
+                .expanded(),
             Row(
               children: [
                 IconButton(
                   tooltip: 'Refresh',
                   color: Theme.of(context).primaryColor,
                   icon: const Icon(Icons.refresh, size: 20),
-                  onPressed: (sub.url ?? '').isEmpty ? null : _onUpdate,
+                  onPressed: (widget.sub.url ?? '').isEmpty ? null : _onUpdate,
                 ),
                 IconButton(
                   tooltip: 'Edit',
                   color: Theme.of(context).primaryColor,
                   icon: const Icon(Icons.edit_outlined, size: 20),
-                  onPressed: () => onEdit(sub),
+                  onPressed: () => widget.onEdit(widget.sub),
                 ),
                 IconButton(
                   tooltip: 'Delete',
                   color: Theme.of(context).primaryColor,
                   icon: const Icon(Icons.delete_forever, size: 20),
-                  onPressed: value == sub.name ? null : () => onDelete(sub),
+                  onPressed: widget.value == widget.sub.name ? null : () => widget.onDelete(widget.sub),
                 ),
                 Radio(
-                  value: sub.name,
-                  groupValue: value,
-                  onChanged: (v) => onSelect(sub),
+                  value: widget.sub.name,
+                  groupValue: widget.value,
+                  onChanged: (v) => widget.onSelect(widget.sub),
                 )
               ],
             ).width(160),

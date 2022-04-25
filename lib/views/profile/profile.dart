@@ -14,6 +14,8 @@ import 'package:clash_for_flutter/store/clash_service.dart';
 
 import 'package:clash_for_flutter/const/const.dart';
 import 'package:clash_for_flutter/types/config.dart';
+import 'package:clash_for_flutter/utils/system_dns.dart';
+import 'package:clash_for_flutter/utils/system_proxy.dart';
 import 'package:clash_for_flutter/views/profile/setting.dart';
 import 'package:clash_for_flutter/views/profile/widgets.dart';
 
@@ -64,11 +66,7 @@ class _PageProfileState extends State<PageProfile> {
       if (!changed) return BotToast.showText(text: '配置无变化');
       if (storeConfig.config.value.selected == sub.name) {
         BotToast.showText(text: '正在重启 Clash Core ……');
-        await storeClashService.fetchStop();
-        await storeClashService.fetchStart(storeConfig.config.value.selected);
-        await storeConfig.readClashCoreApi();
-        storeClashCore.setApi(storeConfig.clashCoreApiAddress.value, storeConfig.clashCoreApiSecret.value);
-        await storeClashCore.waitCoreStart();
+        await reloadClashCore();
         BotToast.showText(text: '重启成功');
       }
     } catch (e) {
@@ -97,14 +95,24 @@ class _PageProfileState extends State<PageProfile> {
     );
   }
 
-  Future<void> selectSub(ConfigSub sub) async {
-    storeConfig.setSelectd(sub.name);
-    BotToast.showText(text: '正在重启 Clash Core ……');
+  Future<void> reloadClashCore() async {
     await storeClashService.fetchStop();
     await storeClashService.fetchStart(storeConfig.config.value.selected);
     await storeConfig.readClashCoreApi();
     storeClashCore.setApi(storeConfig.clashCoreApiAddress.value, storeConfig.clashCoreApiSecret.value);
     await storeClashCore.waitCoreStart();
+    if (storeConfig.clashCoreDns.isNotEmpty) {
+      await MacSystemDns.instance.set([storeConfig.clashCoreDns.value]);
+    } else {
+      await MacSystemDns.instance.set([]);
+    }
+    if (storeConfig.config.value.setSystemProxy) await SystemProxy.instance.set(storeClashCore.proxyConfig);
+  }
+
+  Future<void> selectSub(ConfigSub sub) async {
+    await storeConfig.setSelectd(sub.name);
+    BotToast.showText(text: '正在重启 Clash Core ……');
+    await reloadClashCore();
     BotToast.showText(text: '重启成功');
   }
 
@@ -134,7 +142,7 @@ class _PageProfileState extends State<PageProfile> {
                               padding: const EdgeInsets.all(0),
                               color: Theme.of(context).primaryColor,
                               constraints: const BoxConstraints(minHeight: 30, minWidth: 30),
-                              onPressed: () => launch('file:${Paths.config.path}'),
+                              onPressed: () => launchUrl(Uri.parse('file:${Paths.config.path}')),
                             ),
                             IconButton(
                               iconSize: 20,

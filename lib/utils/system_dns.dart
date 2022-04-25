@@ -18,7 +18,6 @@ class MacSystemDns extends SystemDnsPlatform {
     return result.stdout.toString().trim().split('\n').sublist(1);
   }
 
-  // TODO: test
   @override
   Future<void> set(List<String> dns) async {
     final networks = await getNetworks();
@@ -33,10 +32,9 @@ class MacSystemDns extends SystemDnsPlatform {
     await Process.run('bash', ['-c', commands.join(' && ')]);
   }
 
-  // TODO: test
   @override
   Future<List<String>> get() async {
-    final out = (await Process.run('scutil', ['--dns'])).stdout.toString().trim();
+    final out = (await Process.run('scutil', ['--dns'])).stdout.toString().trim().split('\n\n').last;
     final res = RegExp(r'nameserver\[\d\]\s*:\s*(.+)').allMatches(out);
     return res.map((e) => e.group(1)).whereType<String>().toList();
   }

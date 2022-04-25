@@ -2,7 +2,9 @@ import 'dart:io';
 import 'dart:convert';
 import 'package:dio/dio.dart';
 import 'package:get/get.dart';
+import 'package:yaml/yaml.dart';
 import 'package:path/path.dart' as path;
+import 'package:flutter_emoji/flutter_emoji.dart';
 
 import 'package:clash_for_flutter/const/const.dart';
 import 'package:clash_for_flutter/types/config.dart';
@@ -25,6 +27,7 @@ class StoreConfig extends GetxController {
 
   var clashCoreApiAddress = '127.0.0.1:9090'.obs;
   var clashCoreApiSecret = ''.obs;
+  var clashCoreDns = ''.obs;
 
   Future<void> init() async {
     if (!await Paths.config.exists()) await Paths.config.create(recursive: true);
@@ -53,11 +56,24 @@ class StoreConfig extends GetxController {
 
   Future<void> readClashCoreApi() async {
     final _config = await File(path.join(Paths.config.path, config.value.selected)).readAsString();
+    // final emoji = EmojiParser();
+    // final b = emoji.unemojify(_config);
+    final _json = loadYaml(_config.replaceAll(EmojiParser.REGEX_EMOJI, 'emoji'));
+    // print(_json["external-controller"]);
     // https://github.com/dart-lang/yaml/issues/53
-    final _extControl = RegExp(r'''(?<!#\s*)external-controller:\s+['"]?([^'"]+?)['"]?\s''').firstMatch(_config)?.group(1);
-    final _secret = RegExp(r'''(?<!#\s*)secret:\s+['"]?([^'"]+?)['"]?\s''').firstMatch(_config)?.group(1);
-    clashCoreApiAddress.value = (_extControl ?? '127.0.0.1:9090').replaceAll('0.0.0.0', '127.0.0.1');
-    clashCoreApiSecret.value = (_secret ?? '');
+    // final _extControl = RegExp(r'''(?<!#\s*)external-controller:\s+['"]?([^'"]+?)['"]?\s''').firstMatch(_config)?.group(1);
+    // final _secret = RegExp(r'''(?<!#\s*)secret:\s+['"]?([^'"]+?)['"]?\s''').firstMatch(_config)?.group(1);
+    clashCoreApiAddress.value = (_json["external-controller"] ?? '127.0.0.1:9090').replaceAll('0.0.0.0', '127.0.0.1');
+    clashCoreApiSecret.value = (_json["secret"] ?? '');
+    clashCoreDns.value = '';
+    if (_json["dns"]?["enable"] == true && (_json["dns"]["listen"] ?? '').isNotEmpty) {
+      final dns = (_json["dns"]["listen"] as String).split(":");
+      final ip = dns[0];
+      final port = dns[1];
+      if (port == '53') {
+        clashCoreDns.value = ip == '0.0.0.0' ? '127.0.0.1' : ip;
+      }
+    }
   }
 
   Future<void> setLanguage(String language) async {

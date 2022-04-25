@@ -10,6 +10,7 @@ import 'package:clash_for_flutter/store/tray.dart';
 import 'package:clash_for_flutter/store/config.dart';
 import 'package:clash_for_flutter/views/home/home.dart';
 import 'package:clash_for_flutter/store/clash_core.dart';
+import 'package:clash_for_flutter/utils/system_dns.dart';
 import 'package:clash_for_flutter/utils/system_proxy.dart';
 import 'package:clash_for_flutter/store/clash_service.dart';
 
@@ -61,11 +62,11 @@ class _MyAppState extends State<MyApp> {
     await storeClashService.fetchStart(storeConfig.config.value.selected);
     storeClashCore.setApi(storeConfig.clashCoreApiAddress.value, storeConfig.clashCoreApiSecret.value);
     await storeClashCore.waitCoreStart();
-    // TODO: macos set dns
     await storeClashCore.fetchVersion();
     await storeClashCore.fetchConfig();
     final language = storeConfig.config.value.language.split('_');
     await Get.updateLocale(Locale(language[0], language[1]));
+    if (storeConfig.clashCoreDns.isNotEmpty) await MacSystemDns.instance.set([storeConfig.clashCoreDns.value]);
     if (storeConfig.config.value.setSystemProxy) await SystemProxy.instance.set(storeClashCore.proxyConfig);
   }
 
