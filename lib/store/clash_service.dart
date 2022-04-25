@@ -24,7 +24,7 @@ class StoreClashService extends GetxController {
   IOWebSocketChannel? wsChannelLogs;
   RxList<ClashServiceLog> logs = <ClashServiceLog>[].obs;
 
-  Future init() async {
+  Future<void> init() async {
     try {
       final data = await fetchInfo();
       serviceMode.value = data.mode == 'service-mode';
@@ -51,7 +51,7 @@ class StoreClashService extends GetxController {
     });
   }
 
-  Future _startService() async {
+  Future<void> _startService() async {
     clashServiceProcess = await Process.start(Files.assetsClashService.path, ['user-mode'], mode: ProcessStartMode.inheritStdio);
     clashServiceProcess?.exitCode.then((code) async {
       log.error('clash-service exit with code: $code');
@@ -65,14 +65,14 @@ class StoreClashService extends GetxController {
     });
   }
 
-  Future startService() async {
+  Future<void> startService() async {
     serviceMode.value = false;
     await _startService();
     await _waitServiceStart();
   }
 
   // for macos
-  Future _waitServiceStart() async {
+  Future<void> _waitServiceStart() async {
     while (true) {
       try {
         await fetchInfo();
@@ -84,7 +84,7 @@ class StoreClashService extends GetxController {
   }
 
   // for windows
-  Future _waitServiceStop() async {
+  Future<void> _waitServiceStop() async {
     while (true) {
       try {
         await fetchInfo();
@@ -100,7 +100,7 @@ class StoreClashService extends GetxController {
     return ClashServiceInfo.fromJson(res.data);
   }
 
-  Future fetchStart(String name) async {
+  Future<void> fetchStart(String name) async {
     final data = await fetchInfo();
     if (data.status == 'running') await fetchStop();
     await dio.post('/start', data: {
@@ -108,11 +108,11 @@ class StoreClashService extends GetxController {
     });
   }
 
-  Future fetchStop() async {
+  Future<void> fetchStop() async {
     await dio.post('/stop');
   }
 
-  Future exit() async {
+  Future<void> exit() async {
     wsChannelLogs?.sink.close();
     wsChannelLogs = null;
     final info = await fetchInfo();
@@ -128,14 +128,14 @@ class StoreClashService extends GetxController {
     await _waitServiceStop();
   }
 
-  Future install() async {
+  Future<void> install() async {
     await exit();
     final res = await runAsAdmin(Files.assetsClashService.path, ["install", "start"]);
     log.debug('install', res.stdout);
     await _waitServiceStart();
   }
 
-  Future uninstall() async {
+  Future<void> uninstall() async {
     await exit();
     final res = await runAsAdmin(Files.assetsClashService.path, ["stop", "uninstall"]);
     log.debug('uninstall', res.stdout);

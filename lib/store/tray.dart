@@ -10,7 +10,7 @@ import 'package:tray_manager/tray_manager.dart';
 import 'package:window_manager/window_manager.dart';
 
 class StoreTray extends GetxController with TrayListener {
-  Future init() async {
+  Future<void> init() async {
     await TrayManager.instance.setIcon('assets/logo/logo.ico');
     List<MenuItem> items = [
       MenuItem(

@@ -34,7 +34,7 @@ class StoreClashCore extends GetxController {
     );
   }
 
-  Future waitCoreStart() async {
+  Future<void> waitCoreStart() async {
     while (true) {
       final hello = await fetchHello();
       if (hello) return;
@@ -55,12 +55,12 @@ class StoreClashCore extends GetxController {
     }
   }
 
-  Future fetchVersion() async {
+  Future<void> fetchVersion() async {
     final res = await dio.get('/version');
     version.value = ClashCoreVersion.fromJson(res.data);
   }
 
-  Future fetchConfig() async {
+  Future<void> fetchConfig() async {
     final res = await dio.get('/configs');
     config.value = ClashCoreConfig.fromJson(res.data);
   }

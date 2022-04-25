@@ -54,7 +54,7 @@ class _MyAppState extends State<MyApp> {
     super.initState();
   }
 
-  Future init() async {
+  Future<void> init() async {
     await storeTray.init();
     await storeConfig.init();
     await storeClashService.init();
