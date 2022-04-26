@@ -6,6 +6,7 @@ import 'package:clash_for_flutter/views/log/log.dart';
 import 'package:clash_for_flutter/views/home/sidebar.dart';
 import 'package:clash_for_flutter/views/profile/profile.dart';
 import 'package:clash_for_flutter/views/setting/setting.dart';
+import 'package:clash_for_flutter/views/connection/connection.dart';
 
 class PageHome extends StatefulWidget {
   const PageHome({Key? key}) : super(key: key);
@@ -42,7 +43,7 @@ class _PageHomeState extends State<PageHome> {
               Text('coding'),
               PageLog(),
               Text('coding'),
-              Text('coding'),
+              PageConnection(),
               PageProfile(),
               PageSetting(),
             ],

@@ -64,9 +64,10 @@ class _MyAppState extends State<MyApp> {
     await storeClashCore.waitCoreStart();
     await storeClashCore.fetchVersion();
     await storeClashCore.fetchConfig();
+    storeClashCore.initConnect();
     final language = storeConfig.config.value.language.split('_');
     await Get.updateLocale(Locale(language[0], language[1]));
-    if (storeConfig.clashCoreDns.isNotEmpty) await MacSystemDns.instance.set([storeConfig.clashCoreDns.value]);
+    if (Platform.isMacOS && storeConfig.clashCoreDns.isNotEmpty) await MacSystemDns.instance.set([storeConfig.clashCoreDns.value]);
     if (storeConfig.config.value.setSystemProxy) await SystemProxy.instance.set(storeClashCore.proxyConfig);
   }
 

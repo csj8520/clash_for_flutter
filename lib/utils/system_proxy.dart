@@ -97,12 +97,15 @@ class WinSystemProxy extends SystemProxyPlatform {
   @override
   Future<void> set(SystemProxyConfig conf) async {
     // socks 会丢失域名信息 导致规则失效
+    // http=127.0.0.1:7893;https=127.0.0.1:7890;socks=127.0.0.1:7891;   chrome, firefox use https
     // http://127.0.0.1:7893;https=127.0.0.1:7890;socks=127.0.0.1:7891; chrome use http; firefox use https
     // http://127.0.0.1:7893;https=127.0.0.1:7890;                      chrome use http; firefox use https
     // https=127.0.0.1:7890;socks=127.0.0.1:7891;                       chrome, firefox use https
     // http://127.0.0.1:7893;socks=127.0.0.1:7891;                      chrome, firefox use http
+    // http=127.0.0.1:7893;socks=127.0.0.1:7891;                        chrome use socks, firefox not use
     // socks=127.0.0.1:7891;                                            chrome, firefox use socks4
     // http=127.0.0.1:7893;                                             chrome, firefox not use
+    // http=xxx 不建议使用
     String servers = "";
     if (conf.http != null) servers += "http://${conf.http};";
     if (conf.https != null) servers += "https=${conf.https};";
