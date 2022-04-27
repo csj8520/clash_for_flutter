@@ -78,7 +78,6 @@ class StoreTray extends GetxController with TrayListener {
       final proxyConfig = storeClashCore.proxyConfig;
       await copyCommandLineProxy(menuItem.title!, http: proxyConfig.http, https: proxyConfig.https);
     } else if (menuItem.key == 'exit') {
-      await storeClashCore.connectChannel?.sink.close();
       await storeClashService.exit();
       if (Platform.isMacOS && storeConfig.clashCoreDns.isNotEmpty) await MacSystemDns.instance.set([]);
       if (storeConfig.config.value.setSystemProxy) await SystemProxy.instance.set(SystemProxyConfig());

@@ -1,10 +1,7 @@
-import 'dart:convert';
-
 import 'package:dio/dio.dart';
 import 'package:get/get.dart';
 import 'package:web_socket_channel/io.dart';
 
-import 'package:clash_for_flutter/types/connect.dart';
 import 'package:clash_for_flutter/types/clash_core.dart';
 import 'package:clash_for_flutter/utils/system_proxy.dart';
 
@@ -28,10 +25,6 @@ class StoreClashCore extends GetxController {
     ipv6: false,
   ).obs;
 
-  IOWebSocketChannel? connectChannel;
-  var connect = Connect(downloadTotal: 0, uploadTotal: 0, connections: []).obs;
-  Map<String, List<int>> _preConnectsNet = {};
-
   SystemProxyConfig get proxyConfig {
     final mixedPort = config.value.mixedPort == 0 ? null : config.value.mixedPort;
     final httpPort = mixedPort ?? config.value.port;
@@ -42,25 +35,6 @@ class StoreClashCore extends GetxController {
       https: httpsPort == 0 ? null : '127.0.0.1:$httpsPort',
       socks: socksPort == 0 ? null : '127.0.0.1:$socksPort',
     );
-  }
-
-  void initConnect() async {
-    connectChannel = IOWebSocketChannel.connect(Uri.parse('ws://${address.value}/connections?token=${secret.value}'));
-    connectChannel!.stream.listen(_handleConnectStream);
-  }
-
-  _handleConnectStream(dynamic event) {
-    connect.value = Connect.fromJson(json.decode(event));
-    final preConnects = _preConnectsNet;
-    _preConnectsNet = {};
-    for (var it in connect.value.connections) {
-      final pre = preConnects[it.id];
-      _preConnectsNet[it.id] = [it.download, it.upload];
-      if (pre == null) continue;
-      it.speed.download = it.download - pre[0];
-      it.speed.upload = it.upload - pre[1];
-    }
-    connect.refresh();
   }
 
   Future<void> waitCoreStart() async {
@@ -103,5 +77,9 @@ class StoreClashCore extends GetxController {
 
   Future<void> fetchCloseConnection(String id) async {
     await dio.delete('/connections/${Uri.encodeComponent(id)}');
+  }
+
+  IOWebSocketChannel fetchConnectionsWs() {
+    return IOWebSocketChannel.connect(Uri.parse('ws://${address.value}/connections?token=${secret.value}'));
   }
 }

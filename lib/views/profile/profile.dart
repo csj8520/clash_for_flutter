@@ -98,13 +98,11 @@ class _PageProfileState extends State<PageProfile> {
   }
 
   Future<void> reloadClashCore() async {
-    await storeClashCore.connectChannel?.sink.close();
     await storeClashService.fetchStop();
     await storeClashService.fetchStart(storeConfig.config.value.selected);
     await storeConfig.readClashCoreApi();
     storeClashCore.setApi(storeConfig.clashCoreApiAddress.value, storeConfig.clashCoreApiSecret.value);
     await storeClashCore.waitCoreStart();
-    storeClashCore.initConnect();
     if (Platform.isMacOS) {
       if (storeConfig.clashCoreDns.isNotEmpty) {
         await MacSystemDns.instance.set([storeConfig.clashCoreDns.value]);

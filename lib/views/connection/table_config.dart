@@ -1,4 +1,5 @@
 import 'package:flutter/widgets.dart';
+import 'package:path/path.dart' as path;
 
 import 'package:day/day.dart';
 import 'package:day/i18n/zh_cn.dart';
@@ -19,6 +20,7 @@ final List<TableItem<ConnectConnection>> tableItems = [
   TableItem(head: '类型', width: 120, align: Alignment.center, getLabel: (c) => c.metadata.type),
   TableItem(head: '节点链', width: 200, align: Alignment.centerLeft, tooltip: true, getLabel: (c) => c.chains.reversed.join('/')),
   TableItem(head: '规则', width: 140, align: Alignment.center, getLabel: (c) => '${c.rule}(${c.rulePayload})'),
+  TableItem(head: '进程', width: 100, align: Alignment.center, getLabel: (c) => path.basename(c.metadata.processPath)),
   TableItem(
     head: '速率',
     width: 200,

@@ -1,5 +1,11 @@
+import 'dart:io';
+import 'dart:async';
+import 'dart:convert';
+
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
+import 'package:bot_toast/bot_toast.dart';
+import 'package:web_socket_channel/io.dart';
 import 'package:styled_widget/styled_widget.dart';
 
 import 'package:clash_for_flutter/utils/utils.dart';
@@ -18,72 +24,95 @@ class PageConnection extends StatefulWidget {
   State<PageConnection> createState() => _PageConnectionState();
 }
 
-class _PageConnectionState extends State<PageConnection> with AutomaticKeepAliveClientMixin {
+class _PageConnectionState extends State<PageConnection> {
+  late IOWebSocketChannel _connectChannel;
+  late StreamSubscription<dynamic> _listenStreamSub;
+
   final StoreClashCore storeClashCore = Get.find();
-  TableItem<ConnectConnection>? sortBy = tableItems.last;
-  bool sortAscend = false;
+  TableItem<ConnectConnection>? _sortBy = tableItems.last;
 
-  ConnectConnection? connectionDetail;
-  bool connectionDetailClosed = true;
+  Connect _connect = Connect(downloadTotal: 0, uploadTotal: 0, connections: []);
+  Map<String, ConnectConnection> _connectionsCache = {};
 
-  @override
-  bool get wantKeepAlive => true;
+  bool _sortAscend = false;
+  ConnectConnection? _detail;
+  bool _detailClosed = true;
 
   @override
   void initState() {
+    _connectChannel = storeClashCore.fetchConnectionsWs();
+    _listenStreamSub = _connectChannel.stream.listen(_handleStream, onDone: _handleOnDone);
     super.initState();
-    storeClashCore.connect.listen((p0) {
-      _handleSort();
-      if (connectionDetail != null && !connectionDetailClosed) {
-        final n = p0.connections.firstWhereOrNull((it) => it.id == connectionDetail!.id);
-        if (n == null) {
-          connectionDetailClosed = true;
-        } else {
-          connectionDetail = n;
-        }
-        setState(() {});
-      }
-    });
   }
 
-  void setSortItem(TableItem<ConnectConnection> item) {
-    if (sortBy == item) {
-      if (sortAscend) {
-        sortBy = null;
+  void _handleStream(dynamic event) {
+    _connect = Connect.fromJson(json.decode(event));
+    final cache = _connectionsCache;
+    _connectionsCache = {};
+    // handle speed
+    for (var it in _connect.connections) {
+      final pre = cache[it.id];
+      _connectionsCache[it.id] = it;
+      if (pre == null) continue;
+      it.speed.download = it.download - pre.speed.download;
+      it.speed.upload = it.upload - pre.speed.upload;
+    }
+    // update detail
+    if (_detail != null && !_detailClosed) {
+      final n = _connectionsCache[_detail!.id];
+      if (n == null) {
+        _detailClosed = true;
       } else {
-        sortAscend = true;
+        _detail = n;
+      }
+    }
+    _handleSort();
+    setState(() {});
+  }
+
+  void _handleOnDone() {
+    if (_connectChannel.closeCode != WebSocketStatus.goingAway) {
+      BotToast.showText(text: "连接异常断开");
+    } else {}
+  }
+
+  void _handleSetSort(TableItem<ConnectConnection> item) {
+    if (_sortBy == item) {
+      if (_sortAscend) {
+        _sortBy = null;
+      } else {
+        _sortAscend = true;
       }
     } else {
-      sortBy = item;
-      sortAscend = false;
+      _sortBy = item;
+      _sortAscend = false;
     }
     _handleSort();
     setState(() {});
   }
 
   void _handleSort() {
-    if (sortBy == null) return;
-    final _sort = sortBy!.sort;
-    storeClashCore.connect.value.connections.sort((a, b) {
-      final va = sortAscend ? a : b;
-      final vb = sortAscend ? b : a;
+    if (_sortBy == null) return;
+    final _sort = _sortBy!.sort;
+    _connect.connections.sort((a, b) {
+      final va = _sortAscend ? a : b;
+      final vb = _sortAscend ? b : a;
 
       if (_sort != null) {
         return _sort(va, vb);
       } else {
-        return sortBy!.getLabel(va).compareTo(sortBy!.getLabel(vb));
+        return _sortBy!.getLabel(va).compareTo(_sortBy!.getLabel(vb));
       }
     });
   }
 
-  void handleShowConnectionDetail(ConnectConnection? connection) {
-    setState(() {
-      connectionDetail = connection;
-      connectionDetailClosed = false;
-    });
+  void _handleShowDetail(ConnectConnection? connection) {
+    _detail = connection;
+    _detailClosed = false;
+    setState(() {});
   }
 
-  void closeAllConnections() async {
+  void _hanldeCloseAllConnections() async {
     showDialog(
       context: context,
       builder: (c) => AlertDialog(
@@ -97,7 +126,7 @@ class _PageConnectionState extends State<PageConnection> with AutomaticKeepAlive
           TextButton(
             onPressed: () async {
               Navigator.pop(c);
-              for (final it in storeClashCore.connect.value.connections) {
+              for (final it in _connect.connections) {
                 await storeClashCore.fetchCloseConnection(it.id);
               }
             },
@@ -111,72 +140,76 @@ class _PageConnectionState extends State<PageConnection> with AutomaticKeepAlive
   Widget _buildHeader(TableItem<ConnectConnection> e) {
     return TextButton(
       child: Text(
-        '${e.head}${e == sortBy ? sortAscend ? ' ↑' : ' ↓' : ''}',
+        '${e.head}${e == _sortBy ? _sortAscend ? ' ↑' : ' ↓' : ''}',
         overflow: TextOverflow.ellipsis,
       ).textColor(const Color(0xff909399)).fontSize(14).alignment(Alignment.center),
-      onPressed: () => setSortItem(e),
+      onPressed: () => _handleSetSort(e),
     ).width(e.width);
   }
 
   Widget _buildTableRow(ConnectConnection it) {
     return TextButton(
       style: ButtonStyle(padding: MaterialStateProperty.all(EdgeInsets.zero)),
-      child: Row(
-        children: tableItems.map((e) {
-          String label = '';
-          label = e.getLabel(it);
-          final text = Text(label, overflow: TextOverflow.ellipsis)
-              .textColor(const Color(0xff54759a))
-              .fontSize(14)
-              .alignment(e.align)
-              .padding(left: 5, right: 5)
-              .width(e.width);
-          return e.tooltip ? Tooltip(child: text, message: label) : text;
-        }).toList(),
-      ),
-      onPressed: () => handleShowConnectionDetail(it),
+      child: tableItems
+          .map((e) {
+            String label = e.getLabel(it);
+            final text = Text(label, overflow: TextOverflow.ellipsis)
+                .textColor(const Color(0xff54759a))
+                .fontSize(14)
+                .alignment(e.align)
+                .padding(left: 5, right: 5)
+                .width(e.width);
+            return e.tooltip ? Tooltip(child: text, message: label) : text;
+          })
+          .toList()
+          .toRow(),
+      onPressed: () => _handleShowDetail(it),
     ).height(36);
   }
 
   @override
   Widget build(BuildContext context) {
-    super.build(context);
     return [
       CardHead(
         title: '连接',
         suffix: Row(
           children: [
-            Obx(() => Text(
-                    '(总量: 上传 ${bytesToSize(storeClashCore.connect.value.uploadTotal)} 下载 ${bytesToSize(storeClashCore.connect.value.downloadTotal)})')
+            Text('(总量: 上传 ${bytesToSize(_connect.uploadTotal)} 下载 ${bytesToSize(_connect.downloadTotal)})')
                 .textColor(Theme.of(context).primaryColor)
                 .fontSize(14)
                 .padding(left: 10)
-                .expanded()),
+                .expanded(),
             IconButton(
               icon: const Icon(Icons.close),
               color: Colors.red,
               iconSize: 20,
               tooltip: 'Close All Connections',
-              onPressed: closeAllConnections,
+              onPressed: _hanldeCloseAllConnections,
               constraints: const BoxConstraints(minHeight: 30, minWidth: 30),
               padding: EdgeInsets.zero,
-            )
+            ),
           ],
         ).expanded(),
       ),
       CardView(
         child: Stack(
           children: [
-            Obx(() => _ConnectionsTable(
-                  tableHeaders: tableItems.map(_buildHeader).toList(),
-                  tableRows: storeClashCore.connect.value.connections.map(_buildTableRow).toList(),
-                )),
-            if (connectionDetail != null)
-              ConnectDetail(connection: connectionDetail!, closed: connectionDetailClosed, onClose: () => handleShowConnectionDetail(null)),
+            _ConnectionsTable(
+              tableHeaders: tableItems.map(_buildHeader).toList(),
+              tableRows: _connect.connections.map(_buildTableRow).toList(),
+            ),
+            if (_detail != null) ConnectDetail(connection: _detail!, closed: _detailClosed, onClose: () => _handleShowDetail(null)),
           ],
         ),
       ).expanded()
     ].toColumn();
+  }
+
+  @override
+  void dispose() {
+    _listenStreamSub.cancel();
+    _connectChannel.sink.close(WebSocketStatus.goingAway);
+    super.dispose();
   }
 }
 

@@ -1,5 +1,6 @@
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
+import 'package:path/path.dart' as path;
 import 'package:styled_widget/styled_widget.dart';
 
 import 'package:clash_for_flutter/utils/utils.dart';
@@ -44,6 +45,8 @@ class _ConnectDetailState extends State<ConnectDetail> {
                     _DetailItem(title: '域名', content: m.host.isEmpty ? '空' : '${m.host}:${m.destinationPort}'),
                     _DetailItem(title: 'IP', content: m.destinationIP.isEmpty ? '空' : '${m.destinationIP}:${m.destinationPort}'),
                     _DetailItem(title: '来源', content: '${m.sourceIP}:${m.sourcePort}'),
+                    _DetailItem(title: '进程', content: m.processPath.isEmpty ? '空' : path.basename(m.processPath)),
+                    _DetailItem(title: '路径', content: m.processPath.isEmpty ? '空' : m.processPath),
                     _DetailItem(title: '规则', content: '${d.rule}(${d.rulePayload})'),
                     _DetailItem(title: '代理', content: d.chains.reversed.join(' / ')),
                     Row(children: [
