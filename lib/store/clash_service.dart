@@ -15,9 +15,8 @@ import 'package:clash_for_flutter/types/clash_service.dart';
 
 final headers = {"User-Agent": "clash-for-flutter/0.0.1"};
 
-final dio = Dio(BaseOptions(baseUrl: 'http://127.0.0.1:9089', headers: headers));
-
 class StoreClashService extends GetxController {
+  final dio = Dio(BaseOptions(baseUrl: 'http://127.0.0.1:9089', headers: headers));
   var serviceMode = false.obs;
   Process? clashServiceProcess;
 

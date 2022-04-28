@@ -40,7 +40,7 @@ class _PageConnectionState extends State<PageConnection> {
 
   @override
   void initState() {
-    _connectChannel = storeClashCore.fetchConnectionsWs();
+    _connectChannel = storeClashCore.fetchConnectionWs();
     _listenStreamSub = _connectChannel.stream.listen(_handleStream, onDone: _handleOnDone);
     super.initState();
   }
@@ -54,8 +54,8 @@ class _PageConnectionState extends State<PageConnection> {
       final pre = cache[it.id];
       _connectionsCache[it.id] = it;
       if (pre == null) continue;
-      it.speed.download = it.download - pre.speed.download;
-      it.speed.upload = it.upload - pre.speed.upload;
+      it.speed.download = it.download - pre.download;
+      it.speed.upload = it.upload - pre.upload;
     }
     // update detail
     if (_detail != null && !_detailClosed) {

@@ -2,12 +2,22 @@ import 'package:dio/dio.dart';
 import 'package:get/get.dart';
 import 'package:web_socket_channel/io.dart';
 
+import 'package:clash_for_flutter/types/rule.dart';
+import 'package:clash_for_flutter/types/proxie.dart';
+import 'package:clash_for_flutter/types/connect.dart';
 import 'package:clash_for_flutter/types/clash_core.dart';
 import 'package:clash_for_flutter/utils/system_proxy.dart';
 
-final dio = Dio(BaseOptions(baseUrl: 'http://127.0.0.1:9090'));
+final List<String> _groupExcludeNames = ['DIRECT', 'REJECT', 'GLOBAL'];
+final List<String> _groupNames = [
+  ProxieProxieType.selector,
+  ProxieProxieType.urltest,
+  ProxieProxieType.fallback,
+  ProxieProxieType.loadbalance,
+];
 
 class StoreClashCore extends GetxController {
+  final dio = Dio(BaseOptions(baseUrl: 'http://127.0.0.1:9090'));
   var version = ClashCoreVersion(premium: true, version: '').obs;
   var address = ''.obs;
   var secret = ''.obs;
@@ -24,6 +34,13 @@ class StoreClashCore extends GetxController {
     logLevel: '',
     ipv6: false,
   ).obs;
+
+  var ruleProvider = RuleProvider(providers: {}).obs;
+  var rule = Rule(rules: []).obs;
+  // var proxie = Proxie(proxies: {}).obs;
+  var proxieProviders = <ProxieProviderItem>[].obs;
+  var proxieGroups = <ProxieProxiesItem>[].obs;
+  var proxieProxies = <ProxieProxiesItem>[].obs;
 
   SystemProxyConfig get proxyConfig {
     final mixedPort = config.value.mixedPort == 0 ? null : config.value.mixedPort;
@@ -79,7 +96,85 @@ class StoreClashCore extends GetxController {
     await dio.delete('/connections/${Uri.encodeComponent(id)}');
   }
 
-  IOWebSocketChannel fetchConnectionsWs() {
+  IOWebSocketChannel fetchConnectionWs() {
     return IOWebSocketChannel.connect(Uri.parse('ws://${address.value}/connections?token=${secret.value}'));
+  }
+
+  Future fetchRuleProvider() async {
+    final res = await dio.get('/providers/rules');
+    ruleProvider.value = RuleProvider.fromJson(res.data);
+    ruleProvider.refresh();
+  }
+
+  Future fetchRule() async {
+    final res = await dio.get('/rules');
+    rule.value = Rule.fromJson(res.data);
+    rule.refresh();
+  }
+
+  Future<void> fetchRuleProviderUpdate(String name) async {
+    await dio.put('/providers/rules/${Uri.encodeComponent(name)}');
+  }
+
+  Future<dynamic> fetchProxie() async {
+    final res = await dio.get('/proxies');
+    final proxie = Proxie.fromJson(res.data);
+    final global = proxie.proxies["GLOBAL"]!;
+    proxieGroups.value = global.all!
+        .where((it) => !_groupExcludeNames.contains(it) && _groupNames.contains(proxie.proxies[it]!.type))
+        .map((it) => proxie.proxies[it]!)
+        .toList();
+    proxieProxies.value = global.all!
+        .where((it) => !_groupExcludeNames.contains(it) && !_groupNames.contains(proxie.proxies[it]!.type))
+        .map((it) => proxie.proxies[it]!)
+        .toList();
+    if (config.value.mode == 'global') proxieGroups.insert(0, global);
+    proxieGroups.refresh();
+    proxieProxies.refresh();
+  }
+
+  Future<dynamic> fetchProxieProvider() async {
+    final res = await dio.get('/providers/proxies');
+    proxieProviders.value = ProxieProvider.fromJson(res.data).providers.values.where((it) => it.vehicleType != 'Compatible').toList();
+    for (final it in proxieProviders) {
+      it.proxies.sort((a, b) {
+        final ad = a.history.isEmpty ? 0 : a.history.last.delay;
+        final bd = b.history.isEmpty ? 0 : b.history.last.delay;
+        if (ad == 0) return 1;
+        if (bd == 0) return -1;
+        return ad - bd;
+      });
+    }
+    proxieProviders.refresh();
+  }
+
+  Future<void> fetchProxieProviderHealthCheck(String provider) async {
+    await dio.get('/providers/proxies/${Uri.encodeComponent(provider)}/healthcheck');
+  }
+
+  Future<void> fetchSetProxieGroup(String group, String value) async {
+    await dio.put('/proxies/${Uri.encodeComponent(group)}', data: {'name': value});
+  }
+
+  Future<void> fetchProxieProviderUpdate(String name) async {
+    await dio.put('/providers/proxies/${Uri.encodeComponent(name)}');
+  }
+
+  Future<void> fetchProxieDelay() async {
+    try {
+      await Future.wait(proxieProxies.map((it) async {
+        final res = await dio.get(
+          '/proxies/${Uri.encodeComponent(it.name)}/delay',
+          queryParameters: {'timeout': 5000, 'url': 'http://www.gstatic.com/generate_204'},
+        );
+        it.history.add(ProxieProxiesItemHistory(delay: res.data['delay'] ?? 0, time: DateTime.now().toString()));
+        proxieProxies.refresh();
+      }));
+    } catch (_) {}
+  }
+
+  Future<Connect> fetchConnection() async {
+    final res = await dio.get('/connections');
+    return Connect.fromJson(res.data);
   }
 }

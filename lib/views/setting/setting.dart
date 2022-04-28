@@ -19,7 +19,7 @@ class PageSetting extends StatefulWidget {
   _PageSettingState createState() => _PageSettingState();
 }
 
-class _PageSettingState extends State<PageSetting> with AutomaticKeepAliveClientMixin {
+class _PageSettingState extends State<PageSetting> {
   final StoreConfig storeConfig = Get.find();
   final StoreClashService storeClashService = Get.find();
   final StoreClashCore storeClashCore = Get.find();
@@ -28,9 +28,6 @@ class _PageSettingState extends State<PageSetting> with AutomaticKeepAliveClient
   final List<String> _modes = ['global', 'rule', 'direct', 'script'];
 
   bool _serviceSwitching = false;
-
-  @override
-  bool get wantKeepAlive => true;
 
   void launchWebGui() {
     final address = storeConfig.clashCoreApiAddress.value.split(':');
@@ -69,7 +66,6 @@ class _PageSettingState extends State<PageSetting> with AutomaticKeepAliveClient
 
   @override
   Widget build(BuildContext context) {
-    super.build(context);
     return SingleChildScrollView(
       controller: _scrollController,
       child: Obx(() => Column(

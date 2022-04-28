@@ -9,8 +9,6 @@ import 'package:flutter_emoji/flutter_emoji.dart';
 import 'package:clash_for_flutter/const/const.dart';
 import 'package:clash_for_flutter/types/config.dart';
 
-final dio = Dio();
-
 final Map<String, dynamic> _defaultConfig = {
   'selected': 'example.yaml',
   'updateInterval': 86400,
@@ -23,6 +21,7 @@ final Map<String, dynamic> _defaultConfig = {
 };
 
 class StoreConfig extends GetxController {
+  final dio = Dio();
   var config = Config.fromJson(_defaultConfig).obs;
 
   var clashCoreApiAddress = '127.0.0.1:9090'.obs;
@@ -78,32 +77,32 @@ class StoreConfig extends GetxController {
 
   Future<void> setLanguage(String language) async {
     config.value.language = language;
-    config.refresh();
     await save();
+    config.refresh();
   }
 
   Future<void> setSystemProxy(bool open) async {
     config.value.setSystemProxy = open;
-    config.refresh();
     await save();
+    config.refresh();
   }
 
   Future<void> setUpdateInterval(int value) async {
     config.value.updateInterval = value;
-    config.refresh();
     await save();
+    config.refresh();
   }
 
   Future<void> setUpdateSubsAtStart(bool value) async {
     config.value.updateSubsAtStart = value;
-    config.refresh();
     await save();
+    config.refresh();
   }
 
   Future<void> setSelectd(String selected) async {
     config.value.selected = selected;
-    config.refresh();
     await save();
+    config.refresh();
   }
 
   Future<bool> updateSub(ConfigSub sub) async {
@@ -141,6 +140,12 @@ class StoreConfig extends GetxController {
     final file = File(path.join(Paths.config.path, subName));
     if (await file.exists()) await file.delete();
     config.value.subs.removeWhere((it) => it.name == subName);
+    await save();
+    config.refresh();
+  }
+
+  Future<void> setBreakConnections(bool value) async {
+    config.value.breakConnections = value;
     await save();
     config.refresh();
   }

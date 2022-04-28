@@ -67,9 +67,7 @@ class _PageProfileState extends State<PageProfile> {
       final changed = await storeConfig.updateSub(sub);
       if (!changed) return BotToast.showText(text: '配置无变化');
       if (storeConfig.config.value.selected == sub.name) {
-        BotToast.showText(text: '正在重启 Clash Core ……');
         await reloadClashCore();
-        BotToast.showText(text: '重启成功');
       }
     } catch (e) {
       BotToast.showText(text: 'Update Sub: ${sub.name} Error');
@@ -98,6 +96,7 @@ class _PageProfileState extends State<PageProfile> {
   }
 
   Future<void> reloadClashCore() async {
+    BotToast.showText(text: '正在重启 Clash Core ……');
     await storeClashService.fetchStop();
     await storeClashService.fetchStart(storeConfig.config.value.selected);
     await storeConfig.readClashCoreApi();
@@ -111,13 +110,12 @@ class _PageProfileState extends State<PageProfile> {
       }
     }
     if (storeConfig.config.value.setSystemProxy) await SystemProxy.instance.set(storeClashCore.proxyConfig);
+    BotToast.showText(text: '重启成功');
   }
 
   Future<void> selectSub(ConfigSub sub) async {
     await storeConfig.setSelectd(sub.name);
-    BotToast.showText(text: '正在重启 Clash Core ……');
     await reloadClashCore();
-    BotToast.showText(text: '重启成功');
   }
 
   @override

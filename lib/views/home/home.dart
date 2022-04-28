@@ -3,7 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:styled_widget/styled_widget.dart';
 
 import 'package:clash_for_flutter/views/log/log.dart';
+import 'package:clash_for_flutter/views/rule/rule.dart';
 import 'package:clash_for_flutter/views/home/sidebar.dart';
+import 'package:clash_for_flutter/views/proxie/proxie.dart';
 import 'package:clash_for_flutter/views/profile/profile.dart';
 import 'package:clash_for_flutter/views/setting/setting.dart';
 import 'package:clash_for_flutter/views/connection/connection.dart';
@@ -40,9 +42,9 @@ class _PageHomeState extends State<PageHome> {
             controller: _pageController,
             physics: const NeverScrollableScrollPhysics(),
             children: const [
-              Text('coding'),
+              PageProxie(),
               PageLog(),
-              Text('coding'),
+              PageRule(),
               PageConnection(),
               PageProfile(),
               PageSetting(),

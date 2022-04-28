@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:styled_widget/styled_widget.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 
+// 若使用 Obx 必须在 StatefulWidget 下使用，否则 hide 会失效
 class Loading extends StatefulWidget {
   const Loading({Key? key, required this.controller, required this.child}) : super(key: key);
   final Widget child;
