@@ -63,6 +63,20 @@ class _MyAppState extends State<MyApp> with TrayListener, WindowListener {
   }
 
   Future<void> init() async {
+    // watch process kill
+    // ref https://github.com/dart-lang/sdk/issues/12170
+    // TODO: test windows
+    // for macos 任务管理器退出进程
+    ProcessSignal.sigterm.watch().listen((_) {
+      stdout.writeln('exit: sigterm');
+      handleExit();
+    });
+    // for macos ctrl+c
+    ProcessSignal.sigint.watch().listen((_) {
+      stdout.writeln('exit: sigint');
+      handleExit();
+    });
+
     windowManager.addListener(this);
     await initTray();
     await storeConfig.init();
@@ -145,11 +159,15 @@ class _MyAppState extends State<MyApp> with TrayListener, WindowListener {
     } else if (key == 'about') {
       await launchUrl(Uri.parse('https://github.com/csj8520/clash_for_flutter'));
     } else if (key == 'exit') {
-      await storeClashService.exit();
-      if (Platform.isMacOS && storeConfig.clashCoreDns.isNotEmpty) await MacSystemDns.instance.set([]);
-      if (storeConfig.config.value.setSystemProxy) await SystemProxy.instance.set(SystemProxyConfig());
-      exit(0);
+      await handleExit();
     }
+  }
+
+  Future<void> handleExit() async {
+    await storeClashService.exit();
+    if (Platform.isMacOS && storeConfig.clashCoreDns.isNotEmpty) await MacSystemDns.instance.set([]);
+    if (storeConfig.config.value.setSystemProxy) await SystemProxy.instance.set(SystemProxyConfig());
+    exit(0);
   }
 
   @override
