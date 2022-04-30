@@ -1,5 +1,7 @@
 import 'dart:io';
 
+import 'package:clash_for_flutter/utils/logger.dart';
+
 class SystemDnsPlatform {
   Future<void> set(List<String> dns) async {
     throw UnimplementedError();
@@ -29,6 +31,7 @@ class MacSystemDns extends SystemDnsPlatform {
         commands.add('networksetup -setdnsservers "$network" "${dns.join('" "')}"');
       }
     }
+    log.debug(commands);
     await Process.run('bash', ['-c', commands.join(' && ')]);
   }
 

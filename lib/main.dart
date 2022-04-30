@@ -4,11 +4,13 @@ import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 import 'package:bot_toast/bot_toast.dart';
 import 'package:tray_manager/tray_manager.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:window_manager/window_manager.dart';
 
 import 'package:clash_for_flutter/i18n/i18n.dart';
 import 'package:clash_for_flutter/utils/utils.dart';
 import 'package:clash_for_flutter/store/config.dart';
+import 'package:clash_for_flutter/store/shortcuts.dart';
 import 'package:clash_for_flutter/views/home/home.dart';
 import 'package:clash_for_flutter/store/clash_core.dart';
 import 'package:clash_for_flutter/utils/system_dns.dart';
@@ -19,16 +21,21 @@ void main() async {
   // init windowManager
   WidgetsFlutterBinding.ensureInitialized();
   await windowManager.ensureInitialized();
-  await windowManager.waitUntilReadyToShow();
-  if (Platform.isMacOS) await windowManager.setSkipTaskbar(true);
-  await windowManager.setSize(const Size(950, 600));
-  await windowManager.center();
-  await windowManager.setMinimumSize(const Size(500, 400));
-  windowManager.show();
+  WindowOptions windowOptions = WindowOptions(
+    size: const Size(950, 600),
+    minimumSize: const Size(500, 400),
+    center: true,
+    backgroundColor: Colors.transparent,
+    skipTaskbar: Platform.isMacOS,
+    // titleBarStyle: Platform.isMacOS ? TitleBarStyle.hidden : TitleBarStyle.normal,
+  );
+  await windowManager.waitUntilReadyToShow(windowOptions);
+  await windowManager.show();
   // init store
   Get.put(StoreConfig());
   Get.put(StoreClashService());
   Get.put(StoreClashCore());
+  Get.put(StoreSortcuts());
   runApp(GetMaterialApp(
     translations: I18n(),
     locale: Get.deviceLocale,
@@ -47,6 +54,7 @@ class _MyAppState extends State<MyApp> with TrayListener, WindowListener {
   final StoreConfig storeConfig = Get.find();
   final StoreClashService storeClashService = Get.find();
   final StoreClashCore storeClashCore = Get.find();
+  final StoreSortcuts storeSortcuts = Get.find();
 
   @override
   void initState() {
@@ -59,15 +67,11 @@ class _MyAppState extends State<MyApp> with TrayListener, WindowListener {
     await initTray();
     await storeConfig.init();
     await storeClashService.init();
-    await storeClashService.fetchStart(storeConfig.config.value.selected);
-    storeClashCore.setApi(storeConfig.clashCoreApiAddress.value, storeConfig.clashCoreApiSecret.value);
-    await storeClashCore.waitCoreStart();
+    storeSortcuts.init();
+    await storeSortcuts.startClashCore(autoSetDns: storeConfig.clashCoreDns.isNotEmpty, autoSetProxy: true);
     await storeClashCore.fetchVersion();
-    await storeClashCore.fetchConfig();
     final language = storeConfig.config.value.language.split('_');
     await Get.updateLocale(Locale(language[0], language[1]));
-    if (Platform.isMacOS && storeConfig.clashCoreDns.isNotEmpty) await MacSystemDns.instance.set([storeConfig.clashCoreDns.value]);
-    if (storeConfig.config.value.setSystemProxy) await SystemProxy.instance.set(storeClashCore.proxyConfig);
     initRegularlyUpdate();
   }
 
@@ -83,6 +87,7 @@ class _MyAppState extends State<MyApp> with TrayListener, WindowListener {
         MenuItem(key: 'copy-command-line', title: 'cmd'),
         MenuItem(key: 'copy-command-line', title: 'powershell'),
       ]),
+      MenuItem(key: 'about', title: '关于'),
       MenuItem(key: 'exit', title: '退出'),
     ];
     await TrayManager.instance.setContextMenu(items);
@@ -90,7 +95,7 @@ class _MyAppState extends State<MyApp> with TrayListener, WindowListener {
   }
 
   void initRegularlyUpdate() {
-    Future.delayed(const Duration(minutes: 5)).then((_) async {
+    Future.delayed(const Duration(minutes: 1)).then((_) async {
       initRegularlyUpdate();
       for (final it in storeConfig.config.value.subs) {
         try {
@@ -100,19 +105,7 @@ class _MyAppState extends State<MyApp> with TrayListener, WindowListener {
           if (!chenged) continue;
           if (it.name != storeConfig.config.value.selected) continue;
           // restart clash core
-          await storeClashService.fetchStop();
-          await storeClashService.fetchStart(storeConfig.config.value.selected);
-          await storeConfig.readClashCoreApi();
-          storeClashCore.setApi(storeConfig.clashCoreApiAddress.value, storeConfig.clashCoreApiSecret.value);
-          await storeClashCore.waitCoreStart();
-          if (Platform.isMacOS) {
-            if (storeConfig.clashCoreDns.isNotEmpty) {
-              await MacSystemDns.instance.set([storeConfig.clashCoreDns.value]);
-            } else {
-              await MacSystemDns.instance.set([]);
-            }
-          }
-          if (storeConfig.config.value.setSystemProxy) await SystemProxy.instance.set(storeClashCore.proxyConfig);
+          await storeSortcuts.reloadClashCore();
           await Future.delayed(const Duration(seconds: 20));
         } catch (_) {}
       }
@@ -122,7 +115,7 @@ class _MyAppState extends State<MyApp> with TrayListener, WindowListener {
   @override
   void onTrayIconMouseDown() {
     if (Platform.isWindows) {
-      WindowManager.instance.show();
+      windowManager.show();
     } else {
       onTrayIconRightMouseDown();
     }
@@ -136,18 +129,22 @@ class _MyAppState extends State<MyApp> with TrayListener, WindowListener {
   @override
   void onTrayMenuItemClick(MenuItem menuItem) async {
     super.onTrayMenuItemClick(menuItem);
-    if (menuItem.key == 'show') {
-      await WindowManager.instance.show();
+    final key = menuItem.key;
+    final title = menuItem.title!;
+    if (key == 'show') {
+      await windowManager.show();
       storeConfig.config.refresh();
-    } else if (menuItem.key == 'hide') {
-      await WindowManager.instance.hide();
-    } else if (menuItem.key == 'restart-clash-core') {
+    } else if (key == 'hide') {
+      await windowManager.hide();
+    } else if (key == 'restart-clash-core') {
       await storeClashService.fetchStop();
       await storeClashService.fetchStart(storeConfig.config.value.selected);
-    } else if (menuItem.key == 'copy-command-line') {
+    } else if (key == 'copy-command-line') {
       final proxyConfig = storeClashCore.proxyConfig;
-      await copyCommandLineProxy(menuItem.title!, http: proxyConfig.http, https: proxyConfig.https);
-    } else if (menuItem.key == 'exit') {
+      await copyCommandLineProxy(title, http: proxyConfig.http, https: proxyConfig.https);
+    } else if (key == 'about') {
+      await launchUrl(Uri.parse('https://github.com/csj8520/clash_for_flutter'));
+    } else if (key == 'exit') {
       await storeClashService.exit();
       if (Platform.isMacOS && storeConfig.clashCoreDns.isNotEmpty) await MacSystemDns.instance.set([]);
       if (storeConfig.config.value.setSystemProxy) await SystemProxy.instance.set(SystemProxyConfig());
@@ -166,6 +163,8 @@ class _MyAppState extends State<MyApp> with TrayListener, WindowListener {
       title: 'Clash For Flutter',
       theme: ThemeData(
         primarySwatch: Colors.blue,
+        primaryColor: const Color(0xff2c8af8),
+        errorColor: const Color(0xfff56c6c),
       ),
       builder: BotToastInit(),
       home: const PageHome(),

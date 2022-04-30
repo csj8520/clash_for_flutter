@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:async';
 
 import 'package:dio/dio.dart';
 import 'package:get/get.dart';
@@ -21,6 +22,7 @@ class StoreClashService extends GetxController {
   Process? clashServiceProcess;
 
   IOWebSocketChannel? wsChannelLogs;
+  StreamSubscription<dynamic>? listenLogsSub;
   RxList<ClashServiceLog> logs = <ClashServiceLog>[].obs;
 
   Future<void> init() async {
@@ -35,7 +37,7 @@ class StoreClashService extends GetxController {
 
   initLog() {
     wsChannelLogs = IOWebSocketChannel.connect(Uri.parse('ws://127.0.0.1:9089/logs'), headers: headers);
-    wsChannelLogs!.stream.listen((event) {
+    listenLogsSub = wsChannelLogs!.stream.listen((event) {
       for (final it in (event as String).split('\n')) {
         final matchs = RegExp(r'^time="([\d-T:+]+)" level=(\w+) msg="(.+)"$').firstMatch(it.trim());
 
@@ -112,6 +114,7 @@ class StoreClashService extends GetxController {
   }
 
   Future<void> exit() async {
+    listenLogsSub?.cancel();
     wsChannelLogs?.sink.close();
     wsChannelLogs = null;
     final info = await fetchInfo();

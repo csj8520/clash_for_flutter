@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:dio/dio.dart';
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
@@ -11,13 +9,12 @@ import 'package:clash_for_flutter/widgets/card_view.dart';
 import 'package:clash_for_flutter/widgets/card_head.dart';
 
 import 'package:clash_for_flutter/store/config.dart';
+import 'package:clash_for_flutter/store/shortcuts.dart';
 import 'package:clash_for_flutter/store/clash_core.dart';
 import 'package:clash_for_flutter/store/clash_service.dart';
 
 import 'package:clash_for_flutter/const/const.dart';
 import 'package:clash_for_flutter/types/config.dart';
-import 'package:clash_for_flutter/utils/system_dns.dart';
-import 'package:clash_for_flutter/utils/system_proxy.dart';
 import 'package:clash_for_flutter/views/profile/setting.dart';
 import 'package:clash_for_flutter/views/profile/widgets.dart';
 
@@ -34,6 +31,7 @@ class _PageProfileState extends State<PageProfile> {
   final StoreConfig storeConfig = Get.find();
   final StoreClashService storeClashService = Get.find();
   final StoreClashCore storeClashCore = Get.find();
+  final StoreSortcuts storeSortcuts = Get.find();
 
   final ScrollController _scrollController = ScrollController();
 
@@ -67,7 +65,7 @@ class _PageProfileState extends State<PageProfile> {
       final changed = await storeConfig.updateSub(sub);
       if (!changed) return BotToast.showText(text: '配置无变化');
       if (storeConfig.config.value.selected == sub.name) {
-        await reloadClashCore();
+        await storeSortcuts.reloadClashCore();
       }
     } catch (e) {
       BotToast.showText(text: 'Update Sub: ${sub.name} Error');
@@ -95,27 +93,9 @@ class _PageProfileState extends State<PageProfile> {
     );
   }
 
-  Future<void> reloadClashCore() async {
-    BotToast.showText(text: '正在重启 Clash Core ……');
-    await storeClashService.fetchStop();
-    await storeClashService.fetchStart(storeConfig.config.value.selected);
-    await storeConfig.readClashCoreApi();
-    storeClashCore.setApi(storeConfig.clashCoreApiAddress.value, storeConfig.clashCoreApiSecret.value);
-    await storeClashCore.waitCoreStart();
-    if (Platform.isMacOS) {
-      if (storeConfig.clashCoreDns.isNotEmpty) {
-        await MacSystemDns.instance.set([storeConfig.clashCoreDns.value]);
-      } else {
-        await MacSystemDns.instance.set([]);
-      }
-    }
-    if (storeConfig.config.value.setSystemProxy) await SystemProxy.instance.set(storeClashCore.proxyConfig);
-    BotToast.showText(text: '重启成功');
-  }
-
   Future<void> selectSub(ConfigSub sub) async {
     await storeConfig.setSelectd(sub.name);
-    await reloadClashCore();
+    await storeSortcuts.reloadClashCore();
   }
 
   @override
