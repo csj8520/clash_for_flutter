@@ -1,4 +1,6 @@
 # Clash For Flutter
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fcsj8520%2Fclash_for_flutter.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2Fcsj8520%2Fclash_for_flutter?ref=badge_shield)
+
 
 ### dev
 
@@ -113,3 +115,7 @@ https://github.com/CareyWang/sub-web/
 ### clash pro vmess 最新参数支持
 
 https://github.com/tindy2013/subconverter/issues/442
+
+
+## License
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fcsj8520%2Fclash_for_flutter.svg?type=large)](https://app.fossa.com/projects/git%2Bgithub.com%2Fcsj8520%2Fclash_for_flutter?ref=badge_large)
