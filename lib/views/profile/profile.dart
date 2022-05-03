@@ -1,7 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
-import 'package:bot_toast/bot_toast.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:styled_widget/styled_widget.dart';
 
@@ -9,12 +8,9 @@ import 'package:clash_for_flutter/widgets/card_view.dart';
 import 'package:clash_for_flutter/widgets/card_head.dart';
 
 import 'package:clash_for_flutter/store/config.dart';
-import 'package:clash_for_flutter/store/shortcuts.dart';
-import 'package:clash_for_flutter/store/clash_core.dart';
-import 'package:clash_for_flutter/store/clash_service.dart';
+import 'package:clash_for_flutter/store/profile.dart';
 
 import 'package:clash_for_flutter/const/const.dart';
-import 'package:clash_for_flutter/types/config.dart';
 import 'package:clash_for_flutter/views/profile/setting.dart';
 import 'package:clash_for_flutter/views/profile/widgets.dart';
 
@@ -29,74 +25,9 @@ class PageProfile extends StatefulWidget {
 
 class _PageProfileState extends State<PageProfile> {
   final StoreConfig storeConfig = Get.find();
-  final StoreClashService storeClashService = Get.find();
-  final StoreClashCore storeClashCore = Get.find();
-  final StoreSortcuts storeSortcuts = Get.find();
+  final StoreProfile storeProfile = Get.find();
 
   final ScrollController _scrollController = ScrollController();
-
-  void addSub() {
-    showDialog(context: context, builder: (_) => PageProfileEditProfile(title: '添加', onEnter: _addSub));
-  }
-
-  void editSub(ConfigSub sub) {
-    showDialog(context: context, builder: (_) => PageProfileEditProfile(name: sub.name, url: sub.url, onEnter: (n, u, c) => _editSub(sub, n, u, c)));
-  }
-
-  Future<dynamic> _addSub(String name, String url, VoidCallback close) async {
-    if (!RegExp(r'^[^.].*\.ya?ml$').hasMatch(name)) return BotToast.showText(text: '请确保文件后缀名为.yaml');
-    final has = storeConfig.config.value.subs.firstWhereOrNull((it) => it.name == name);
-    if (has != null) return BotToast.showText(text: "$name 已存在");
-    final ConfigSub sub = ConfigSub(name: name, url: url.isEmpty ? null : url);
-    await storeConfig.addSub(sub);
-    close();
-  }
-
-  Future<dynamic> _editSub(ConfigSub oldSub, String name, String url, VoidCallback close) async {
-    if (!RegExp(r'^[^.].*\.ya?ml$').hasMatch(name)) return BotToast.showText(text: '请确保文件后缀名为.yaml');
-    final _sub = storeConfig.config.value.subs.firstWhere((it) => it.name == oldSub.name);
-    final ConfigSub sub = ConfigSub(name: name, url: url.isEmpty ? null : url, updateTime: oldSub.updateTime);
-    await storeConfig.setSub(_sub.name, sub);
-    close();
-  }
-
-  Future<dynamic> updateSub(ConfigSub sub) async {
-    try {
-      final changed = await storeConfig.updateSub(sub);
-      if (!changed) return BotToast.showText(text: '配置无变化');
-      if (storeConfig.config.value.selected == sub.name) {
-        await storeSortcuts.reloadClashCore();
-      }
-    } catch (e) {
-      BotToast.showText(text: 'Update Sub: ${sub.name} Error');
-    }
-  }
-
-  dynamic deleteSub(ConfigSub sub) {
-    if (storeConfig.config.value.subs.length <= 1) return BotToast.showText(text: '请至少保留一个配置文件');
-    showDialog(
-      context: context,
-      builder: (c) => AlertDialog(
-        title: const Text('确定'),
-        content: Text('删除 ${sub.name} 配置，磁盘内文件会同时删除。'),
-        actions: [
-          TextButton(
-            onPressed: () async {
-              Navigator.pop(c);
-              await storeConfig.deleteSub(sub.name);
-            },
-            child: const Text('删除'),
-          ),
-          TextButton(onPressed: () => Navigator.pop(c), child: const Text('取消')),
-        ],
-      ),
-    );
-  }
-
-  Future<void> selectSub(ConfigSub sub) async {
-    await storeConfig.setSelectd(sub.name);
-    await storeSortcuts.reloadClashCore();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -133,7 +64,7 @@ class _PageProfileState extends State<PageProfile> {
                               padding: const EdgeInsets.all(0),
                               color: Theme.of(context).primaryColor,
                               constraints: const BoxConstraints(minHeight: 30, minWidth: 30),
-                              onPressed: addSub,
+                              onPressed: () => storeProfile.showAddSubPopup(context, null),
                             ).paddingDirectional(start: 15, end: 3)
                           ],
                         ).padding(right: 10).width(160),
@@ -143,10 +74,10 @@ class _PageProfileState extends State<PageProfile> {
                         .map((e) => PageProfileSubItem(
                               sub: e,
                               value: storeConfig.config.value.selected,
-                              onEdit: editSub,
-                              onSelect: selectSub,
-                              onDelete: deleteSub,
-                              onUpdate: updateSub,
+                              onEdit: (sub) => storeProfile.showEditSubPopup(context, sub),
+                              onSelect: storeProfile.handleSelectSub,
+                              onDelete: (sub) => storeProfile.handleDeleteSub(context, sub),
+                              onUpdate: storeProfile.handleUpdateSub,
                             ))
                         .toList()
                   ],

@@ -1,15 +1,19 @@
 import 'dart:io';
 
+import 'package:day/day.dart';
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 import 'package:bot_toast/bot_toast.dart';
 import 'package:tray_manager/tray_manager.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:window_manager/window_manager.dart';
+import 'package:protocol_handler/protocol_handler.dart';
 
 import 'package:clash_for_flutter/i18n/i18n.dart';
 import 'package:clash_for_flutter/utils/utils.dart';
+import 'package:clash_for_flutter/types/config.dart';
 import 'package:clash_for_flutter/store/config.dart';
+import 'package:clash_for_flutter/store/profile.dart';
 import 'package:clash_for_flutter/store/shortcuts.dart';
 import 'package:clash_for_flutter/views/home/home.dart';
 import 'package:clash_for_flutter/store/clash_core.dart';
@@ -21,6 +25,7 @@ void main() async {
   // init windowManager
   WidgetsFlutterBinding.ensureInitialized();
   await windowManager.ensureInitialized();
+  await protocolHandler.register('clash');
   WindowOptions windowOptions = WindowOptions(
     size: const Size(950, 600),
     minimumSize: const Size(500, 400),
@@ -36,6 +41,7 @@ void main() async {
   Get.put(StoreClashService());
   Get.put(StoreClashCore());
   Get.put(StoreSortcuts());
+  Get.put(StoreProfile());
   runApp(GetMaterialApp(
     translations: I18n(),
     locale: Get.deviceLocale,
@@ -50,11 +56,12 @@ class MyApp extends StatefulWidget {
   State<MyApp> createState() => _MyAppState();
 }
 
-class _MyAppState extends State<MyApp> with TrayListener, WindowListener {
+class _MyAppState extends State<MyApp> with TrayListener, WindowListener, ProtocolListener {
   final StoreConfig storeConfig = Get.find();
   final StoreClashService storeClashService = Get.find();
   final StoreClashCore storeClashCore = Get.find();
   final StoreSortcuts storeSortcuts = Get.find();
+  final StoreProfile storeProfile = Get.find();
 
   @override
   void initState() {
@@ -78,10 +85,12 @@ class _MyAppState extends State<MyApp> with TrayListener, WindowListener {
     });
 
     windowManager.addListener(this);
+    protocolHandler.addListener(this);
     await initTray();
     await storeConfig.init();
     await storeClashService.init();
     storeSortcuts.init();
+    storeProfile.init();
     await storeSortcuts.startClashCore(autoSetDns: storeConfig.clashCoreDns.isNotEmpty, autoSetProxy: true);
     await storeClashCore.fetchVersion();
     final language = storeConfig.config.value.language.split('_');
@@ -176,6 +185,24 @@ class _MyAppState extends State<MyApp> with TrayListener, WindowListener {
   }
 
   @override
+  void onProtocolUrlReceived(String url) async {
+    // ref https://github.com/biyidev/biyi/blob/37aa84ec063fcbac717ace26acd361764ab9a2c5/lib/pages/desktop_popup/desktop_popup.dart#L829
+    // clash://install-config?url=xxxx
+    final uri = Uri.parse(url);
+    if (uri.scheme != 'clash') return;
+    if (uri.authority == 'install-config') {
+      final paths = Uri.parse(uri.queryParameters['url']!).pathSegments;
+      String name = paths.isNotEmpty ? paths.last : Day().format('YYYYMMDD_HHmmss');
+      name = name.replaceFirst(RegExp(r'(\.\w*)?$'), '.yaml');
+      storeProfile.showAddSubPopup(context, ConfigSub(name: name, url: uri.queryParameters['url']));
+    } else {
+      return;
+    }
+    await windowManager.show();
+    await windowManager.focus();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Clash For Flutter',
@@ -187,5 +214,11 @@ class _MyAppState extends State<MyApp> with TrayListener, WindowListener {
       builder: BotToastInit(),
       home: const PageHome(),
     );
+  }
+
+  @override
+  void dispose() {
+    protocolHandler.removeListener(this);
+    super.dispose();
   }
 }
