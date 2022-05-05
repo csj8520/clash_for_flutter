@@ -91,7 +91,7 @@ class _MyAppState extends State<MyApp> with TrayListener, WindowListener, Protoc
     await storeClashService.init();
     storeSortcuts.init();
     storeProfile.init();
-    await storeSortcuts.startClashCore(autoSetDns: storeConfig.clashCoreDns.isNotEmpty, autoSetProxy: true);
+    await storeSortcuts.startClashCore();
     await storeClashCore.fetchVersion();
     final language = storeConfig.config.value.language.split('_');
     await Get.updateLocale(Locale(language[0], language[1]));
@@ -156,7 +156,6 @@ class _MyAppState extends State<MyApp> with TrayListener, WindowListener, Protoc
     final title = menuItem.title!;
     if (key == 'show') {
       await windowManager.show();
-      storeConfig.config.refresh();
     } else if (key == 'hide') {
       await windowManager.hide();
     } else if (key == 'restart-clash-core') {

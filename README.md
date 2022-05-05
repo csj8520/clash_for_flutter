@@ -1,6 +1,6 @@
 # Clash For Flutter
 
-[Clash Premium](https://github.com/Dreamacro/clash/releases/tag/premium) GUI implemented with Flutter
+[Clash Premium](https://github.com/Dreamacro/clash/releases/tag/premium) GUI implemented with `Flutter`
 
 ## Platform Support
 
