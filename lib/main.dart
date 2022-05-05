@@ -17,6 +17,7 @@ import 'package:clash_for_flutter/store/profile.dart';
 import 'package:clash_for_flutter/store/shortcuts.dart';
 import 'package:clash_for_flutter/views/home/home.dart';
 import 'package:clash_for_flutter/store/clash_core.dart';
+import 'package:clash_for_flutter/store/connection.dart';
 import 'package:clash_for_flutter/utils/system_dns.dart';
 import 'package:clash_for_flutter/utils/system_proxy.dart';
 import 'package:clash_for_flutter/store/clash_service.dart';
@@ -42,6 +43,7 @@ void main() async {
   Get.put(StoreClashCore());
   Get.put(StoreSortcuts());
   Get.put(StoreProfile());
+  Get.put(StoreConnection());
   runApp(GetMaterialApp(
     translations: I18n(),
     locale: Get.deviceLocale,

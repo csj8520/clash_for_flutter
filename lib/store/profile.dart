@@ -5,9 +5,9 @@ import 'package:bot_toast/bot_toast.dart';
 import 'package:clash_for_flutter/types/config.dart';
 import 'package:clash_for_flutter/store/config.dart';
 import 'package:clash_for_flutter/store/shortcuts.dart';
+import 'package:clash_for_flutter/widgets/dialogs.dart';
 import 'package:clash_for_flutter/store/clash_core.dart';
 import 'package:clash_for_flutter/store/clash_service.dart';
-import 'package:clash_for_flutter/widgets/edit_profile.dart';
 
 class StoreProfile extends GetxController {
   late StoreConfig storeConfig;
@@ -22,30 +22,28 @@ class StoreProfile extends GetxController {
     storeSortcuts = Get.find();
   }
 
-  void showAddSubPopup(BuildContext context, ConfigSub? sub) {
-    showDialog(context: context, builder: (_) => PageProfileEditProfile(title: '添加', name: sub?.name, url: sub?.url, onEnter: handleAddSub));
+  bool validatorSub(ConfigSub newSub, ConfigSub? oldSub) {
+    if (!RegExp(r'^[^.].*\.ya?ml$').hasMatch(newSub.name)) {
+      BotToast.showText(text: '请确保文件后缀名为.yaml');
+      return false;
+    }
+    if (newSub.name == oldSub?.name) return true;
+    final has = storeConfig.config.value.subs.any((it) => it.name == newSub.name);
+    if (has) BotToast.showText(text: "${newSub.name} 已存在");
+    return !has;
   }
 
-  void showEditSubPopup(BuildContext context, ConfigSub sub) {
-    showDialog(
-        context: context, builder: (_) => PageProfileEditProfile(name: sub.name, url: sub.url, onEnter: (n, u, c) => handleEditSub(sub, n, u, c)));
+  Future<void> showAddSubPopup(BuildContext context, ConfigSub? sub) async {
+    final _sub = await showEditProfileDialog(context, sub: sub, title: '添加', validator: (n) => validatorSub(n, null));
+    if (_sub == null) return;
+    await storeConfig.addSub(_sub);
   }
 
-  Future<dynamic> handleAddSub(String name, String url, VoidCallback close) async {
-    if (!RegExp(r'^[^.].*\.ya?ml$').hasMatch(name)) return BotToast.showText(text: '请确保文件后缀名为.yaml');
-    final has = storeConfig.config.value.subs.firstWhereOrNull((it) => it.name == name);
-    if (has != null) return BotToast.showText(text: "$name 已存在");
-    final ConfigSub sub = ConfigSub(name: name, url: url.isEmpty ? null : url);
-    await storeConfig.addSub(sub);
-    close();
-  }
-
-  Future<dynamic> handleEditSub(ConfigSub oldSub, String name, String url, VoidCallback close) async {
-    if (!RegExp(r'^[^.].*\.ya?ml$').hasMatch(name)) return BotToast.showText(text: '请确保文件后缀名为.yaml');
-    final _sub = storeConfig.config.value.subs.firstWhere((it) => it.name == oldSub.name);
-    final ConfigSub sub = ConfigSub(name: name, url: url.isEmpty ? null : url, updateTime: oldSub.updateTime);
-    await storeConfig.setSub(_sub.name, sub);
-    close();
+  Future<void> showEditSubPopup(BuildContext context, ConfigSub sub) async {
+    final _sub = await showEditProfileDialog(context, sub: sub, title: '编辑', validator: (n) => validatorSub(n, sub));
+    if (_sub == null) return;
+    if (_sub.name == sub.name && _sub.url == sub.url) return;
+    await storeConfig.setSub(sub.name, _sub);
   }
 
   Future<dynamic> handleUpdateSub(ConfigSub sub) async {
@@ -60,25 +58,11 @@ class StoreProfile extends GetxController {
     }
   }
 
-  dynamic handleDeleteSub(BuildContext context, ConfigSub sub) {
+  dynamic handleDeleteSub(BuildContext context, ConfigSub sub) async {
     if (storeConfig.config.value.subs.length <= 1) return BotToast.showText(text: '请至少保留一个配置文件');
-    showDialog(
-      context: context,
-      builder: (c) => AlertDialog(
-        title: const Text('确定'),
-        content: Text('删除 ${sub.name} 配置，磁盘内文件会同时删除。'),
-        actions: [
-          TextButton(
-            onPressed: () async {
-              Navigator.pop(c);
-              await storeConfig.deleteSub(sub.name);
-            },
-            child: const Text('删除'),
-          ),
-          TextButton(onPressed: () => Navigator.pop(c), child: const Text('取消')),
-        ],
-      ),
-    );
+    final del = await showNormalDialog(context, title: "警告", content: '删除 ${sub.name} 配置，磁盘内文件会同时删除。', enterText: '删 除', cancelText: "取消");
+    if (del != true) return;
+    await storeConfig.deleteSub(sub.name);
   }
 
   Future<void> handleSelectSub(ConfigSub sub) async {
