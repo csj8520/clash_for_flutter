@@ -52,6 +52,13 @@ class StoreClashService extends GetxController {
     });
   }
 
+  closeLog() {
+    listenLogsSub?.cancel();
+    listenLogsSub = null;
+    wsChannelLogs?.sink.close();
+    wsChannelLogs = null;
+  }
+
   Future<void> _startService() async {
     clashServiceProcess = await Process.start(Files.assetsClashService.path, ['user-mode'], mode: ProcessStartMode.inheritStdio);
     clashServiceProcess?.exitCode.then((code) async {
@@ -114,9 +121,7 @@ class StoreClashService extends GetxController {
   }
 
   Future<void> exit() async {
-    listenLogsSub?.cancel();
-    wsChannelLogs?.sink.close();
-    wsChannelLogs = null;
+    closeLog();
     final info = await fetchInfo();
     if (info.status == 'running') await fetchStop();
     if (info.mode == 'service-mode') return;

@@ -11,15 +11,14 @@ import 'package:clash_for_flutter/views/setting/setting.dart';
 import 'package:clash_for_flutter/views/connection/connection.dart';
 
 class PageHome extends StatefulWidget {
-  const PageHome({Key? key}) : super(key: key);
+  const PageHome({Key? key, required this.pageController}) : super(key: key);
+  final PageController pageController;
 
   @override
   State<PageHome> createState() => _PageHomeState();
 }
 
 class _PageHomeState extends State<PageHome> {
-  final PageController _pageController = PageController(initialPage: 1);
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -35,11 +34,11 @@ class _PageHomeState extends State<PageHome> {
               'sidebar_profiles'.tr,
               'sidebar_settings'.tr
             ],
-            controller: _pageController,
+            controller: widget.pageController,
           ),
           PageView(
             scrollDirection: Axis.vertical,
-            controller: _pageController,
+            controller: widget.pageController,
             physics: const NeverScrollableScrollPhysics(),
             children: const [
               PageProxie(),

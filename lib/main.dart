@@ -64,6 +64,9 @@ class _MyAppState extends State<MyApp> with TrayListener, WindowListener, Protoc
   final StoreClashCore storeClashCore = Get.find();
   final StoreSortcuts storeSortcuts = Get.find();
   final StoreProfile storeProfile = Get.find();
+  final StoreConnection storeConnection = Get.find();
+
+  final PageController _pageController = PageController(initialPage: 1);
 
   @override
   void initState() {
@@ -139,11 +142,8 @@ class _MyAppState extends State<MyApp> with TrayListener, WindowListener, Protoc
 
   @override
   void onTrayIconMouseDown() {
-    if (Platform.isWindows) {
-      windowManager.show();
-    } else {
-      onTrayIconRightMouseDown();
-    }
+    windowManager.show();
+    onWindowShow();
   }
 
   @override
@@ -158,6 +158,7 @@ class _MyAppState extends State<MyApp> with TrayListener, WindowListener, Protoc
     final title = menuItem.title!;
     if (key == 'show') {
       await windowManager.show();
+      onWindowShow();
     } else if (key == 'hide') {
       await windowManager.hide();
     } else if (key == 'restart-clash-core') {
@@ -186,6 +187,22 @@ class _MyAppState extends State<MyApp> with TrayListener, WindowListener, Protoc
   }
 
   @override
+  Future<void> onWindowClose() async {
+    print('clean');
+    storeClashService.closeLog();
+    storeClashService.logs.clear();
+    storeConnection.closeWs();
+  }
+
+  Future<void> onWindowShow() async {
+    print('reinit');
+    storeClashService.initLog();
+    if (_pageController.page == 3) {
+      storeConnection.initWs();
+    }
+  }
+
+  @override
   void onProtocolUrlReceived(String url) async {
     // ref https://github.com/biyidev/biyi/blob/37aa84ec063fcbac717ace26acd361764ab9a2c5/lib/pages/desktop_popup/desktop_popup.dart#L829
     // clash://install-config?url=xxxx
@@ -201,6 +218,7 @@ class _MyAppState extends State<MyApp> with TrayListener, WindowListener, Protoc
     }
     await windowManager.show();
     await windowManager.focus();
+    onWindowShow();
   }
 
   @override
@@ -213,7 +231,7 @@ class _MyAppState extends State<MyApp> with TrayListener, WindowListener, Protoc
         errorColor: const Color(0xfff56c6c),
       ),
       builder: BotToastInit(),
-      home: const PageHome(),
+      home: PageHome(pageController: _pageController),
     );
   }
 
