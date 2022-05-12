@@ -78,22 +78,22 @@ class StoreConnection extends GetxController {
 
   String filter = '';
 
-  IOWebSocketChannel? _connectChannel;
+  IOWebSocketChannel? connectChannel;
   StreamSubscription<dynamic>? _listenStreamSub;
   Map<String, ConnectConnection> _connectionsCache = {};
 
   initWs() {
     sortBy.value = tableItems.last;
     final StoreClashCore storeClashCore = Get.find();
-    _connectChannel = storeClashCore.fetchConnectionWs();
-    _listenStreamSub = _connectChannel!.stream.listen(_handleStream, onDone: _handleOnDone);
+    connectChannel = storeClashCore.fetchConnectionWs();
+    _listenStreamSub = connectChannel!.stream.listen(_handleStream, onDone: _handleOnDone);
   }
 
   closeWs() {
     _listenStreamSub?.cancel();
-    _connectChannel?.sink.close(WebSocketStatus.goingAway);
+    connectChannel?.sink.close(WebSocketStatus.goingAway);
     _listenStreamSub = null;
-    _connectChannel = null;
+    connectChannel = null;
   }
 
   void handleSetSort(TableItem<ConnectConnection> item) {
@@ -150,7 +150,7 @@ class StoreConnection extends GetxController {
   }
 
   void _handleOnDone() {
-    if (_connectChannel?.closeCode != WebSocketStatus.goingAway) {
+    if (connectChannel?.closeCode != WebSocketStatus.goingAway) {
       BotToast.showText(text: "连接异常断开");
     } else {}
   }

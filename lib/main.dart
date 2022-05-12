@@ -2,7 +2,7 @@ import 'dart:io';
 
 import 'package:day/day.dart';
 import 'package:get/get.dart';
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' hide MenuItem;
 import 'package:bot_toast/bot_toast.dart';
 import 'package:tray_manager/tray_manager.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -104,26 +104,28 @@ class _MyAppState extends State<MyApp> with TrayListener, WindowListener, Protoc
   }
 
   Future<void> initTray() async {
-    await TrayManager.instance.setIcon('assets/logo/logo.ico');
-    List<MenuItem> items = [
-      MenuItem(key: 'show', title: '显示'),
-      MenuItem(key: 'hide', title: '隐藏'),
-      MenuItem.separator,
-      MenuItem(key: 'restart-clash-core', title: '重启 Clash Core'),
-      MenuItem(title: '复制命令行代理', items: [
-        MenuItem(key: 'copy-command-line', title: 'bash'),
-        MenuItem(key: 'copy-command-line', title: 'cmd'),
-        MenuItem(key: 'copy-command-line', title: 'powershell'),
-      ]),
-      MenuItem(key: 'about', title: '关于'),
-      MenuItem(key: 'exit', title: '退出'),
-    ];
-    await TrayManager.instance.setContextMenu(items);
-    TrayManager.instance.addListener(this);
+    await trayManager.setIcon('assets/logo/logo.ico');
+    Menu menu = Menu(items: [
+      MenuItem(key: 'show', label: '显示'),
+      MenuItem(key: 'hide', label: '隐藏'),
+      MenuItem.separator(),
+      MenuItem(key: 'restart-clash-core', label: '重启 Clash Core'),
+      MenuItem(
+          label: '复制命令行代理',
+          submenu: Menu(items: [
+            MenuItem(key: 'copy-command-line', label: 'bash'),
+            MenuItem(key: 'copy-command-line', label: 'cmd'),
+            MenuItem(key: 'copy-command-line', label: 'powershell'),
+          ])),
+      MenuItem(key: 'about', label: '关于'),
+      MenuItem(key: 'exit', label: '退出'),
+    ]);
+    await trayManager.setContextMenu(menu);
+    trayManager.addListener(this);
   }
 
   void initRegularlyUpdate() {
-    Future.delayed(const Duration(minutes: 1)).then((_) async {
+    Future.delayed(const Duration(minutes: 5)).then((_) async {
       initRegularlyUpdate();
       for (final it in storeConfig.config.value.subs) {
         try {
@@ -148,14 +150,14 @@ class _MyAppState extends State<MyApp> with TrayListener, WindowListener, Protoc
 
   @override
   void onTrayIconRightMouseDown() {
-    TrayManager.instance.popUpContextMenu();
+    trayManager.popUpContextMenu();
   }
 
   @override
   void onTrayMenuItemClick(MenuItem menuItem) async {
     super.onTrayMenuItemClick(menuItem);
     final key = menuItem.key;
-    final title = menuItem.title!;
+    final title = menuItem.label!;
     if (key == 'show') {
       await windowManager.show();
       onWindowShow();
@@ -178,6 +180,8 @@ class _MyAppState extends State<MyApp> with TrayListener, WindowListener, Protoc
     await storeClashService.exit();
     if (Platform.isMacOS && storeConfig.clashCoreDns.isNotEmpty) await MacSystemDns.instance.set([]);
     if (storeConfig.config.value.setSystemProxy) await SystemProxy.instance.set(SystemProxyConfig());
+    trayManager.destroy();
+    windowManager.destroy();
     exit(0);
   }
 
@@ -196,8 +200,8 @@ class _MyAppState extends State<MyApp> with TrayListener, WindowListener, Protoc
 
   Future<void> onWindowShow() async {
     print('reinit');
-    storeClashService.initLog();
-    if (_pageController.page == 3) {
+    if (storeClashService.wsChannelLogs == null) storeClashService.initLog();
+    if (_pageController.page == 3 && storeConnection.connectChannel == null) {
       storeConnection.initWs();
     }
   }
@@ -237,6 +241,8 @@ class _MyAppState extends State<MyApp> with TrayListener, WindowListener, Protoc
 
   @override
   void dispose() {
+    trayManager.removeListener(this);
+    windowManager.removeListener(this);
     protocolHandler.removeListener(this);
     super.dispose();
   }
