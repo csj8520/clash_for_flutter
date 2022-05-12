@@ -11,7 +11,7 @@ class ClashName {
   }
 
   static String get arch {
-    return 'amd64';
+    return const String.fromEnvironment('OS_ARCH', defaultValue: 'amd64');
   }
 
   static String get ext {

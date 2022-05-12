@@ -28,6 +28,36 @@ Because `TUN model` need administrator privileges to run, so use [service](https
 
 - [subconverter web gui](https://github.com/CareyWang/sub-web/)
 
+## How do dev
+
+> set arch arm64, default is amd64
+
+Download dependencies
+
+```
+flutter pub get
+dart run --define=OS_ARCH=arm64 ./scripts/init.dart
+```
+
+dev
+
+```
+flutter run -d macos --dart-define=OS_ARCH=arm64
+```
+
+build
+
+```
+flutter build macos --dart-define OS_ARCH=arm64
+```
+
+build dmg
+
+```
+dart pub global activate flutter_distributor
+flutter_distributor package --platform=macos --targets=dmg --build-dart-define=OS_ARCH=arm64
+```
+
 ## Thanks
 
 - [clash core](https://github.com/Dreamacro/clash)
