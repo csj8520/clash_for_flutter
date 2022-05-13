@@ -35,8 +35,7 @@ Because `TUN model` need administrator privileges to run, so use [service](https
 Download dependencies
 
 ```
-flutter pub get
-dart run --define=OS_ARCH=arm64 ./scripts/init.dart
+make init-arm64
 ```
 
 dev
@@ -55,7 +54,7 @@ build dmg
 
 ```
 dart pub global activate flutter_distributor
-flutter_distributor package --platform=macos --targets=dmg --build-dart-define=OS_ARCH=arm64
+make build-darwin-arm64
 ```
 
 ## Thanks
