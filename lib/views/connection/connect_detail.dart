@@ -58,7 +58,6 @@ class _ConnectDetailState extends State<ConnectDetail> {
                       children: [
                         Container().expanded(),
                         TextButton(
-                          child: const Text('关闭连接').textColor(widget.closed ? Colors.grey.shade400 : Colors.white),
                           style: ButtonStyle(
                             backgroundColor: MaterialStateProperty.resolveWith(
                                 (states) => states.contains(MaterialState.disabled) ? Colors.grey.shade200 : Colors.red),
@@ -66,6 +65,7 @@ class _ConnectDetailState extends State<ConnectDetail> {
                             padding: MaterialStateProperty.all(const EdgeInsets.all(15)),
                           ),
                           onPressed: widget.closed ? null : () => storeClashCore.fetchCloseConnection(widget.connection.id),
+                          child: const Text('关闭连接').textColor(widget.closed ? Colors.grey.shade400 : Colors.white),
                         ),
                       ],
                     ),

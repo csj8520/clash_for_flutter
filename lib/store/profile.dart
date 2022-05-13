@@ -34,16 +34,16 @@ class StoreProfile extends GetxController {
   }
 
   Future<void> showAddSubPopup(BuildContext context, ConfigSub? sub) async {
-    final _sub = await showEditProfileDialog(context, sub: sub, title: '添加', validator: (n) => validatorSub(n, null));
-    if (_sub == null) return;
-    await storeConfig.addSub(_sub);
+    final subDate = await showEditProfileDialog(context, sub: sub, title: '添加', validator: (n) => validatorSub(n, null));
+    if (subDate == null) return;
+    await storeConfig.addSub(subDate);
   }
 
   Future<void> showEditSubPopup(BuildContext context, ConfigSub sub) async {
-    final _sub = await showEditProfileDialog(context, sub: sub, title: '编辑', validator: (n) => validatorSub(n, sub));
-    if (_sub == null) return;
-    if (_sub.name == sub.name && _sub.url == sub.url) return;
-    await storeConfig.setSub(sub.name, _sub);
+    final subDate = await showEditProfileDialog(context, sub: sub, title: '编辑', validator: (n) => validatorSub(n, sub));
+    if (subDate == null) return;
+    if (subDate.name == sub.name && subDate.url == sub.url) return;
+    await storeConfig.setSub(sub.name, subDate);
   }
 
   Future<dynamic> handleUpdateSub(ConfigSub sub) async {

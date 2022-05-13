@@ -23,22 +23,22 @@ Future<bool?> showNormalDialog(
       actions: [
         TextButton(
           onPressed: () => Navigator.pop(c, false),
-          child: Text(cancelText),
           style: ButtonStyle(
             fixedSize: MaterialStateProperty.all(const Size(62, 32)),
             shape: MaterialStateProperty.all(RoundedRectangleBorder(borderRadius: BorderRadius.circular(16))),
             side: MaterialStateProperty.all(const BorderSide(color: Color(0x1a000000), width: 1)),
           ),
+          child: Text(cancelText),
         ),
         TextButton(
           onPressed: () => validator?.call() == false ? null : Navigator.pop(c, true),
-          child: Text(enterText).textColor(Colors.white),
           style: ButtonStyle(
             fixedSize: MaterialStateProperty.all(const Size(62, 32)),
             backgroundColor: MaterialStateProperty.all(Theme.of(context).primaryColor),
             shape: MaterialStateProperty.all(RoundedRectangleBorder(borderRadius: BorderRadius.circular(16))),
             side: MaterialStateProperty.all(const BorderSide(color: Color(0x1a000000), width: 1)),
           ),
+          child: Text(enterText).textColor(Colors.white),
         ).boxShadow(color: const Color(0x802c8af8), blurRadius: 8, offset: const Offset(0, 2)),
       ],
     ),

@@ -17,7 +17,7 @@ class PageProxieGroupItem extends StatefulWidget {
   final Function(ProxieProxiesItem proxie, String value) onChange;
 
   @override
-  _PageProxieGroupItemState createState() => _PageProxieGroupItemState();
+  State<PageProxieGroupItem> createState() => _PageProxieGroupItemState();
 }
 
 class _PageProxieGroupItemState extends State<PageProxieGroupItem> {
@@ -73,8 +73,8 @@ class PageProxieGroupItemTab extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return TextButton(
-      child: Text(text, overflow: TextOverflow.ellipsis).fontSize(12).textColor((fail || value) ? Colors.white : const Color(0xff54759a)),
       onPressed: disabled ? null : onClick,
+      child: Text(text, overflow: TextOverflow.ellipsis).fontSize(12).textColor((fail || value) ? Colors.white : const Color(0xff54759a)),
     )
         .height(24)
         .backgroundColor((fail && value)
@@ -129,7 +129,7 @@ class PageProxieProvider extends StatefulWidget {
   final Future<void> Function(ProxieProviderItem provider) onHealthCheck;
 
   @override
-  _PageProxieProviderState createState() => _PageProxieProviderState();
+  State<PageProxieProvider> createState() => _PageProxieProviderState();
 }
 
 class _PageProxieProviderState extends State<PageProxieProvider> {

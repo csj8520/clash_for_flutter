@@ -16,7 +16,7 @@ class PageSetting extends StatefulWidget {
   const PageSetting({Key? key}) : super(key: key);
 
   @override
-  _PageSettingState createState() => _PageSettingState();
+  State<PageSetting> createState() => _PageSettingState();
 }
 
 class _PageSettingState extends State<PageSetting> {
@@ -144,7 +144,7 @@ class _PageSettingState extends State<PageSetting> {
                   [
                     SettingItem(
                       title: 'setting_external_controller'.tr,
-                      child: TextButton(child: Text(storeConfig.clashCoreApiAddress.value), onPressed: launchWebGui),
+                      child: TextButton(onPressed: launchWebGui, child: Text(storeConfig.clashCoreApiAddress.value)),
                     ),
                     const SettingItem()
                   ],

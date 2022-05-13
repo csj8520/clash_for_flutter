@@ -169,13 +169,13 @@ class StoreConnection extends GetxController {
 
   void _handleSort() {
     if (sortBy.value == null) return;
-    final _sort = sortBy.value!.sort;
+    final sort = sortBy.value!.sort;
     connect.value.connections.sort((a, b) {
       final va = sortAscend.value ? a : b;
       final vb = sortAscend.value ? b : a;
 
-      if (_sort != null) {
-        return _sort(va, vb);
+      if (sort != null) {
+        return sort(va, vb);
       } else {
         return sortBy.value!.getLabel(va).compareTo(sortBy.value!.getLabel(vb));
       }

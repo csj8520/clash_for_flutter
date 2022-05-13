@@ -11,7 +11,7 @@ class Loading extends StatefulWidget {
   final LoadingController controller;
 
   @override
-  _LoadingState createState() => _LoadingState();
+  State<Loading> createState() => _LoadingState();
 }
 
 class _LoadingState extends State<Loading> {

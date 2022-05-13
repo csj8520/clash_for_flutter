@@ -17,8 +17,8 @@ class ButtonSelect extends StatelessWidget {
           .asMap()
           .keys
           .map((idx) => TextButton(
-                  child: Text(labels[idx]).textColor(value == idx ? Colors.white : const Color(0xff54759a)).fontSize(12),
-                  onPressed: onSelect == null ? null : () => onSelect!(idx))
+                  onPressed: onSelect == null ? null : () => onSelect!(idx),
+                  child: Text(labels[idx]).textColor(value == idx ? Colors.white : const Color(0xff54759a)).fontSize(12))
               .decorated(
                 color: value == idx ? Theme.of(context).primaryColor : Colors.white,
                 // TODO-FIX: 边框重合

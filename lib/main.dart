@@ -192,14 +192,12 @@ class _MyAppState extends State<MyApp> with TrayListener, WindowListener, Protoc
 
   @override
   Future<void> onWindowClose() async {
-    print('clean');
     storeClashService.closeLog();
     storeClashService.logs.clear();
     storeConnection.closeWs();
   }
 
   Future<void> onWindowShow() async {
-    print('reinit');
     if (storeClashService.wsChannelLogs == null) storeClashService.initLog();
     if (_pageController.page == 3 && storeConnection.connectChannel == null) {
       storeConnection.initWs();

@@ -16,14 +16,14 @@ Future<void> killProcess(String name) async {
 }
 
 Future<ProcessResult> runAsAdmin(String executable, List<String> arguments) async {
-  String _path = shellArgument(executable).replaceAll(' ', r'\\ ');
-  _path = _path.substring(1, _path.length - 1);
+  String executablePath = shellArgument(executable).replaceAll(' ', r'\\ ');
+  executablePath = executablePath.substring(1, executablePath.length - 1);
   if (Platform.isMacOS) {
     return await Process.run(
       'osascript',
       [
         '-e',
-        shellArguments(['do', 'shell', 'script', '$_path ${shellArguments(arguments)}', 'with', 'administrator', 'privileges']),
+        shellArguments(['do', 'shell', 'script', '$executablePath ${shellArguments(arguments)}', 'with', 'administrator', 'privileges']),
       ],
     );
   } else if (Platform.isWindows) {

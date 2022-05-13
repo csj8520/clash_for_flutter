@@ -27,10 +27,10 @@ class ClashName {
 class Paths {
   static Directory get assets {
     File mainFile = File(Platform.resolvedExecutable);
-    String _assetsPath = '';
-    if (Platform.isWindows) _assetsPath = '../data/flutter_assets/assets';
-    if (Platform.isMacOS) _assetsPath = '../../Frameworks/App.framework/Resources/flutter_assets/assets';
-    return Directory(path.normalize(path.join(mainFile.path, _assetsPath)));
+    String assetsPath = '';
+    if (Platform.isWindows) assetsPath = '../data/flutter_assets/assets';
+    if (Platform.isMacOS) assetsPath = '../../Frameworks/App.framework/Resources/flutter_assets/assets';
+    return Directory(path.normalize(path.join(mainFile.path, assetsPath)));
   }
 
   static Directory get assetsBin {

@@ -53,7 +53,7 @@ class _PageConnectionState extends State<PageConnection> {
                 .alignment(e.align)
                 .padding(left: 5, right: 5)
                 .width(e.width);
-            return e.tooltip ? Tooltip(child: text, message: label) : text;
+            return e.tooltip ? Tooltip(message: label, child: text) : text;
           })
           .toList()
           .toRow(),

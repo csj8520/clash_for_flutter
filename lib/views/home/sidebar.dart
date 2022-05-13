@@ -17,7 +17,7 @@ class SideBar extends StatefulWidget {
   final PageController controller;
 
   @override
-  _SideBarState createState() => _SideBarState();
+  State<SideBar> createState() => _SideBarState();
 }
 
 class _SideBarState extends State<SideBar> {

@@ -46,14 +46,14 @@ class RuleProvidersProvidersItem {
   }
 
   Map<String, dynamic> toJson() {
-    final _data = <String, dynamic>{};
-    _data['behavior'] = behavior;
-    _data['name'] = name;
-    _data['ruleCount'] = ruleCount;
-    _data['type'] = type;
-    _data['updatedAt'] = updatedAt;
-    _data['vehicleType'] = vehicleType;
-    return _data;
+    final data = <String, dynamic>{};
+    data['behavior'] = behavior;
+    data['name'] = name;
+    data['ruleCount'] = ruleCount;
+    data['type'] = type;
+    data['updatedAt'] = updatedAt;
+    data['vehicleType'] = vehicleType;
+    return data;
   }
 
   @override
@@ -73,9 +73,9 @@ class Rule {
   }
 
   Map<String, dynamic> toJson() {
-    final _data = <String, dynamic>{};
-    _data['rules'] = rules.map((e) => e.toJson()).toList();
-    return _data;
+    final data = <String, dynamic>{};
+    data['rules'] = rules.map((e) => e.toJson()).toList();
+    return data;
   }
 
   @override
@@ -101,11 +101,11 @@ class RuleRule {
   }
 
   Map<String, dynamic> toJson() {
-    final _data = <String, dynamic>{};
-    _data['type'] = type;
-    _data['payload'] = payload;
-    _data['proxy'] = proxy;
-    return _data;
+    final data = <String, dynamic>{};
+    data['type'] = type;
+    data['payload'] = payload;
+    data['proxy'] = proxy;
+    return data;
   }
 
   @override

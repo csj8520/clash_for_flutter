@@ -20,7 +20,7 @@ class PageProfile extends StatefulWidget {
   const PageProfile({Key? key}) : super(key: key);
 
   @override
-  _PageProfileState createState() => _PageProfileState();
+  State<PageProfile> createState() => _PageProfileState();
 }
 
 class _PageProfileState extends State<PageProfile> {

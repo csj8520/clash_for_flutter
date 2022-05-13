@@ -18,12 +18,12 @@ class ClashServiceInfo {
   }
 
   Map<String, dynamic> toJson() {
-    final _data = <String, dynamic>{};
-    _data['code'] = code;
-    _data['mode'] = mode;
-    _data['status'] = status;
-    _data['version'] = version;
-    return _data;
+    final data = <String, dynamic>{};
+    data['code'] = code;
+    data['mode'] = mode;
+    data['status'] = status;
+    data['version'] = version;
+    return data;
   }
 
   @override
@@ -49,11 +49,11 @@ class ClashServiceLog {
   }
 
   Map<String, dynamic> toJson() {
-    final _data = <String, dynamic>{};
-    _data['time'] = time;
-    _data['type'] = type;
-    _data['msg'] = msg;
-    return _data;
+    final data = <String, dynamic>{};
+    data['time'] = time;
+    data['type'] = type;
+    data['msg'] = msg;
+    return data;
   }
 
   @override

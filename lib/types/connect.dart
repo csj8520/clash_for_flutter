@@ -15,11 +15,11 @@ class Connect {
   }
 
   Map<String, dynamic> toJson() {
-    final _data = <String, dynamic>{};
-    _data['downloadTotal'] = downloadTotal;
-    _data['uploadTotal'] = uploadTotal;
-    _data['connections'] = connections.map((e) => e.toJson()).toList();
-    return _data;
+    final data = <String, dynamic>{};
+    data['downloadTotal'] = downloadTotal;
+    data['uploadTotal'] = uploadTotal;
+    data['connections'] = connections.map((e) => e.toJson()).toList();
+    return data;
   }
 
   @override
@@ -63,17 +63,17 @@ class ConnectConnection {
   }
 
   Map<String, dynamic> toJson() {
-    final _data = <String, dynamic>{};
-    _data['id'] = id;
-    _data['speed'] = speed.toJson();
-    _data['metadata'] = metadata.toJson();
-    _data['upload'] = upload;
-    _data['download'] = download;
-    _data['start'] = start;
-    _data['chains'] = chains;
-    _data['rule'] = rule;
-    _data['rulePayload'] = rulePayload;
-    return _data;
+    final data = <String, dynamic>{};
+    data['id'] = id;
+    data['speed'] = speed.toJson();
+    data['metadata'] = metadata.toJson();
+    data['upload'] = upload;
+    data['download'] = download;
+    data['start'] = start;
+    data['chains'] = chains;
+    data['rule'] = rule;
+    data['rulePayload'] = rulePayload;
+    return data;
   }
 
   @override
@@ -96,10 +96,10 @@ class ConnectConnectionSpeed {
   }
 
   Map<String, dynamic> toJson() {
-    final _data = <String, dynamic>{};
-    _data['download'] = download;
-    _data['upload'] = upload;
-    return _data;
+    final data = <String, dynamic>{};
+    data['download'] = download;
+    data['upload'] = upload;
+    return data;
   }
 
   @override
@@ -143,17 +143,17 @@ class ConnectConnectionMetadata {
   }
 
   Map<String, dynamic> toJson() {
-    final _data = <String, dynamic>{};
-    _data['network'] = network;
-    _data['type'] = type;
-    _data['sourceIP'] = sourceIP;
-    _data['destinationIP'] = destinationIP;
-    _data['sourcePort'] = sourcePort;
-    _data['destinationPort'] = destinationPort;
-    _data['host'] = host;
-    _data['dnsMode'] = dnsMode;
-    _data['processPath'] = processPath;
-    return _data;
+    final data = <String, dynamic>{};
+    data['network'] = network;
+    data['type'] = type;
+    data['sourceIP'] = sourceIP;
+    data['destinationIP'] = destinationIP;
+    data['sourcePort'] = sourcePort;
+    data['destinationPort'] = destinationPort;
+    data['host'] = host;
+    data['dnsMode'] = dnsMode;
+    data['processPath'] = processPath;
+    return data;
   }
 
   @override

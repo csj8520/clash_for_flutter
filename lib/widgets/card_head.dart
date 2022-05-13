@@ -8,7 +8,7 @@ class CardHead extends StatefulWidget {
   final Widget? suffix;
 
   @override
-  _CardHeadState createState() => _CardHeadState();
+  State<CardHead> createState() => _CardHeadState();
 }
 
 class _CardHeadState extends State<CardHead> {

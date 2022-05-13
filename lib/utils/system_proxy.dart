@@ -47,22 +47,22 @@ class MacSystemProxy extends SystemProxyPlatform {
     List<String> commands = [];
     for (var network in networks) {
       if (conf.http != null) {
-        final _http = SystemProxyServer(conf.http!);
-        commands.add('networksetup -setwebproxy "$network" "${_http.host}" "${_http.port}"');
+        final http = SystemProxyServer(conf.http!);
+        commands.add('networksetup -setwebproxy "$network" "${http.host}" "${http.port}"');
       } else {
         commands.add('networksetup -setwebproxy "$network" "" ""');
         commands.add('networksetup -setwebproxystate "$network" off');
       }
       if (conf.https != null) {
-        final _https = SystemProxyServer(conf.https!);
-        commands.add('networksetup -setsecurewebproxy "$network" "${_https.host}" "${_https.port}"');
+        final https = SystemProxyServer(conf.https!);
+        commands.add('networksetup -setsecurewebproxy "$network" "${https.host}" "${https.port}"');
       } else {
         commands.add('networksetup -setsecurewebproxy "$network" "" ""');
         commands.add('networksetup -setsecurewebproxystate "$network" off');
       }
       if (conf.socks != null) {
-        final _socks = SystemProxyServer(conf.socks!);
-        commands.add('networksetup -setsocksfirewallproxy "$network" "${_socks.host}" "${_socks.port}"');
+        final socks = SystemProxyServer(conf.socks!);
+        commands.add('networksetup -setsocksfirewallproxy "$network" "${socks.host}" "${socks.port}"');
       } else {
         commands.add('networksetup -setsocksfirewallproxy "$network" "" ""');
         commands.add('networksetup -setsocksfirewallproxystate "$network" off');
@@ -77,12 +77,12 @@ class MacSystemProxy extends SystemProxyPlatform {
   Future<SystemProxyConfig> get() async {
     final out = (await Process.run('scutil', ['--proxy'])).stdout.toString().trim();
     final states = ['HTTP', 'HTTPS', 'SOCKS'].map((it) {
-      final _enable = RegExp('(?<=${it}Enable\\s*:\\s*)([^\\s]+)').firstMatch(out);
-      final _host = RegExp('(?<=${it}Proxy\\s*:\\s*)([^\\s]+)').firstMatch(out);
-      final _port = RegExp('(?<=${it}Port\\s*:\\s*)([^\\s]+)').firstMatch(out);
-      final enable = _enable?.group(1);
-      final host = _host?.group(1);
-      final port = _port?.group(1);
+      final enableReg = RegExp('(?<=${it}Enable\\s*:\\s*)([^\\s]+)').firstMatch(out);
+      final hostReg = RegExp('(?<=${it}Proxy\\s*:\\s*)([^\\s]+)').firstMatch(out);
+      final portReg = RegExp('(?<=${it}Port\\s*:\\s*)([^\\s]+)').firstMatch(out);
+      final enable = enableReg?.group(1);
+      final host = hostReg?.group(1);
+      final port = portReg?.group(1);
       if (enable == null || enable == '0' || host == null || port == null) return null;
       return '$host:$port';
     }).toList();

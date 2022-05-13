@@ -61,11 +61,11 @@ class StoreClashCore extends GetxController {
     }
   }
 
-  setApi(String _address, String _secret) {
-    address.value = _address;
-    secret.value = _secret;
-    dio.options.baseUrl = 'http://$_address';
-    if (_secret.isNotEmpty) dio.options.headers['Authorization'] = 'Bearer $_secret';
+  setApi(String apiAddress, String apiSecret) {
+    address.value = apiAddress;
+    secret.value = apiSecret;
+    dio.options.baseUrl = 'http://$apiAddress';
+    if (apiSecret.isNotEmpty) dio.options.headers['Authorization'] = 'Bearer $apiSecret';
   }
 
   Future<bool> fetchHello() async {

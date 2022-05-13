@@ -7,7 +7,7 @@ String bytesToSize(int bytes) {
   const k = 1024;
   const sizes = ['B', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
   final i = (math.log(bytes) / math.log(k)).floor();
-  return (bytes / math.pow(k, i)).toStringAsFixed(2) + ' ' + sizes[i];
+  return '${(bytes / math.pow(k, i)).toStringAsFixed(2)} ${sizes[i]}';
 }
 
 final Map<String, Map<String, String>> _copyCommandLineProxyTypes = {
@@ -17,11 +17,11 @@ final Map<String, Map<String, String>> _copyCommandLineProxyTypes = {
 };
 
 Future<void> copyCommandLineProxy(String type, {String? http, String? https}) async {
-  final _types = _copyCommandLineProxyTypes[type];
-  if (_types == null) return;
-  final prefix = _types['prefix']!;
-  final quot = _types['quot']!;
-  final join = _types['join']!;
+  final types = _copyCommandLineProxyTypes[type];
+  if (types == null) return;
+  final prefix = types['prefix']!;
+  final quot = types['quot']!;
+  final join = types['join']!;
   List<String> commands = [];
   if (http != null) commands.add('${prefix}http_proxy=${quot}http://$http$quot');
   if (https != null) commands.add('${prefix}https_proxy=${quot}http://$https$quot');

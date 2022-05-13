@@ -12,10 +12,10 @@ class ClashCoreVersion {
   }
 
   Map<String, dynamic> toJson() {
-    final _data = <String, dynamic>{};
-    _data['premium'] = premium;
-    _data['version'] = version;
-    return _data;
+    final data = <String, dynamic>{};
+    data['premium'] = premium;
+    data['version'] = version;
+    return data;
   }
 
   @override
@@ -65,19 +65,19 @@ class ClashCoreConfig {
   }
 
   Map<String, dynamic> toJson() {
-    final _data = <String, dynamic>{};
-    _data['port'] = port;
-    _data['socks-port'] = socksPort;
-    _data['redir-port'] = redirPort;
-    _data['tproxy-port'] = tproxyPort;
-    _data['mixed-port'] = mixedPort;
-    _data['authentication'] = authentication;
-    _data['allow-lan'] = allowLan;
-    _data['bind-address'] = bindAddress;
-    _data['mode'] = mode;
-    _data['log-level'] = logLevel;
-    _data['ipv6'] = ipv6;
-    return _data;
+    final data = <String, dynamic>{};
+    data['port'] = port;
+    data['socks-port'] = socksPort;
+    data['redir-port'] = redirPort;
+    data['tproxy-port'] = tproxyPort;
+    data['mixed-port'] = mixedPort;
+    data['authentication'] = authentication;
+    data['allow-lan'] = allowLan;
+    data['bind-address'] = bindAddress;
+    data['mode'] = mode;
+    data['log-level'] = logLevel;
+    data['ipv6'] = ipv6;
+    return data;
   }
 
   @override

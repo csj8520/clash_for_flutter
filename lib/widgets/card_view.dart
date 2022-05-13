@@ -6,7 +6,7 @@ class CardView extends StatefulWidget {
   final Widget child;
 
   @override
-  _CardViewState createState() => _CardViewState();
+  State<CardView> createState() => _CardViewState();
 }
 
 class _CardViewState extends State<CardView> {

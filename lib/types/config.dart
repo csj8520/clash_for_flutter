@@ -30,16 +30,16 @@ class Config {
   }
 
   Map<String, dynamic> toJson() {
-    final _data = <String, dynamic>{};
-    _data['selected'] = selected;
-    _data['updateInterval'] = updateInterval;
-    _data['updateSubsAtStart'] = updateSubsAtStart;
-    _data['setSystemProxy'] = setSystemProxy;
-    _data['startAtLogin'] = startAtLogin;
-    _data['breakConnections'] = breakConnections;
-    _data['language'] = language;
-    _data['subs'] = subs.map((e) => e.toJson()).toList();
-    return _data;
+    final data = <String, dynamic>{};
+    data['selected'] = selected;
+    data['updateInterval'] = updateInterval;
+    data['updateSubsAtStart'] = updateSubsAtStart;
+    data['setSystemProxy'] = setSystemProxy;
+    data['startAtLogin'] = startAtLogin;
+    data['breakConnections'] = breakConnections;
+    data['language'] = language;
+    data['subs'] = subs.map((e) => e.toJson()).toList();
+    return data;
   }
 
   @override
@@ -65,11 +65,11 @@ class ConfigSub {
   }
 
   Map<String, dynamic> toJson() {
-    final _data = <String, dynamic>{};
-    _data['name'] = name;
-    _data['url'] = url;
-    _data['updateTime'] = updateTime;
-    return _data;
+    final data = <String, dynamic>{};
+    data['name'] = name;
+    data['url'] = url;
+    data['updateTime'] = updateTime;
+    return data;
   }
 
   @override

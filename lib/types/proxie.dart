@@ -46,14 +46,14 @@ class ProxieProxiesItem {
   }
 
   Map<String, dynamic> toJson() {
-    final _data = <String, dynamic>{};
-    _data['all'] = all;
-    _data['history'] = history.map((e) => e.toJson()).toList();
-    _data['name'] = name;
-    _data['now'] = now;
-    _data['type'] = type;
-    _data['udp'] = udp;
-    return _data;
+    final data = <String, dynamic>{};
+    data['all'] = all;
+    data['history'] = history.map((e) => e.toJson()).toList();
+    data['name'] = name;
+    data['now'] = now;
+    data['type'] = type;
+    data['udp'] = udp;
+    return data;
   }
 
   @override
@@ -76,10 +76,10 @@ class ProxieProxiesItemHistory {
   }
 
   Map<String, dynamic> toJson() {
-    final _data = <String, dynamic>{};
-    _data['time'] = time;
-    _data['delay'] = delay;
-    return _data;
+    final data = <String, dynamic>{};
+    data['time'] = time;
+    data['delay'] = delay;
+    return data;
   }
 
   @override
@@ -133,13 +133,13 @@ class ProxieProviderItem {
   }
 
   Map<String, dynamic> toJson() {
-    final _data = <String, dynamic>{};
-    _data['name'] = name;
-    _data['proxies'] = proxies.map((e) => e.toJson()).toList();
-    _data['type'] = type;
-    _data['vehicleType'] = vehicleType;
-    _data['updatedAt'] = updatedAt;
-    return _data;
+    final data = <String, dynamic>{};
+    data['name'] = name;
+    data['proxies'] = proxies.map((e) => e.toJson()).toList();
+    data['type'] = type;
+    data['vehicleType'] = vehicleType;
+    data['updatedAt'] = updatedAt;
+    return data;
   }
 
   @override
