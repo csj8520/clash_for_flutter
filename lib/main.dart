@@ -1,26 +1,30 @@
 import 'dart:io';
 
-import 'package:day/day.dart';
 import 'package:get/get.dart';
 import 'package:flutter/material.dart' hide MenuItem;
 import 'package:bot_toast/bot_toast.dart';
-import 'package:tray_manager/tray_manager.dart';
-import 'package:url_launcher/url_launcher.dart';
 import 'package:window_manager/window_manager.dart';
 import 'package:protocol_handler/protocol_handler.dart';
 
 import 'package:clash_for_flutter/i18n/i18n.dart';
-import 'package:clash_for_flutter/utils/utils.dart';
-import 'package:clash_for_flutter/types/config.dart';
-import 'package:clash_for_flutter/store/config.dart';
-import 'package:clash_for_flutter/store/profile.dart';
-import 'package:clash_for_flutter/store/shortcuts.dart';
+
+import 'package:clash_for_flutter/controllers/tray.dart';
+import 'package:clash_for_flutter/controllers/window.dart';
+import 'package:clash_for_flutter/controllers/protocol.dart';
+import 'package:clash_for_flutter/controllers/controllers.dart';
+
+import 'package:clash_for_flutter/controllers/core.dart';
+import 'package:clash_for_flutter/controllers/config.dart';
+import 'package:clash_for_flutter/controllers/service.dart';
+import 'package:clash_for_flutter/controllers/shortcuts.dart';
+
+import 'package:clash_for_flutter/controller.dart';
 import 'package:clash_for_flutter/views/home/home.dart';
-import 'package:clash_for_flutter/store/clash_core.dart';
-import 'package:clash_for_flutter/store/connection.dart';
-import 'package:clash_for_flutter/utils/system_dns.dart';
-import 'package:clash_for_flutter/utils/system_proxy.dart';
-import 'package:clash_for_flutter/store/clash_service.dart';
+import 'package:clash_for_flutter/views/home/controller.dart';
+import 'package:clash_for_flutter/views/proxie/controller.dart';
+import 'package:clash_for_flutter/views/setting/controller.dart';
+import 'package:clash_for_flutter/views/profile/controller.dart';
+import 'package:clash_for_flutter/views/connection/controller.dart';
 
 void main() async {
   // init windowManager
@@ -36,14 +40,25 @@ void main() async {
     // titleBarStyle: Platform.isMacOS ? TitleBarStyle.hidden : TitleBarStyle.normal,
   );
   await windowManager.waitUntilReadyToShow(windowOptions);
-  await windowManager.show();
-  // init store
-  Get.put(StoreConfig());
-  Get.put(StoreClashService());
-  Get.put(StoreClashCore());
-  Get.put(StoreSortcuts());
-  Get.put(StoreProfile());
-  Get.put(StoreConnection());
+  // await windowManager.show();
+
+  // init controllers
+  Get.put(TrayController());
+  Get.put(WindowController());
+  Get.put(ProtocolController());
+
+  Get.put(CoreController());
+  Get.put(ConfigController());
+  Get.put(ServiceController());
+  Get.put(ShortcutsController());
+
+  Get.put(PageMainController());
+  Get.put(PageHomeController());
+  Get.put(PageProxieController());
+  Get.put(PageSettingController());
+  Get.put(PageProfileController());
+  Get.put(PageConnectionController());
+
   runApp(GetMaterialApp(
     translations: I18n(),
     locale: Get.deviceLocale,
@@ -58,169 +73,12 @@ class MyApp extends StatefulWidget {
   State<MyApp> createState() => _MyAppState();
 }
 
-class _MyAppState extends State<MyApp> with TrayListener, WindowListener, ProtocolListener {
-  final StoreConfig storeConfig = Get.find();
-  final StoreClashService storeClashService = Get.find();
-  final StoreClashCore storeClashCore = Get.find();
-  final StoreSortcuts storeSortcuts = Get.find();
-  final StoreProfile storeProfile = Get.find();
-  final StoreConnection storeConnection = Get.find();
-
-  final PageController _pageController = PageController(initialPage: 1);
-
+class _MyAppState extends State<MyApp> {
   @override
   void initState() {
-    init();
+    controllers.init();
+    controllers.pageMain.init(context);
     super.initState();
-  }
-
-  Future<void> init() async {
-    // watch process kill
-    // ref https://github.com/dart-lang/sdk/issues/12170
-    // TODO: test windows
-    // for macos 任务管理器退出进程
-    ProcessSignal.sigterm.watch().listen((_) {
-      stdout.writeln('exit: sigterm');
-      handleExit();
-    });
-    // for macos ctrl+c
-    ProcessSignal.sigint.watch().listen((_) {
-      stdout.writeln('exit: sigint');
-      handleExit();
-    });
-
-    windowManager.addListener(this);
-    protocolHandler.addListener(this);
-    await initTray();
-    await storeConfig.init();
-    await storeClashService.init();
-    storeSortcuts.init();
-    storeProfile.init();
-    await storeSortcuts.startClashCore();
-    await storeClashCore.fetchVersion();
-    final language = storeConfig.config.value.language.split('_');
-    await Get.updateLocale(Locale(language[0], language[1]));
-    initRegularlyUpdate();
-  }
-
-  Future<void> initTray() async {
-    await trayManager.setIcon('assets/logo/logo.ico');
-    Menu menu = Menu(items: [
-      MenuItem(key: 'show', label: '显示'),
-      MenuItem(key: 'hide', label: '隐藏'),
-      MenuItem.separator(),
-      MenuItem(key: 'restart-clash-core', label: '重启 Clash Core'),
-      MenuItem(
-          label: '复制命令行代理',
-          submenu: Menu(items: [
-            MenuItem(key: 'copy-command-line', label: 'bash'),
-            MenuItem(key: 'copy-command-line', label: 'cmd'),
-            MenuItem(key: 'copy-command-line', label: 'powershell'),
-          ])),
-      MenuItem(key: 'about', label: '关于'),
-      MenuItem(key: 'exit', label: '退出'),
-    ]);
-    await trayManager.setContextMenu(menu);
-    trayManager.addListener(this);
-  }
-
-  void initRegularlyUpdate() {
-    Future.delayed(const Duration(minutes: 5)).then((_) async {
-      initRegularlyUpdate();
-      for (final it in storeConfig.config.value.subs) {
-        try {
-          if (it.url == null || it.url!.isEmpty) continue;
-          if (((DateTime.now().millisecondsSinceEpoch ~/ 1000) - (it.updateTime ?? 0)) < storeConfig.config.value.updateInterval) continue;
-          final chenged = await storeConfig.updateSub(it);
-          if (!chenged) continue;
-          if (it.name != storeConfig.config.value.selected) continue;
-          // restart clash core
-          await storeSortcuts.reloadClashCore();
-          await Future.delayed(const Duration(seconds: 20));
-        } catch (_) {}
-      }
-    });
-  }
-
-  @override
-  void onTrayIconMouseDown() {
-    windowManager.show();
-    onWindowShow();
-  }
-
-  @override
-  void onTrayIconRightMouseDown() {
-    trayManager.popUpContextMenu();
-  }
-
-  @override
-  void onTrayMenuItemClick(MenuItem menuItem) async {
-    super.onTrayMenuItemClick(menuItem);
-    final key = menuItem.key;
-    final title = menuItem.label!;
-    if (key == 'show') {
-      await windowManager.show();
-      onWindowShow();
-    } else if (key == 'hide') {
-      await windowManager.hide();
-    } else if (key == 'restart-clash-core') {
-      await storeClashService.fetchStop();
-      await storeClashService.fetchStart(storeConfig.config.value.selected);
-    } else if (key == 'copy-command-line') {
-      final proxyConfig = storeClashCore.proxyConfig;
-      await copyCommandLineProxy(title, http: proxyConfig.http, https: proxyConfig.https);
-    } else if (key == 'about') {
-      await launchUrl(Uri.parse('https://github.com/csj8520/clash_for_flutter'));
-    } else if (key == 'exit') {
-      await handleExit();
-    }
-  }
-
-  Future<void> handleExit() async {
-    await storeClashService.exit();
-    if (Platform.isMacOS && storeConfig.clashCoreDns.isNotEmpty) await MacSystemDns.instance.set([]);
-    if (storeConfig.config.value.setSystemProxy) await SystemProxy.instance.set(SystemProxyConfig());
-    trayManager.destroy();
-    windowManager.destroy();
-    exit(0);
-  }
-
-  @override
-  Future<void> onWindowFocus() async {
-    await storeClashCore.fetchConfig();
-  }
-
-  @override
-  Future<void> onWindowClose() async {
-    storeClashService.closeLog();
-    storeClashService.logs.clear();
-    storeConnection.closeWs();
-  }
-
-  Future<void> onWindowShow() async {
-    if (storeClashService.wsChannelLogs == null) storeClashService.initLog();
-    if (_pageController.page == 3 && storeConnection.connectChannel == null) {
-      storeConnection.initWs();
-    }
-  }
-
-  @override
-  void onProtocolUrlReceived(String url) async {
-    // ref https://github.com/biyidev/biyi/blob/37aa84ec063fcbac717ace26acd361764ab9a2c5/lib/pages/desktop_popup/desktop_popup.dart#L829
-    // clash://install-config?url=xxxx
-    final uri = Uri.parse(url);
-    if (uri.scheme != 'clash') return;
-    if (uri.authority == 'install-config') {
-      final paths = Uri.parse(uri.queryParameters['url']!).pathSegments;
-      String name = paths.isNotEmpty ? paths.last : Day().format('YYYYMMDD_HHmmss');
-      name = name.replaceFirst(RegExp(r'(\.\w*)?$'), '.yaml');
-      storeProfile.showAddSubPopup(context, ConfigSub(name: name, url: uri.queryParameters['url']));
-    } else {
-      return;
-    }
-    await windowManager.show();
-    await windowManager.focus();
-    onWindowShow();
   }
 
   @override
@@ -233,15 +91,13 @@ class _MyAppState extends State<MyApp> with TrayListener, WindowListener, Protoc
         errorColor: const Color(0xfff56c6c),
       ),
       builder: BotToastInit(),
-      home: PageHome(pageController: _pageController),
+      home: const PageHome(),
     );
   }
 
   @override
   void dispose() {
-    trayManager.removeListener(this);
-    windowManager.removeListener(this);
-    protocolHandler.removeListener(this);
+    controllers.pageMain.dispose();
     super.dispose();
   }
 }

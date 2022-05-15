@@ -36,6 +36,10 @@ class ProxieProxiesItem {
   late String type;
   late bool udp;
 
+  get delay {
+    return history.isEmpty ? 0 : history.last.delay;
+  }
+
   ProxieProxiesItem.fromJson(Map<String, dynamic> json) {
     all = json['all'] == null ? null : List.castFrom<dynamic, String>(json['all']);
     history = List.from(json['history']).map((e) => ProxieProxiesItemHistory.fromJson(e)).toList();

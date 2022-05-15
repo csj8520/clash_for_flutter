@@ -1,10 +1,9 @@
-import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 import 'package:bot_toast/bot_toast.dart';
 import 'package:styled_widget/styled_widget.dart';
 
-import 'package:clash_for_flutter/store/config.dart';
 import 'package:clash_for_flutter/widgets/card_view.dart';
+import 'package:clash_for_flutter/controllers/controllers.dart';
 
 class PageProfileSetting extends StatefulWidget {
   const PageProfileSetting({Key? key}) : super(key: key);
@@ -14,14 +13,12 @@ class PageProfileSetting extends StatefulWidget {
 }
 
 class _PageProfileSettingState extends State<PageProfileSetting> {
-  final StoreConfig storeConfig = Get.find();
-
   final TextEditingController _updateIntervalInputController = TextEditingController();
   final FocusNode _updateIntervalInputfocusNode = FocusNode();
 
   @override
   void initState() {
-    _updateIntervalInputController.text = (storeConfig.config.value.updateInterval / 60 / 60).toString();
+    _updateIntervalInputController.text = (controllers.config.config.value.updateInterval / 60 / 60).toString();
     _updateIntervalInputfocusNode.addListener(_updateIntervalInputEvent);
     super.initState();
   }
@@ -30,12 +27,12 @@ class _PageProfileSettingState extends State<PageProfileSetting> {
     if (!_updateIntervalInputfocusNode.hasFocus) {
       try {
         final time = (double.parse(_updateIntervalInputController.text) * 60 * 60).toInt();
-        if (time == storeConfig.config.value.updateInterval) return;
+        if (time == controllers.config.config.value.updateInterval) return;
         if (time < 60) {
           BotToast.showText(text: '时间不可小于一分钟！');
           return;
         }
-        await storeConfig.setUpdateInterval(time);
+        await controllers.config.setUpdateInterval(time);
       } catch (e) {
         BotToast.showText(text: '请输入正确的时间！');
       }

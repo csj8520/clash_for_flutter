@@ -16,7 +16,7 @@ final List<String> _groupNames = [
   ProxieProxieType.loadbalance,
 ];
 
-class StoreClashCore extends GetxController {
+class CoreController extends GetxController {
   final dio = Dio(BaseOptions(baseUrl: 'http://127.0.0.1:9090'));
   var version = ClashCoreVersion(premium: true, version: '').obs;
   var address = ''.obs;
@@ -138,11 +138,9 @@ class StoreClashCore extends GetxController {
     proxieProviders.value = ProxieProvider.fromJson(res.data).providers.values.where((it) => it.vehicleType != 'Compatible').toList();
     for (final it in proxieProviders) {
       it.proxies.sort((a, b) {
-        final ad = a.history.isEmpty ? 0 : a.history.last.delay;
-        final bd = b.history.isEmpty ? 0 : b.history.last.delay;
-        if (ad == 0) return 1;
-        if (bd == 0) return -1;
-        return ad - bd;
+        if (a.delay == 0) return 1;
+        if (b.delay == 0) return -1;
+        return a.delay - b.delay;
       });
     }
     proxieProviders.refresh();

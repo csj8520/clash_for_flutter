@@ -20,7 +20,7 @@ final Map<String, dynamic> _defaultConfig = {
   'subs': [],
 };
 
-class StoreConfig extends GetxController {
+class ConfigController extends GetxController {
   final dio = Dio();
   var config = Config.fromJson(_defaultConfig).obs;
 
@@ -28,7 +28,7 @@ class StoreConfig extends GetxController {
   var clashCoreApiSecret = ''.obs;
   var clashCoreDns = ''.obs;
 
-  Future<void> init() async {
+  Future<void> initConfig() async {
     if (!await Paths.config.exists()) await Paths.config.create(recursive: true);
     if (!await Files.configCountryMmdb.exists()) await Files.assetsCountryMmdb.copy(Files.configCountryMmdb.path);
     if (Platform.isWindows && !await Files.configWintun.exists()) await Files.assetsWintun.copy(Files.configWintun.path);

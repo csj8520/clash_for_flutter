@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:styled_widget/styled_widget.dart';
 
 import 'package:day/day.dart';
-import 'package:day/i18n/zh_cn.dart';
 import 'package:day/plugins/relative_time.dart';
 
 import 'package:clash_for_flutter/types/config.dart';
@@ -47,9 +46,7 @@ class _PageProfileSubItemState extends State<PageProfileSubItem> {
           children: [
             Text(widget.sub.name).padding(right: 5).expanded(),
             Text(widget.sub.url ?? '-').padding(right: 5).expanded(),
-            Text(widget.sub.updateTime == null ? '-' : Day().useLocale(locale).from(Day.fromUnix(widget.sub.updateTime! * 1000)))
-                .padding(right: 5)
-                .expanded(),
+            Text(widget.sub.updateTime == null ? '-' : Day().from(Day.fromUnix(widget.sub.updateTime! * 1000))).padding(right: 5).expanded(),
             Row(
               children: [
                 IconButton(

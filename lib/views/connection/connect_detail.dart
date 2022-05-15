@@ -1,11 +1,10 @@
-import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 import 'package:path/path.dart' as path;
 import 'package:styled_widget/styled_widget.dart';
 
 import 'package:clash_for_flutter/utils/utils.dart';
 import 'package:clash_for_flutter/types/connect.dart';
-import 'package:clash_for_flutter/store/clash_core.dart';
+import 'package:clash_for_flutter/controllers/controllers.dart';
 
 class ConnectDetail extends StatefulWidget {
   const ConnectDetail({Key? key, required this.connection, required this.closed, required this.onClose}) : super(key: key);
@@ -18,7 +17,6 @@ class ConnectDetail extends StatefulWidget {
 }
 
 class _ConnectDetailState extends State<ConnectDetail> {
-  final StoreClashCore storeClashCore = Get.find();
   final ScrollController _scrollController = ScrollController();
 
   @override
@@ -64,7 +62,7 @@ class _ConnectDetailState extends State<ConnectDetail> {
                             shape: MaterialStateProperty.all(const StadiumBorder()),
                             padding: MaterialStateProperty.all(const EdgeInsets.all(15)),
                           ),
-                          onPressed: widget.closed ? null : () => storeClashCore.fetchCloseConnection(widget.connection.id),
+                          onPressed: widget.closed ? null : () => controllers.core.fetchCloseConnection(widget.connection.id),
                           child: const Text('关闭连接').textColor(widget.closed ? Colors.grey.shade400 : Colors.white),
                         ),
                       ],

@@ -7,12 +7,10 @@ import 'package:styled_widget/styled_widget.dart';
 import 'package:clash_for_flutter/widgets/card_view.dart';
 import 'package:clash_for_flutter/widgets/card_head.dart';
 
-import 'package:clash_for_flutter/store/config.dart';
-import 'package:clash_for_flutter/store/profile.dart';
-
 import 'package:clash_for_flutter/const/const.dart';
 import 'package:clash_for_flutter/views/profile/setting.dart';
 import 'package:clash_for_flutter/views/profile/widgets.dart';
+import 'package:clash_for_flutter/controllers/controllers.dart';
 
 final dio = Dio();
 
@@ -24,9 +22,6 @@ class PageProfile extends StatefulWidget {
 }
 
 class _PageProfileState extends State<PageProfile> {
-  final StoreConfig storeConfig = Get.find();
-  final StoreProfile storeProfile = Get.find();
-
   final ScrollController _scrollController = ScrollController();
 
   @override
@@ -64,20 +59,20 @@ class _PageProfileState extends State<PageProfile> {
                               padding: const EdgeInsets.all(0),
                               color: Theme.of(context).primaryColor,
                               constraints: const BoxConstraints(minHeight: 30, minWidth: 30),
-                              onPressed: () => storeProfile.showAddSubPopup(context, null),
+                              onPressed: () => controllers.pageProfile.showAddSubPopup(context, null),
                             ).paddingDirectional(start: 15, end: 3)
                           ],
                         ).padding(right: 10).width(160),
                       ],
                     ).padding(all: 5, left: 15, right: 15).alignment(Alignment.center).backgroundColor(Colors.grey.shade100),
-                    ...storeConfig.config.value.subs
+                    ...controllers.config.config.value.subs
                         .map((e) => PageProfileSubItem(
                               sub: e,
-                              value: storeConfig.config.value.selected,
-                              onEdit: (sub) => storeProfile.showEditSubPopup(context, sub),
-                              onSelect: storeProfile.handleSelectSub,
-                              onDelete: (sub) => storeProfile.handleDeleteSub(context, sub),
-                              onUpdate: storeProfile.handleUpdateSub,
+                              value: controllers.config.config.value.selected,
+                              onEdit: (sub) => controllers.pageProfile.showEditSubPopup(context, sub),
+                              onSelect: controllers.pageProfile.handleSelectSub,
+                              onDelete: (sub) => controllers.pageProfile.handleDeleteSub(context, sub),
+                              onUpdate: controllers.pageProfile.handleUpdateSub,
                             ))
                         .toList()
                   ],
@@ -86,5 +81,11 @@ class _PageProfileState extends State<PageProfile> {
             ],
           ).padding(top: 5, right: 20, bottom: 20)),
     );
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
   }
 }

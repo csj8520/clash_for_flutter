@@ -43,6 +43,14 @@ class I18n extends Translations {
           "setting_mode_rules": "Rules",
           "setting_mode_direct": "Direct",
           "setting_mode_script": "Script",
+          // proxie
+          "proxie_group_title": "Policy Group",
+          // tray
+          "tray_restart_clash_core": "Restart Clash Core",
+          "tray_show": "Show",
+          "tray_copy_command_line_proxy": "Copy command line proxy",
+          "tray_about": "About",
+          "tray_exit": "Exit",
         },
         'zh_CN': {
           "clash_core_version": "Clash 内核 版本",
@@ -69,6 +77,14 @@ class I18n extends Translations {
           "setting_mode_rules": "规则",
           "setting_mode_direct": "直连",
           "setting_mode_script": "脚本",
+          // proxie
+          "proxie_group_title": "策略组",
+          // tray
+          "tray_restart_clash_core": "重启 Clash Core",
+          "tray_show": "显示",
+          "tray_copy_command_line_proxy": "复制命令行代理",
+          "tray_about": "关于",
+          "tray_exit": "退出",
         }
       };
 }

@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:styled_widget/styled_widget.dart';
 
-import 'package:clash_for_flutter/store/clash_core.dart';
+import 'package:clash_for_flutter/controllers/controllers.dart';
 
 class SideBarMenu {
   String label;
@@ -21,8 +21,6 @@ class SideBar extends StatefulWidget {
 }
 
 class _SideBarState extends State<SideBar> {
-  final StoreClashCore storeClashCore = Get.find();
-
   @override
   void initState() {
     super.initState();
@@ -52,11 +50,11 @@ class _SideBarState extends State<SideBar> {
                       .textColor(Theme.of(context).primaryColor)
                       .textShadow(color: const Color(0x662c8af8), blurRadius: 6, offset: const Offset(0, 2))
                       .fontSize(14),
-                  Text(storeClashCore.version.value.version).textColor(const Color(0xff54759a)).fontSize(14).padding(top: 8, bottom: 8),
+                  Text(controllers.core.version.value.version).textColor(const Color(0xff54759a)).fontSize(14).padding(top: 8, bottom: 8),
                   const Text('Premium')
                       .textColor(Theme.of(context).primaryColor)
                       .textShadow(color: const Color(0x662c8af8), blurRadius: 6, offset: const Offset(0, 2))
-                      .fontSize(storeClashCore.version.value.premium ? 14 : 0),
+                      .fontSize(controllers.core.version.value.premium ? 14 : 0),
                 ],
               )),
           onPressed: () => launchUrl(Uri.parse('https://github.com/Dreamacro/clash/releases/tag/premium')),

@@ -5,9 +5,9 @@ import 'package:styled_widget/styled_widget.dart';
 import 'package:clash_for_flutter/utils/utils.dart';
 import 'package:clash_for_flutter/types/table.dart';
 import 'package:clash_for_flutter/types/connect.dart';
-import 'package:clash_for_flutter/store/connection.dart';
 import 'package:clash_for_flutter/widgets/card_view.dart';
 import 'package:clash_for_flutter/widgets/card_head.dart';
+import 'package:clash_for_flutter/controllers/controllers.dart';
 import 'package:clash_for_flutter/views/connection/table_config.dart';
 import 'package:clash_for_flutter/views/connection/connect_detail.dart';
 
@@ -19,14 +19,13 @@ class PageConnection extends StatefulWidget {
 }
 
 class _PageConnectionState extends State<PageConnection> {
-  final StoreConnection storeConnection = Get.find();
   final TextEditingController _filterTextEditingController = TextEditingController();
 
   @override
   void initState() {
-    storeConnection.initWs();
+    controllers.pageConnection.initWs();
     _filterTextEditingController.addListener(() {
-      storeConnection.filter = _filterTextEditingController.text;
+      controllers.pageConnection.filter = _filterTextEditingController.text;
     });
     super.initState();
   }
@@ -34,10 +33,10 @@ class _PageConnectionState extends State<PageConnection> {
   Widget _buildHeader(TableItem<ConnectConnection> e) {
     return TextButton(
       child: Text(
-        '${e.head}${e == storeConnection.sortBy.value ? storeConnection.sortAscend.value ? ' ↑' : ' ↓' : ''}',
+        '${e.head}${e == controllers.pageConnection.sortBy.value ? controllers.pageConnection.sortAscend.value ? ' ↑' : ' ↓' : ''}',
         overflow: TextOverflow.ellipsis,
       ).textColor(const Color(0xff909399)).fontSize(14).alignment(Alignment.center),
-      onPressed: () => storeConnection.handleSetSort(e),
+      onPressed: () => controllers.pageConnection.handleSetSort(e),
     ).width(e.width);
   }
 
@@ -57,7 +56,7 @@ class _PageConnectionState extends State<PageConnection> {
           })
           .toList()
           .toRow(),
-      onPressed: () => storeConnection.handleShowDetail(it),
+      onPressed: () => controllers.pageConnection.handleShowDetail(it),
     ).height(36);
   }
 
@@ -68,7 +67,7 @@ class _PageConnectionState extends State<PageConnection> {
             title: '连接',
             suffix: Row(
               children: [
-                Text('(总量: 上传 ${bytesToSize(storeConnection.connect.value.uploadTotal)} 下载 ${bytesToSize(storeConnection.connect.value.downloadTotal)})')
+                Text('(总量: 上传 ${bytesToSize(controllers.pageConnection.connect.value.uploadTotal)} 下载 ${bytesToSize(controllers.pageConnection.connect.value.downloadTotal)})')
                     .textColor(Theme.of(context).primaryColor)
                     .fontSize(14)
                     .padding(left: 10)
@@ -95,7 +94,7 @@ class _PageConnectionState extends State<PageConnection> {
                   color: Colors.red,
                   iconSize: 20,
                   tooltip: 'Close All Connections',
-                  onPressed: () => storeConnection.hanldeCloseAllConnections(context),
+                  onPressed: () => controllers.pageConnection.hanldeCloseAllConnections(context),
                   constraints: const BoxConstraints(minHeight: 30, minWidth: 30),
                   padding: EdgeInsets.zero,
                 ),
@@ -107,13 +106,13 @@ class _PageConnectionState extends State<PageConnection> {
               children: [
                 _ConnectionsTable(
                   tableHeaders: tableItems.map(_buildHeader).toList(),
-                  tableRows: storeConnection.connect.value.connections.map(_buildTableRow).toList(),
+                  tableRows: controllers.pageConnection.connect.value.connections.map(_buildTableRow).toList(),
                 ),
-                if (storeConnection.detail.value != null)
+                if (controllers.pageConnection.detail.value != null)
                   ConnectDetail(
-                      connection: storeConnection.detail.value!,
-                      closed: storeConnection.detailClosed.value,
-                      onClose: () => storeConnection.handleShowDetail(null)),
+                      connection: controllers.pageConnection.detail.value!,
+                      closed: controllers.pageConnection.detailClosed.value,
+                      onClose: () => controllers.pageConnection.handleShowDetail(null)),
               ],
             ),
           ).expanded()
@@ -122,7 +121,7 @@ class _PageConnectionState extends State<PageConnection> {
 
   @override
   void dispose() {
-    storeConnection.closeWs();
+    controllers.pageConnection.closeWs();
     _filterTextEditingController.dispose();
     super.dispose();
   }

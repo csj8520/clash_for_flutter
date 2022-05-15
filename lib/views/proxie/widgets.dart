@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:styled_widget/styled_widget.dart';
 
 import 'package:day/day.dart';
-import 'package:day/i18n/zh_cn.dart';
 import 'package:day/plugins/relative_time.dart';
 
 import 'package:clash_for_flutter/widgets/tag.dart';
@@ -102,7 +101,7 @@ class PageProxieItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final delay = proxie.history.isEmpty ? 0 : proxie.history.last.delay;
+    final delay = proxie.delay;
     final name = proxie.name;
     Color color = _colors.keys.firstWhere((it) => (delay <= _colors[it]!));
 
@@ -159,7 +158,7 @@ class _PageProxieProviderState extends State<PageProxieProvider> {
             Row(
               children: [
                 Row(children: [Text(provider.name), Tag(provider.vehicleType).padding(left: 10)]).expanded(),
-                Text(provider.updatedAt == null ? '' : '最后更新于：${Day().useLocale(locale).from(Day.fromString(provider.updatedAt!))}'),
+                Text(provider.updatedAt == null ? '' : '最后更新于：${Day().from(Day.fromString(provider.updatedAt!))}'),
                 IconButton(icon: Icon(Icons.network_check, size: 20, color: Theme.of(context).primaryColor), onPressed: _handleOnHealthCheck),
                 IconButton(icon: Icon(Icons.refresh, size: 20, color: Theme.of(context).primaryColor), onPressed: _handleOnUpdate)
               ],

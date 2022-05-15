@@ -2,7 +2,6 @@ import 'package:flutter/widgets.dart';
 import 'package:path/path.dart' as path;
 
 import 'package:day/day.dart';
-import 'package:day/i18n/zh_cn.dart';
 import 'package:day/plugins/relative_time.dart';
 
 import 'package:clash_for_flutter/types/table.dart';
@@ -54,7 +53,7 @@ final List<TableItem<ConnectConnection>> tableItems = [
     head: '连接时间',
     width: 120,
     align: Alignment.center,
-    getLabel: (c) => Day().useLocale(locale).from(Day.fromString(c.start)),
+    getLabel: (c) => Day().from(Day.fromString(c.start)),
     sort: (a, b) => a.start.compareTo(b.start),
   ),
 ];

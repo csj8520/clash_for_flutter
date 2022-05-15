@@ -13,26 +13,30 @@ import 'package:clash_for_flutter/const/const.dart';
 import 'package:clash_for_flutter/utils/shell.dart';
 import 'package:clash_for_flutter/utils/logger.dart';
 import 'package:clash_for_flutter/types/clash_service.dart';
+import 'package:clash_for_flutter/controllers/controllers.dart';
 
 final headers = {"User-Agent": "clash-for-flutter/0.0.1"};
 
-class StoreClashService extends GetxController {
+class ServiceController extends GetxController {
   final dio = Dio(BaseOptions(baseUrl: 'http://127.0.0.1:9089', headers: headers));
+
   var serviceMode = false.obs;
+  var restartClashCoreIng = false.obs;
+  var serviceModeSwitching = false.obs;
+
   Process? clashServiceProcess;
 
   IOWebSocketChannel? wsChannelLogs;
   StreamSubscription<dynamic>? listenLogsSub;
   RxList<ClashServiceLog> logs = <ClashServiceLog>[].obs;
 
-  Future<void> init() async {
+  Future<void> initService() async {
     try {
       final data = await fetchInfo();
       serviceMode.value = data.mode == 'service-mode';
     } catch (e) {
       await startService();
     }
-    initLog();
   }
 
   initLog() {
@@ -139,13 +143,38 @@ class StoreClashService extends GetxController {
     await exit();
     final res = await runAsAdmin(Files.assetsClashService.path, ["install", "start"]);
     log.debug('install', res.stdout);
-    await _waitServiceStart();
+    if (res.exitCode == 0) await _waitServiceStart();
   }
 
   Future<void> uninstall() async {
     await exit();
     final res = await runAsAdmin(Files.assetsClashService.path, ["stop", "uninstall"]);
     log.debug('uninstall', res.stdout);
-    await _waitServiceStop();
+    if (res.exitCode == 0) await _waitServiceStop();
+  }
+
+  Future<void> restartClashCore() async {
+    log.debug('restartClashCore');
+    restartClashCoreIng.value = true;
+    await controllers.tray.updateTray();
+    await fetchStop();
+    await fetchStart(controllers.config.config.value.selected);
+    restartClashCoreIng.value = false;
+    await controllers.tray.updateTray();
+  }
+
+  Future<void> serviceModeSwitch(bool open) async {
+    serviceModeSwitching.value = true;
+    controllers.tray.updateTray();
+    if (open) {
+      await install();
+    } else {
+      await uninstall();
+    }
+    await initService();
+    await fetchStart(controllers.config.config.value.selected);
+    await controllers.core.waitCoreStart();
+    serviceModeSwitching.value = false;
+    controllers.tray.updateTray();
   }
 }

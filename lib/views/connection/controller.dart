@@ -3,7 +3,6 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:day/day.dart';
-import 'package:day/i18n/zh_cn.dart';
 import 'package:day/plugins/relative_time.dart';
 
 import 'package:get/get.dart';
@@ -16,9 +15,9 @@ import 'package:clash_for_flutter/types/table.dart';
 import 'package:clash_for_flutter/utils/utils.dart';
 import 'package:clash_for_flutter/types/connect.dart';
 import 'package:clash_for_flutter/widgets/dialogs.dart';
-import 'package:clash_for_flutter/store/clash_core.dart';
+import 'package:clash_for_flutter/controllers/controllers.dart';
 
-class StoreConnection extends GetxController {
+class PageConnectionController extends GetxController {
   final List<TableItem<ConnectConnection>> tableItems = [
     TableItem(
       head: '域名',
@@ -64,7 +63,7 @@ class StoreConnection extends GetxController {
       head: '连接时间',
       width: 120,
       align: Alignment.center,
-      getLabel: (c) => Day().useLocale(locale).from(Day.fromString(c.start)),
+      getLabel: (c) => Day().from(Day.fromString(c.start)),
       sort: (a, b) => a.start.compareTo(b.start),
     ),
   ];
@@ -84,8 +83,7 @@ class StoreConnection extends GetxController {
 
   initWs() {
     sortBy.value = tableItems.last;
-    final StoreClashCore storeClashCore = Get.find();
-    connectChannel = storeClashCore.fetchConnectionWs();
+    connectChannel = controllers.core.fetchConnectionWs();
     _listenStreamSub = connectChannel!.stream.listen(_handleStream, onDone: _handleOnDone);
   }
 
@@ -118,9 +116,8 @@ class StoreConnection extends GetxController {
   void hanldeCloseAllConnections(BuildContext context) async {
     final res = await showNormalDialog(context, title: "警告", content: '将会关闭所有连接', enterText: "确 定", cancelText: "取 消");
     if (res != true) return;
-    final StoreClashCore storeClashCore = Get.find();
     for (final it in connect.value.connections) {
-      await storeClashCore.fetchCloseConnection(it.id);
+      await controllers.core.fetchCloseConnection(it.id);
     }
   }
 

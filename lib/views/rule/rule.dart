@@ -3,10 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:bot_toast/bot_toast.dart';
 import 'package:styled_widget/styled_widget.dart';
 
-import 'package:clash_for_flutter/store/clash_core.dart';
 import 'package:clash_for_flutter/widgets/card_head.dart';
 import 'package:clash_for_flutter/widgets/card_view.dart';
 import 'package:clash_for_flutter/views/rule/widgets.dart';
+import 'package:clash_for_flutter/controllers/controllers.dart';
 
 class PageRule extends StatefulWidget {
   const PageRule({Key? key}) : super(key: key);
@@ -16,7 +16,6 @@ class PageRule extends StatefulWidget {
 }
 
 class _PageRuleState extends State<PageRule> {
-  final StoreClashCore storeClashCore = Get.find();
   final ScrollController _scrollController = ScrollController();
   final ScrollController _scrollController2 = ScrollController();
 
@@ -27,14 +26,14 @@ class _PageRuleState extends State<PageRule> {
   }
 
   Future<void> _init() async {
-    await storeClashCore.fetchRuleProvider();
-    await storeClashCore.fetchRule();
+    await controllers.core.fetchRuleProvider();
+    await controllers.core.fetchRule();
   }
 
   Future<void> _handleRuleProviderUpdate(String name) async {
     try {
-      await storeClashCore.fetchRuleProviderUpdate(name);
-      await storeClashCore.fetchRuleProvider();
+      await controllers.core.fetchRuleProviderUpdate(name);
+      await controllers.core.fetchRuleProvider();
     } catch (e) {
       BotToast.showText(text: 'Update Rule: $name Error');
     }
@@ -47,10 +46,10 @@ class _PageRuleState extends State<PageRule> {
       child: Obx(() => Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              if (storeClashCore.ruleProvider.value.providers.isNotEmpty) const CardHead(title: '规则集'),
-              if (storeClashCore.ruleProvider.value.providers.isNotEmpty)
+              if (controllers.core.ruleProvider.value.providers.isNotEmpty) const CardHead(title: '规则集'),
+              if (controllers.core.ruleProvider.value.providers.isNotEmpty)
                 CardView(
-                  child: storeClashCore.ruleProvider.value.providers.values
+                  child: controllers.core.ruleProvider.value.providers.values
                       .map((it) => RuleProviderItem(rule: it, onUpdate: _handleRuleProviderUpdate))
                       .toList()
                       .toColumn(),
@@ -59,8 +58,8 @@ class _PageRuleState extends State<PageRule> {
               CardView(
                 child: ListView.builder(
                   controller: _scrollController2,
-                  itemCount: storeClashCore.rule.value.rules.length,
-                  itemBuilder: (_, idx) => RuleItem(rule: storeClashCore.rule.value.rules[idx]),
+                  itemCount: controllers.core.rule.value.rules.length,
+                  itemBuilder: (_, idx) => RuleItem(rule: controllers.core.rule.value.rules[idx]),
                 ).height(480),
               )
             ],
