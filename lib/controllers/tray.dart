@@ -20,11 +20,13 @@ class TrayController extends GetxController with TrayListener {
   Future<void> updateTray() async {
     log.debug('updateTray');
     final visible = await windowManager.isVisible();
+    final disabled = controllers.service.serviceModeSwitching.value || controllers.service.restartClashCoreIng.value;
     trayMenu = Menu(items: [
       MenuItem.checkbox(label: 'tray_show'.tr, checked: visible, onClick: handleClickShow),
       MenuItem.separator(),
       MenuItem.submenu(
         label: 'proxie_group_title'.tr,
+        disabled: disabled,
         submenu: Menu(
             items: controllers.core.proxieGroups
                 .map((it) => MenuItem.submenu(
@@ -44,28 +46,30 @@ class TrayController extends GetxController with TrayListener {
       ),
       MenuItem(
         label: 'tray_restart_clash_core'.tr,
-        disabled: controllers.service.restartClashCoreIng.value,
+        disabled: disabled,
         onClick: handleClickRestartClashCore,
       ),
       MenuItem.checkbox(
         label: 'setting_set_as_system_proxy'.tr,
         checked: controllers.config.config.value.setSystemProxy,
-        disabled: controllers.pageSetting.systemProxySwitchIng.value,
+        disabled: disabled || controllers.pageSetting.systemProxySwitchIng.value,
         onClick: handleClickSetAsSystemProxy,
       ),
       MenuItem.checkbox(
         label: 'setting_service_open'.tr,
         checked: controllers.service.serviceMode.value,
-        disabled: controllers.service.serviceModeSwitching.value,
+        disabled: disabled,
         onClick: handleClickServiceModeSwitch,
       ),
       MenuItem.submenu(
           label: 'tray_copy_command_line_proxy'.tr,
+          disabled: disabled,
           submenu: Menu(items: [
             MenuItem(label: 'bash', onClick: handleClickCopyCommandLineProxy),
             MenuItem(label: 'cmd', onClick: handleClickCopyCommandLineProxy),
             MenuItem(label: 'powershell', onClick: handleClickCopyCommandLineProxy),
           ])),
+      MenuItem.separator(),
       MenuItem(label: 'tray_about'.tr, onClick: handleClickAbout),
       MenuItem(label: 'tray_exit'.tr, onClick: handleClickExit),
     ]);
@@ -112,11 +116,11 @@ class TrayController extends GetxController with TrayListener {
   }
 
   Future<void> handleClickExit(MenuItem menuItem) async {
-    await controllers.shortcuts.handleExit();
+    await controllers.pageMain.handleExit();
   }
 
   Future<void> handleClickRestartClashCore(MenuItem menuItem) async {
-    await controllers.service.restartClashCore();
+    await controllers.service.reloadClashCore();
   }
 
   Future<void> handleClickServiceModeSwitch(MenuItem menuItem) async {

@@ -59,6 +59,7 @@ class CoreController extends GetxController {
     while (true) {
       final hello = await fetchHello();
       if (hello) return;
+      await Future.delayed(const Duration(milliseconds: 100));
     }
   }
 

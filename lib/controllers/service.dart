@@ -12,8 +12,11 @@ import 'package:web_socket_channel/io.dart';
 import 'package:clash_for_flutter/const/const.dart';
 import 'package:clash_for_flutter/utils/shell.dart';
 import 'package:clash_for_flutter/utils/logger.dart';
+import 'package:clash_for_flutter/utils/system_dns.dart';
+import 'package:clash_for_flutter/utils/system_proxy.dart';
 import 'package:clash_for_flutter/types/clash_service.dart';
 import 'package:clash_for_flutter/controllers/controllers.dart';
+import 'package:window_manager/window_manager.dart';
 
 final headers = {"User-Agent": "clash-for-flutter/0.0.1"};
 
@@ -37,9 +40,11 @@ class ServiceController extends GetxController {
     } catch (e) {
       await startService();
     }
+    final visible = await windowManager.isVisible();
+    if (visible) initLog();
   }
 
-  initLog() {
+  void initLog() {
     wsChannelLogs = IOWebSocketChannel.connect(Uri.parse('ws://127.0.0.1:9089/logs'), headers: headers);
     listenLogsSub = wsChannelLogs!.stream.listen((event) {
       for (final it in (event as String).split('\n')) {
@@ -56,10 +61,10 @@ class ServiceController extends GetxController {
     });
   }
 
-  closeLog() {
-    listenLogsSub?.cancel();
+  Future<void> closeLog() async {
+    await listenLogsSub?.cancel();
     listenLogsSub = null;
-    wsChannelLogs?.sink.close();
+    await wsChannelLogs?.sink.close();
     wsChannelLogs = null;
   }
 
@@ -125,56 +130,69 @@ class ServiceController extends GetxController {
   }
 
   Future<void> exit() async {
-    closeLog();
-    final info = await fetchInfo();
-    if (info.status == 'running') await fetchStop();
-    if (info.mode == 'service-mode') return;
-
+    await closeLog();
+    await stopClashCore();
     if (clashServiceProcess != null) {
       clashServiceProcess!.kill();
       clashServiceProcess = null;
     } else if (kDebugMode) {
       await killProcess(path.basename(Files.assetsClashService.path));
     }
-    await _waitServiceStop();
   }
 
   Future<void> install() async {
-    await exit();
     final res = await runAsAdmin(Files.assetsClashService.path, ["install", "start"]);
     log.debug('install', res.stdout);
     if (res.exitCode == 0) await _waitServiceStart();
   }
 
   Future<void> uninstall() async {
-    await exit();
     final res = await runAsAdmin(Files.assetsClashService.path, ["stop", "uninstall"]);
     log.debug('uninstall', res.stdout);
     if (res.exitCode == 0) await _waitServiceStop();
   }
 
-  Future<void> restartClashCore() async {
-    log.debug('restartClashCore');
-    restartClashCoreIng.value = true;
-    // await controllers.tray.updateTray();
-    await fetchStop();
-    await fetchStart(controllers.config.config.value.selected);
-    restartClashCoreIng.value = false;
-    // await controllers.tray.updateTray();
-  }
-
   Future<void> serviceModeSwitch(bool open) async {
     serviceModeSwitching.value = true;
-    // await controllers.tray.updateTray();
-    if (open) {
-      await install();
-    } else {
-      await uninstall();
-    }
+    await exit();
+    open ? await install() : await uninstall();
     await initService();
-    await fetchStart(controllers.config.config.value.selected);
-    await controllers.core.waitCoreStart();
+    await startClashCore();
     serviceModeSwitching.value = false;
-    // await controllers.tray.updateTray();
+  }
+
+  Future<void> stopClashCore() async {
+    if (Platform.isMacOS &&
+        controllers.service.serviceMode.value &&
+        controllers.config.clashCoreTunEnable.value &&
+        controllers.config.clashCoreDns.isNotEmpty) {
+      await MacSystemDns.instance.set([]);
+    }
+    if (controllers.config.config.value.setSystemProxy) await SystemProxy.instance.set(SystemProxyConfig());
+    await fetchStop();
+  }
+
+  Future<void> startClashCore() async {
+    await fetchStart(controllers.config.config.value.selected);
+    controllers.core.setApi(controllers.config.clashCoreApiAddress.value, controllers.config.clashCoreApiSecret.value);
+    await controllers.core.waitCoreStart();
+    if (Platform.isMacOS &&
+        controllers.service.serviceMode.value &&
+        controllers.config.clashCoreTunEnable.value &&
+        controllers.config.clashCoreDns.isNotEmpty) {
+      await MacSystemDns.instance.set([controllers.config.clashCoreDns.value]);
+    }
+    if (controllers.config.config.value.setSystemProxy) await SystemProxy.instance.set(controllers.core.proxyConfig);
+    await controllers.core.fetchConfig();
+  }
+
+  Future<void> reloadClashCore() async {
+    restartClashCoreIng.value = true;
+    BotToast.showText(text: '正在重启 Clash Core ……');
+    await stopClashCore();
+    await controllers.config.readClashCoreApi();
+    await startClashCore();
+    BotToast.showText(text: '重启成功');
+    restartClashCoreIng.value = false;
   }
 }

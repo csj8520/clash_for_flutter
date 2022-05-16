@@ -1,6 +1,5 @@
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:styled_widget/styled_widget.dart';
 
 import 'package:clash_for_flutter/widgets/card_head.dart';
@@ -17,6 +16,13 @@ class PageLog extends StatefulWidget {
 class _PageLogState extends State<PageLog> {
   final ScrollController _scrollController = ScrollController();
 
+  final Map<String, Color> levelColors = const {
+    "debug": Color(0xff14b8a6),
+    "info": Color(0xff0ea5e9),
+    "warning": Color(0xffec4899),
+    "error": Color(0xfff43f5e),
+  };
+
   @override
   Widget build(BuildContext context) {
     return Column(children: [
@@ -29,13 +35,21 @@ class _PageLogState extends State<PageLog> {
               final it = controllers.service.logs[controllers.service.logs.length - index - 1];
               return RichText(
                 text: TextSpan(
+                  style: const TextStyle(height: 1.5, fontSize: 13, color: Color(0xff73808f)),
                   children: [
-                    TextSpan(text: it.time).textColor(const Color(0xe69ca3af)),
-                    TextSpan(text: '  [${it.type}] '),
+                    TextSpan(text: it.time).textColor(const Color(0xfffb923c)),
+                    // WidgetSpan(child: Text(it.time).textColor(const Color(0xfffb923c)).fontSize(13).constrained(minWidth: 145)),
+                    // WidgetSpan(
+                    //     child: Text('[${it.type.toUpperCase()}]')
+                    //         .textColor(levelColors[it.type] ?? Colors.black)
+                    //         .fontSize(13)
+                    //         .padding(left: 10)
+                    //         .constrained(minWidth: 80)),
+                    TextSpan(text: '  [${it.type.toUpperCase()}]  ').textColor(levelColors[it.type] ?? Colors.black),
                     TextSpan(text: it.msg),
                   ],
-                ).fontSize(14).textColor(const Color(0xff73808f)),
-              ).padding(top: 5);
+                ),
+              );
             },
             itemCount: controllers.service.logs.length,
             controller: _scrollController,

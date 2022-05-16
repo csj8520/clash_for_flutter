@@ -7,7 +7,6 @@ import 'package:clash_for_flutter/controllers/protocol.dart';
 import 'package:clash_for_flutter/controllers/core.dart';
 import 'package:clash_for_flutter/controllers/config.dart';
 import 'package:clash_for_flutter/controllers/service.dart';
-import 'package:clash_for_flutter/controllers/shortcuts.dart';
 
 import 'package:clash_for_flutter/controller.dart';
 import 'package:clash_for_flutter/views/home/controller.dart';
@@ -24,7 +23,6 @@ class Controllers {
   late final CoreController core;
   late final ConfigController config;
   late final ServiceController service;
-  late final ShortcutsController shortcuts;
 
   late final PageMainController pageMain;
   late final PageHomeController pageHome;
@@ -41,7 +39,6 @@ class Controllers {
     core = Get.find();
     config = Get.find();
     service = Get.find();
-    shortcuts = Get.find();
 
     pageMain = Get.find();
     pageHome = Get.find();

@@ -27,6 +27,7 @@ class ConfigController extends GetxController {
   var clashCoreApiAddress = '127.0.0.1:9090'.obs;
   var clashCoreApiSecret = ''.obs;
   var clashCoreDns = ''.obs;
+  var clashCoreTunEnable = false.obs;
 
   Future<void> initConfig() async {
     if (!await Paths.config.exists()) await Paths.config.create(recursive: true);
@@ -64,6 +65,7 @@ class ConfigController extends GetxController {
     // final _secret = RegExp(r'''(?<!#\s*)secret:\s+['"]?([^'"]+?)['"]?\s''').firstMatch(_config)?.group(1);
     clashCoreApiAddress.value = (configJson["external-controller"] ?? '127.0.0.1:9090').replaceAll('0.0.0.0', '127.0.0.1');
     clashCoreApiSecret.value = (configJson["secret"] ?? '');
+    clashCoreTunEnable.value = configJson["tun"]?["enable"] == true;
     clashCoreDns.value = '';
     if (configJson["dns"]?["enable"] == true && (configJson["dns"]["listen"] ?? '').isNotEmpty) {
       final dns = (configJson["dns"]["listen"] as String).split(":");

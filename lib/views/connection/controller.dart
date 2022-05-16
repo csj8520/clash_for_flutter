@@ -84,16 +84,16 @@ class PageConnectionController extends GetxController {
   StreamSubscription<dynamic>? _listenStreamSub;
   Map<String, ConnectConnection> _connectionsCache = {};
 
-  initWs() {
+  void initWs() {
     sortBy.value = tableItems.last;
     connectChannel = controllers.core.fetchConnectionWs();
     _listenStreamSub = connectChannel!.stream.listen(_handleStream, onDone: _handleOnDone);
   }
 
-  closeWs() {
-    _listenStreamSub?.cancel();
-    connectChannel?.sink.close(WebSocketStatus.goingAway);
+  Future<void> closeWs() async {
+    await _listenStreamSub?.cancel();
     _listenStreamSub = null;
+    await connectChannel?.sink.close(WebSocketStatus.goingAway);
     connectChannel = null;
   }
 
@@ -159,9 +159,9 @@ class PageConnectionController extends GetxController {
   void _handleFilter() {
     if (filter.isNotEmpty) {
       connect.value.connections = connect.value.connections.where((it) {
-        final str = ('${it.metadata.host}|${it.metadata.destinationPort}|${it.metadata.destinationIP}'
+        final str = ('${it.metadata.host.isEmpty ? it.metadata.destinationIP : it.metadata.host}:${it.metadata.destinationPort}'
                 '|${it.metadata.sourceIP}|${it.metadata.processPath}|${it.metadata.network}|${it.metadata.type}'
-                '|${it.rule}|${it.rulePayload}|${it.chains.join('|')}')
+                '|${it.rule}(${it.rulePayload})|${it.chains.join('/')}')
             .toLowerCase();
         return filter.toLowerCase().split('|').any((f) => f.split('&').every((t) => str.contains(t.trim())));
       }).toList();

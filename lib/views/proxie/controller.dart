@@ -10,7 +10,6 @@ class PageProxieController extends GetxController {
     log.debug('updateProxie');
     await controllers.core.fetchProxie();
     await controllers.core.fetchProxieProvider();
-    // await controllers.tray.updateTray();
   }
 
   Future<void> handleSetProxieGroup(ProxieProxiesItem proxie, String value) async {
@@ -23,7 +22,6 @@ class PageProxieController extends GetxController {
         if (it.chains.contains(proxie.name)) controllers.core.fetchCloseConnection(it.id);
       }
     }
-    // await controllers.tray.updateTray();
   }
 
   Future<void> handleUpdateProvider(ProxieProviderItem provider) async {
@@ -31,7 +29,6 @@ class PageProxieController extends GetxController {
       await controllers.core.fetchProxieProviderUpdate(provider.name);
       await controllers.core.fetchProxieProvider();
       await controllers.core.fetchProxie();
-      // await controllers.tray.updateTray();
     } catch (e) {
       BotToast.showText(text: 'Updata Error');
     }
@@ -42,7 +39,6 @@ class PageProxieController extends GetxController {
       await controllers.core.fetchProxieProviderHealthCheck(provider.name);
       await controllers.core.fetchProxieProvider();
       await controllers.core.fetchProxie();
-      // await controllers.tray.updateTray();
     } catch (e) {
       BotToast.showText(text: 'Health Check Error');
     }

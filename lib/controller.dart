@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:flutter/widgets.dart' hide MenuItem;
 
 import 'package:clash_for_flutter/controllers/controllers.dart';
+import 'package:tray_manager/tray_manager.dart';
 import 'package:window_manager/window_manager.dart';
 
 class PageMainController extends GetxController {
@@ -25,11 +26,9 @@ class PageMainController extends GetxController {
 
     // init service
     await controllers.service.initService();
-    final visible = await windowManager.isVisible();
-    if (visible) controllers.service.initLog();
 
     // init clash core
-    await controllers.shortcuts.startClashCore();
+    await controllers.service.startClashCore();
     await controllers.core.fetchVersion();
     await controllers.pageProxie.updateProxie();
 
@@ -43,12 +42,12 @@ class PageMainController extends GetxController {
     // for macos 任务管理器退出进程
     ProcessSignal.sigterm.watch().listen((_) {
       stdout.writeln('exit: sigterm');
-      controllers.shortcuts.handleExit();
+      handleExit();
     });
     // for macos ctrl+c
     ProcessSignal.sigint.watch().listen((_) {
       stdout.writeln('exit: sigint');
-      controllers.shortcuts.handleExit();
+      handleExit();
     });
   }
 
@@ -63,11 +62,18 @@ class PageMainController extends GetxController {
           if (!chenged) continue;
           if (it.name != controllers.config.config.value.selected) continue;
           // restart clash core
-          await controllers.shortcuts.reloadClashCore();
+          await controllers.service.reloadClashCore();
           await Future.delayed(const Duration(seconds: 20));
         } catch (_) {}
       }
     });
+  }
+
+  Future<void> handleExit() async {
+    await controllers.service.exit();
+    trayManager.destroy();
+    windowManager.destroy();
+    exit(0);
   }
 
   @override

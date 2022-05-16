@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import 'package:get/get.dart';
-import 'package:flutter/material.dart' hide MenuItem;
+import 'package:flutter/material.dart';
 import 'package:bot_toast/bot_toast.dart';
 import 'package:window_manager/window_manager.dart';
 import 'package:protocol_handler/protocol_handler.dart';
@@ -16,7 +16,6 @@ import 'package:clash_for_flutter/controllers/controllers.dart';
 import 'package:clash_for_flutter/controllers/core.dart';
 import 'package:clash_for_flutter/controllers/config.dart';
 import 'package:clash_for_flutter/controllers/service.dart';
-import 'package:clash_for_flutter/controllers/shortcuts.dart';
 
 import 'package:clash_for_flutter/controller.dart';
 import 'package:clash_for_flutter/views/home/home.dart';
@@ -50,7 +49,6 @@ void main() async {
   Get.put(CoreController());
   Get.put(ConfigController());
   Get.put(ServiceController());
-  Get.put(ShortcutsController());
 
   Get.put(PageMainController());
   Get.put(PageHomeController());

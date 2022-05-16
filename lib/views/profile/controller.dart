@@ -36,7 +36,7 @@ class PageProfileController extends GetxController {
       final changed = await controllers.config.updateSub(sub);
       if (!changed) return BotToast.showText(text: 'profile_config_no_change'.tr);
       if (controllers.config.config.value.selected == sub.name) {
-        await controllers.shortcuts.reloadClashCore();
+        await controllers.service.reloadClashCore();
       }
     } catch (e) {
       BotToast.showText(text: 'profile_config_update_error'.trParams({"name": sub.name}));
@@ -56,6 +56,6 @@ class PageProfileController extends GetxController {
 
   Future<void> handleSelectSub(ConfigSub sub) async {
     await controllers.config.setSelectd(sub.name);
-    await controllers.shortcuts.reloadClashCore();
+    await controllers.service.reloadClashCore();
   }
 }
