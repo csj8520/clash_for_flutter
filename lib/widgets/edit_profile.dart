@@ -1,3 +1,4 @@
+import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 import 'package:styled_widget/styled_widget.dart';
 
@@ -18,15 +19,20 @@ class EditProfile extends StatelessWidget {
       children: [
         Row(
           children: [
-            const Text('文件名').fontSize(12).textColor(Colors.grey.shade700).alignment(Alignment.centerRight).padding(right: 5).width(50),
+            Text('profile_config_mode_file_name'.tr)
+                .fontSize(12)
+                .textColor(Colors.grey.shade700)
+                .alignment(Alignment.centerRight)
+                .padding(right: 5)
+                .width(50),
             TextField(
               controller: nameInputController,
               style: const TextStyle(fontSize: 12),
               keyboardType: TextInputType.text,
-              decoration: const InputDecoration(
-                hintText: 'config.yaml',
+              decoration: InputDecoration(
+                hintText: 'profile_config_mode_file_name_hint'.tr,
                 isCollapsed: true,
-                contentPadding: EdgeInsets.fromLTRB(5, 15, 5, 15),
+                contentPadding: const EdgeInsets.fromLTRB(5, 15, 5, 15),
                 border: InputBorder.none,
               ),
             ).width(200).decorated(border: Border.all(width: 1, color: Colors.grey.shade400), borderRadius: BorderRadius.circular(4)),
@@ -34,15 +40,20 @@ class EditProfile extends StatelessWidget {
         ),
         Row(
           children: [
-            const Text('地址').fontSize(12).textColor(Colors.grey.shade700).alignment(Alignment.centerRight).padding(right: 5).width(50),
+            Text('profile_config_mode_url'.tr)
+                .fontSize(12)
+                .textColor(Colors.grey.shade700)
+                .alignment(Alignment.centerRight)
+                .padding(right: 5)
+                .width(50),
             TextField(
               controller: urlInputController,
               style: const TextStyle(fontSize: 12),
               keyboardType: TextInputType.text,
-              decoration: const InputDecoration(
-                hintText: '本地配置可留空',
+              decoration: InputDecoration(
+                hintText: 'profile_config_mode_url_hint'.tr,
                 isCollapsed: true,
-                contentPadding: EdgeInsets.fromLTRB(5, 15, 5, 15),
+                contentPadding: const EdgeInsets.fromLTRB(5, 15, 5, 15),
                 border: InputBorder.none,
               ),
             ).width(200).decorated(border: Border.all(width: 1, color: Colors.grey.shade400), borderRadius: BorderRadius.circular(4)),

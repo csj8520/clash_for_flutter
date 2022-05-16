@@ -156,16 +156,16 @@ class ServiceController extends GetxController {
   Future<void> restartClashCore() async {
     log.debug('restartClashCore');
     restartClashCoreIng.value = true;
-    await controllers.tray.updateTray();
+    // await controllers.tray.updateTray();
     await fetchStop();
     await fetchStart(controllers.config.config.value.selected);
     restartClashCoreIng.value = false;
-    await controllers.tray.updateTray();
+    // await controllers.tray.updateTray();
   }
 
   Future<void> serviceModeSwitch(bool open) async {
     serviceModeSwitching.value = true;
-    controllers.tray.updateTray();
+    // await controllers.tray.updateTray();
     if (open) {
       await install();
     } else {
@@ -175,6 +175,6 @@ class ServiceController extends GetxController {
     await fetchStart(controllers.config.config.value.selected);
     await controllers.core.waitCoreStart();
     serviceModeSwitching.value = false;
-    controllers.tray.updateTray();
+    // await controllers.tray.updateTray();
   }
 }

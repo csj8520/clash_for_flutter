@@ -8,7 +8,6 @@ import 'package:clash_for_flutter/types/connect.dart';
 import 'package:clash_for_flutter/widgets/card_view.dart';
 import 'package:clash_for_flutter/widgets/card_head.dart';
 import 'package:clash_for_flutter/controllers/controllers.dart';
-import 'package:clash_for_flutter/views/connection/table_config.dart';
 import 'package:clash_for_flutter/views/connection/connect_detail.dart';
 
 class PageConnection extends StatefulWidget {
@@ -43,7 +42,7 @@ class _PageConnectionState extends State<PageConnection> {
   Widget _buildTableRow(ConnectConnection it) {
     return TextButton(
       style: ButtonStyle(padding: MaterialStateProperty.all(EdgeInsets.zero)),
-      child: tableItems
+      child: controllers.pageConnection.tableItems
           .map((e) {
             String label = e.getLabel(it);
             final text = Text(label, overflow: TextOverflow.ellipsis)
@@ -64,17 +63,16 @@ class _PageConnectionState extends State<PageConnection> {
   Widget build(BuildContext context) {
     return Obx(() => [
           CardHead(
-            title: '连接',
+            title: 'connection_title'.tr,
             suffix: Row(
               children: [
-                Text('(总量: 上传 ${bytesToSize(controllers.pageConnection.connect.value.uploadTotal)} 下载 ${bytesToSize(controllers.pageConnection.connect.value.downloadTotal)})')
-                    .textColor(Theme.of(context).primaryColor)
-                    .fontSize(14)
-                    .padding(left: 10)
-                    .width(300),
+                Text('connection_total'.trParams({
+                  "upload": bytesToSize(controllers.pageConnection.connect.value.uploadTotal),
+                  "download": bytesToSize(controllers.pageConnection.connect.value.downloadTotal)
+                })).textColor(Theme.of(context).primaryColor).fontSize(14).padding(left: 10, right: 50),
                 Row(
                   children: [
-                    const Text("过滤").textColor(Colors.grey.shade700).padding(right: 10),
+                    Text("connection_filter".tr).textColor(Colors.grey.shade700).padding(right: 10),
                     TextField(
                       controller: _filterTextEditingController,
                       style: TextStyle(fontSize: 12, color: Colors.grey.shade700),
@@ -105,7 +103,7 @@ class _PageConnectionState extends State<PageConnection> {
             child: Stack(
               children: [
                 _ConnectionsTable(
-                  tableHeaders: tableItems.map(_buildHeader).toList(),
+                  tableHeaders: controllers.pageConnection.tableItems.map(_buildHeader).toList(),
                   tableRows: controllers.pageConnection.connect.value.connections.map(_buildTableRow).toList(),
                 ),
                 if (controllers.pageConnection.detail.value != null)

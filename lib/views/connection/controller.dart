@@ -18,55 +18,58 @@ import 'package:clash_for_flutter/widgets/dialogs.dart';
 import 'package:clash_for_flutter/controllers/controllers.dart';
 
 class PageConnectionController extends GetxController {
-  final List<TableItem<ConnectConnection>> tableItems = [
-    TableItem(
-      head: '域名',
-      width: 260,
-      align: Alignment.centerLeft,
-      getLabel: (c) => '${c.metadata.host.isNotEmpty ? c.metadata.host : c.metadata.destinationIP}:${c.metadata.destinationPort}',
-    ),
-    TableItem(head: '网络', width: 80, align: Alignment.center, getLabel: (c) => c.metadata.network),
-    TableItem(head: '类型', width: 120, align: Alignment.center, getLabel: (c) => c.metadata.type),
-    TableItem(head: '节点链', width: 200, align: Alignment.centerLeft, tooltip: true, getLabel: (c) => c.chains.reversed.join('/')),
-    TableItem(head: '规则', width: 140, align: Alignment.center, getLabel: (c) => '${c.rule}(${c.rulePayload})'),
-    TableItem(head: '进程', width: 100, align: Alignment.center, getLabel: (c) => path.basename(c.metadata.processPath)),
-    TableItem(
-      head: '速率',
-      width: 200,
-      align: Alignment.center,
-      getLabel: (c) {
-        final download = c.speed.download;
-        final upload = c.speed.upload;
-        if (upload == 0 && download == 0) return '-';
-        if (upload == 0) return '↓ ${bytesToSize(download)}/s';
-        if (download == 0) return '↑ ${bytesToSize(upload)}/s';
-        return '↑ ${bytesToSize(upload)}/s ↓ ${bytesToSize(download)}/s';
-      },
-      sort: (a, b) => (a.speed.download + a.speed.upload) - (b.speed.download + b.speed.upload),
-    ),
-    TableItem(
-      head: '上传',
-      width: 100,
-      align: Alignment.center,
-      getLabel: (c) => bytesToSize(c.upload),
-      sort: (a, b) => a.upload - b.upload,
-    ),
-    TableItem(
-      head: '下载',
-      width: 100,
-      align: Alignment.center,
-      getLabel: (c) => bytesToSize(c.download),
-      sort: (a, b) => a.download - b.download,
-    ),
-    TableItem(head: '来源IP', width: 140, align: Alignment.center, getLabel: (c) => c.metadata.sourceIP),
-    TableItem(
-      head: '连接时间',
-      width: 120,
-      align: Alignment.center,
-      getLabel: (c) => Day().from(Day.fromString(c.start)),
-      sort: (a, b) => a.start.compareTo(b.start),
-    ),
-  ];
+  List<TableItem<ConnectConnection>> get tableItems {
+    return [
+      TableItem(
+        head: 'connection_columns_host'.tr,
+        width: 260,
+        align: Alignment.centerLeft,
+        getLabel: (c) => '${c.metadata.host.isNotEmpty ? c.metadata.host : c.metadata.destinationIP}:${c.metadata.destinationPort}',
+      ),
+      TableItem(head: 'connection_columns_network'.tr, width: 80, align: Alignment.center, getLabel: (c) => c.metadata.network),
+      TableItem(head: 'connection_columns_type'.tr, width: 120, align: Alignment.center, getLabel: (c) => c.metadata.type),
+      TableItem(
+          head: 'connection_columns_chains'.tr, width: 200, align: Alignment.centerLeft, tooltip: true, getLabel: (c) => c.chains.reversed.join('/')),
+      TableItem(head: 'connection_columns_rule'.tr, width: 140, align: Alignment.center, getLabel: (c) => '${c.rule}(${c.rulePayload})'),
+      TableItem(head: 'connection_columns_process'.tr, width: 100, align: Alignment.center, getLabel: (c) => path.basename(c.metadata.processPath)),
+      TableItem(
+        head: 'connection_columns_speed'.tr,
+        width: 200,
+        align: Alignment.center,
+        getLabel: (c) {
+          final download = c.speed.download;
+          final upload = c.speed.upload;
+          if (upload == 0 && download == 0) return '-';
+          if (upload == 0) return '↓ ${bytesToSize(download)}/s';
+          if (download == 0) return '↑ ${bytesToSize(upload)}/s';
+          return '↑ ${bytesToSize(upload)}/s ↓ ${bytesToSize(download)}/s';
+        },
+        sort: (a, b) => (a.speed.download + a.speed.upload) - (b.speed.download + b.speed.upload),
+      ),
+      TableItem(
+        head: 'connection_columns_upload'.tr,
+        width: 100,
+        align: Alignment.center,
+        getLabel: (c) => bytesToSize(c.upload),
+        sort: (a, b) => a.upload - b.upload,
+      ),
+      TableItem(
+        head: 'connection_columns_download'.tr,
+        width: 100,
+        align: Alignment.center,
+        getLabel: (c) => bytesToSize(c.download),
+        sort: (a, b) => a.download - b.download,
+      ),
+      TableItem(head: 'connection_columns_source_ip'.tr, width: 140, align: Alignment.center, getLabel: (c) => c.metadata.sourceIP),
+      TableItem(
+        head: 'connection_columns_time'.tr,
+        width: 120,
+        align: Alignment.center,
+        getLabel: (c) => Day().from(Day.fromString(c.start)),
+        sort: (a, b) => a.start.compareTo(b.start),
+      ),
+    ];
+  }
 
   var connect = Connect(downloadTotal: 0, uploadTotal: 0, connections: []).obs;
   var sortBy = Rx<TableItem<ConnectConnection>?>(null);
@@ -114,7 +117,8 @@ class PageConnectionController extends GetxController {
   }
 
   void hanldeCloseAllConnections(BuildContext context) async {
-    final res = await showNormalDialog(context, title: "警告", content: '将会关闭所有连接', enterText: "确 定", cancelText: "取 消");
+    final res = await showNormalDialog(context,
+        title: "connection_close_all_title".tr, content: 'connection_close_all_content'.tr, enterText: "model_ok".tr, cancelText: "model_cancel".tr);
     if (res != true) return;
     for (final it in connect.value.connections) {
       await controllers.core.fetchCloseConnection(it.id);

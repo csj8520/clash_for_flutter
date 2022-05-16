@@ -1,3 +1,4 @@
+import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 import 'package:styled_widget/styled_widget.dart';
 
@@ -35,8 +36,11 @@ class _RuleProviderItemState extends State<RuleProviderItem> {
           Text(widget.rule.name, overflow: TextOverflow.ellipsis).textColor(const Color(0xff546b87)).fontSize(16).width(115),
           Tag(widget.rule.vehicleType, width: 50).padding(left: 5),
           Tag(widget.rule.behavior, bgcolor: Theme.of(context).primaryColor, color: Colors.white, width: 55).padding(left: 12),
-          Text('规则条数：${widget.rule.ruleCount}').textColor(const Color(0xff546b87)).fontSize(14).padding(left: 15).expanded(),
-          Text('最后更新于：${Day().from(Day.fromString(widget.rule.updatedAt))}').textColor(const Color(0xff546b87)).fontSize(14).padding(right: 5),
+          Text('${'rule_rule_count'.tr}：${widget.rule.ruleCount}').textColor(const Color(0xff546b87)).fontSize(14).padding(left: 15).expanded(),
+          Text('${'rule_provider_update_time'.tr}：${Day().from(Day.fromString(widget.rule.updatedAt))}')
+              .textColor(const Color(0xff546b87))
+              .fontSize(14)
+              .padding(right: 5),
           IconButton(icon: Icon(Icons.refresh, color: Theme.of(context).primaryColor, size: 20), onPressed: widget.onUpdate == null ? null : _update),
         ],
       ).padding(all: 20).border(bottom: 1, color: const Color(0xffe5e7eb)),

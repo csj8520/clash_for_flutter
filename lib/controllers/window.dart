@@ -22,7 +22,7 @@ class WindowController extends GetxController with WindowListener {
     controllers.service.closeLog();
     controllers.service.logs.clear();
     controllers.pageConnection.closeWs();
-    await controllers.tray.updateTray();
+    // await controllers.tray.updateTray();
   }
 
   Future<void> onWindowShow() async {
@@ -31,7 +31,7 @@ class WindowController extends GetxController with WindowListener {
     if (controllers.pageHome.pageController.page == 3 && controllers.pageConnection.connectChannel == null) {
       controllers.pageConnection.initWs();
     }
-    await controllers.tray.updateTray();
+    // await controllers.tray.updateTray();
   }
 
   Future<void> closeWindow() async {

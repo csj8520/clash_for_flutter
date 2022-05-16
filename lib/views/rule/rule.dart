@@ -46,7 +46,7 @@ class _PageRuleState extends State<PageRule> {
       child: Obx(() => Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              if (controllers.core.ruleProvider.value.providers.isNotEmpty) const CardHead(title: '规则集'),
+              if (controllers.core.ruleProvider.value.providers.isNotEmpty) CardHead(title: 'rule_provider_title'.tr),
               if (controllers.core.ruleProvider.value.providers.isNotEmpty)
                 CardView(
                   child: controllers.core.ruleProvider.value.providers.values
@@ -54,7 +54,7 @@ class _PageRuleState extends State<PageRule> {
                       .toList()
                       .toColumn(),
                 ),
-              const CardHead(title: '规则'),
+              CardHead(title: 'rule_title'.tr),
               CardView(
                 child: ListView.builder(
                   controller: _scrollController2,

@@ -30,22 +30,22 @@ class _PageProfileState extends State<PageProfile> {
       controller: _scrollController,
       child: Obx(() => Column(
             children: [
-              const CardHead(title: '配置'),
+              CardHead(title: 'profile_title'.tr),
               const PageProfileSetting(),
               CardView(
                 child: Column(
                   children: [
                     Row(
                       children: [
-                        const Text('配置文件名称').textColor(Colors.grey.shade600).expanded(),
-                        const Text('链接').textColor(Colors.grey.shade600).expanded(),
-                        const Text('更新时间').textColor(Colors.grey.shade600).expanded(),
+                        Text('profile_columens_config_name'.tr).textColor(Colors.grey.shade600).expanded(),
+                        Text('profile_columens_url'.tr).textColor(Colors.grey.shade600).expanded(),
+                        Text('profile_columens_update_time'.tr).textColor(Colors.grey.shade600).expanded(),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.end,
                           children: [
                             IconButton(
                               iconSize: 20,
-                              tooltip: 'Open Config Folder',
+                              tooltip: 'profile_columens_open_config_folder'.tr,
                               icon: const Icon(Icons.folder_open),
                               padding: const EdgeInsets.all(0),
                               color: Theme.of(context).primaryColor,
@@ -54,7 +54,7 @@ class _PageProfileState extends State<PageProfile> {
                             ),
                             IconButton(
                               iconSize: 20,
-                              tooltip: 'Add Config',
+                              tooltip: 'profile_columens_add_config'.tr,
                               icon: const Icon(Icons.add),
                               padding: const EdgeInsets.all(0),
                               color: Theme.of(context).primaryColor,

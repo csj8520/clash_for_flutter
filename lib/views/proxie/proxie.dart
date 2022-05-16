@@ -26,13 +26,13 @@ class _PageProxieState extends State<PageProxie> {
               Column(
                 children: [
                   CardHead(
-                    title: '策略组',
+                    title: 'proxie_group_title'.tr,
                     suffix: Row(
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: [
                         Checkbox(
                             value: controllers.config.config.value.breakConnections, onChanged: (v) => controllers.config.setBreakConnections(v!)),
-                        const Text('切换时打断包含策略组的连接').textColor(Theme.of(context).primaryColor)
+                        Text('proxie_break_connections'.tr).textColor(Theme.of(context).primaryColor)
                       ],
                     ).expanded(),
                   ),
@@ -49,7 +49,7 @@ class _PageProxieState extends State<PageProxie> {
             if (controllers.core.proxieProviders.isNotEmpty)
               Column(
                 children: [
-                  const CardHead(title: '代理集'),
+                  CardHead(title: 'proxie_provider_title'.tr),
                   ...controllers.core.proxieProviders
                       .map((it) => PageProxieProvider(
                           provider: it,
@@ -63,7 +63,7 @@ class _PageProxieState extends State<PageProxie> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   CardHead(
-                    title: '代理',
+                    title: 'proxie_title'.tr,
                     suffix: Align(
                       alignment: Alignment.centerRight,
                       child: IconButton(

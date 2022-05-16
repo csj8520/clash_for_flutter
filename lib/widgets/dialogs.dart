@@ -1,3 +1,4 @@
+import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 import 'package:styled_widget/styled_widget.dart';
 
@@ -24,7 +25,7 @@ Future<bool?> showNormalDialog(
         TextButton(
           onPressed: () => Navigator.pop(c, false),
           style: ButtonStyle(
-            fixedSize: MaterialStateProperty.all(const Size(62, 32)),
+            minimumSize: MaterialStateProperty.all(const Size(70, 36)),
             shape: MaterialStateProperty.all(RoundedRectangleBorder(borderRadius: BorderRadius.circular(16))),
             side: MaterialStateProperty.all(const BorderSide(color: Color(0x1a000000), width: 1)),
           ),
@@ -33,7 +34,7 @@ Future<bool?> showNormalDialog(
         TextButton(
           onPressed: () => validator?.call() == false ? null : Navigator.pop(c, true),
           style: ButtonStyle(
-            fixedSize: MaterialStateProperty.all(const Size(62, 32)),
+            minimumSize: MaterialStateProperty.all(const Size(70, 36)),
             backgroundColor: MaterialStateProperty.all(Theme.of(context).primaryColor),
             shape: MaterialStateProperty.all(RoundedRectangleBorder(borderRadius: BorderRadius.circular(16))),
             side: MaterialStateProperty.all(const BorderSide(color: Color(0x1a000000), width: 1)),
@@ -52,8 +53,8 @@ Future<ConfigSub?> showEditProfileDialog(BuildContext context,
     context,
     title: title,
     child: child,
-    enterText: '确 定',
-    cancelText: '取 消',
+    enterText: 'model_ok'.tr,
+    cancelText: 'model_cancel'.tr,
     validator: () => validator?.call(ConfigSub(name: child.nameInputController.text, url: child.urlInputController.text)) ?? true,
   );
   if (res != true) return null;

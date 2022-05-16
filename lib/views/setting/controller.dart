@@ -27,7 +27,7 @@ class PageSettingController extends GetxController {
   Future<void> languageSwitch(int idx) async {
     await applyLanguage(I18n.locales[idx]);
     controllers.config.setLanguage(I18n.locales[idx].toString());
-    await controllers.tray.updateTray();
+    // await controllers.tray.updateTray();
   }
 
   Future<void> applyLanguage(Locale locale) async {
@@ -37,10 +37,10 @@ class PageSettingController extends GetxController {
 
   Future<void> systemProxySwitch(bool open) async {
     systemProxySwitchIng.value = true;
-    await controllers.tray.updateTray();
+    // await controllers.tray.updateTray();
     await SystemProxy.instance.set(open ? controllers.core.proxyConfig : SystemProxyConfig());
     await controllers.config.setSystemProxy(open);
     systemProxySwitchIng.value = false;
-    await controllers.tray.updateTray();
+    // await controllers.tray.updateTray();
   }
 }

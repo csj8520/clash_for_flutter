@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:web_socket_channel/io.dart';
 
 import 'package:clash_for_flutter/types/rule.dart';
+import 'package:clash_for_flutter/utils/logger.dart';
 import 'package:clash_for_flutter/types/proxie.dart';
 import 'package:clash_for_flutter/types/connect.dart';
 import 'package:clash_for_flutter/types/clash_core.dart';
@@ -97,6 +98,7 @@ class CoreController extends GetxController {
   }
 
   IOWebSocketChannel fetchConnectionWs() {
+    log.debug('fetchConnectionWs');
     return IOWebSocketChannel.connect(Uri.parse('ws://${address.value}/connections?token=${secret.value}'));
   }
 

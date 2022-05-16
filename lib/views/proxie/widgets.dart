@@ -1,4 +1,6 @@
 import 'dart:math';
+
+import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 import 'package:styled_widget/styled_widget.dart';
 
@@ -52,7 +54,7 @@ class _PageProxieGroupItemState extends State<PageProxieGroupItem> {
         ).constrained(maxHeight: _expand ? double.infinity : 24).clipRect().expanded(),
         // TODO: 无更多时不显示
         TextButton(
-          child: Text(_expand ? '收起' : '展开').fontSize(14).textColor(const Color(0xff546b87)),
+          child: Text(_expand ? 'proxie_collapse'.tr : 'proxie_expand'.tr).fontSize(14).textColor(const Color(0xff546b87)),
           onPressed: () => setState(() => _expand = !_expand),
         )
       ],
@@ -158,7 +160,7 @@ class _PageProxieProviderState extends State<PageProxieProvider> {
             Row(
               children: [
                 Row(children: [Text(provider.name), Tag(provider.vehicleType).padding(left: 10)]).expanded(),
-                Text(provider.updatedAt == null ? '' : '最后更新于：${Day().from(Day.fromString(provider.updatedAt!))}'),
+                Text(provider.updatedAt == null ? '' : '${'proxie_provider_update_time'.tr}：${Day().from(Day.fromString(provider.updatedAt!))}'),
                 IconButton(icon: Icon(Icons.network_check, size: 20, color: Theme.of(context).primaryColor), onPressed: _handleOnHealthCheck),
                 IconButton(icon: Icon(Icons.refresh, size: 20, color: Theme.of(context).primaryColor), onPressed: _handleOnUpdate)
               ],

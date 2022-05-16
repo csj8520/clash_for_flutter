@@ -79,8 +79,9 @@ class TrayController extends GetxController with TrayListener {
   }
 
   @override
-  void onTrayIconRightMouseDown() {
+  void onTrayIconRightMouseDown() async {
     log.debug('onTrayIconRightMouseDown');
+    await updateTray();
     trayManager.popUpContextMenu();
   }
 
