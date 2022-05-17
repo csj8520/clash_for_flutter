@@ -24,6 +24,12 @@ class _PageLogState extends State<PageLog> {
   };
 
   @override
+  void initState() {
+    controllers.pageLog.initDate();
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Column(children: [
       CardHead(title: 'sidebar_logs'.tr),
@@ -32,7 +38,7 @@ class _PageLogState extends State<PageLog> {
           () => ListView.builder(
             padding: const EdgeInsets.only(left: 10, top: 10, right: 10, bottom: 10),
             itemBuilder: (context, index) {
-              final it = controllers.service.logs[controllers.service.logs.length - index - 1];
+              final it = controllers.pageLog.logs[controllers.pageLog.logs.length - index - 1];
               return RichText(
                 text: TextSpan(
                   style: const TextStyle(height: 1.5, fontSize: 13, color: Color(0xff73808f)),
@@ -51,7 +57,7 @@ class _PageLogState extends State<PageLog> {
                 ),
               );
             },
-            itemCount: controllers.service.logs.length,
+            itemCount: controllers.pageLog.logs.length,
             controller: _scrollController,
             reverse: true,
           ).backgroundColor(const Color(0xfff3f6f9)).clipRRect(all: 4).padding(all: 15),
@@ -63,6 +69,7 @@ class _PageLogState extends State<PageLog> {
   @override
   void dispose() {
     _scrollController.dispose();
+    controllers.pageLog.clearDate();
     super.dispose();
   }
 }

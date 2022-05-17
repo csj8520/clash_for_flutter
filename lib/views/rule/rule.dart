@@ -1,6 +1,5 @@
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
-import 'package:bot_toast/bot_toast.dart';
 import 'package:styled_widget/styled_widget.dart';
 
 import 'package:clash_for_flutter/widgets/card_head.dart';
@@ -21,22 +20,8 @@ class _PageRuleState extends State<PageRule> {
 
   @override
   void initState() {
-    _init();
+    controllers.pageRule.updateDate();
     super.initState();
-  }
-
-  Future<void> _init() async {
-    await controllers.core.fetchRuleProvider();
-    await controllers.core.fetchRule();
-  }
-
-  Future<void> _handleRuleProviderUpdate(String name) async {
-    try {
-      await controllers.core.fetchRuleProviderUpdate(name);
-      await controllers.core.fetchRuleProvider();
-    } catch (e) {
-      BotToast.showText(text: 'Update Rule: $name Error');
-    }
   }
 
   @override
@@ -50,7 +35,7 @@ class _PageRuleState extends State<PageRule> {
               if (controllers.core.ruleProvider.value.providers.isNotEmpty)
                 CardView(
                   child: controllers.core.ruleProvider.value.providers.values
-                      .map((it) => RuleProviderItem(rule: it, onUpdate: _handleRuleProviderUpdate))
+                      .map((it) => RuleProviderItem(rule: it, onUpdate: controllers.pageRule.handleRuleProviderUpdate))
                       .toList()
                       .toColumn(),
                 ),

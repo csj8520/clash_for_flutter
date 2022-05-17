@@ -19,7 +19,9 @@ import 'package:clash_for_flutter/controllers/service.dart';
 
 import 'package:clash_for_flutter/controller.dart';
 import 'package:clash_for_flutter/views/home/home.dart';
+import 'package:clash_for_flutter/views/log/controller.dart';
 import 'package:clash_for_flutter/views/home/controller.dart';
+import 'package:clash_for_flutter/views/rule/controller.dart';
 import 'package:clash_for_flutter/views/proxie/controller.dart';
 import 'package:clash_for_flutter/views/setting/controller.dart';
 import 'package:clash_for_flutter/views/profile/controller.dart';
@@ -50,8 +52,10 @@ void main() async {
   Get.put(ConfigController());
   Get.put(ServiceController());
 
+  Get.put(PageLogController());
   Get.put(PageMainController());
   Get.put(PageHomeController());
+  Get.put(PageRuleController());
   Get.put(PageProxieController());
   Get.put(PageSettingController());
   Get.put(PageProfileController());
@@ -89,6 +93,7 @@ class _MyAppState extends State<MyApp> {
         errorColor: const Color(0xfff56c6c),
       ),
       builder: BotToastInit(),
+      navigatorObservers: [BotToastNavigatorObserver()],
       home: const PageHome(),
     );
   }

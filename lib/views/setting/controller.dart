@@ -1,5 +1,6 @@
 import 'dart:ui';
 
+import 'package:clash_for_flutter/utils/logger.dart';
 import 'package:day/day.dart';
 import 'package:day/i18n/en.dart' as day_locale_en;
 import 'package:day/i18n/zh_cn.dart' as day_locale_zh;
@@ -9,11 +10,20 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:clash_for_flutter/i18n/i18n.dart';
 import 'package:clash_for_flutter/utils/system_proxy.dart';
 import 'package:clash_for_flutter/controllers/controllers.dart';
+import 'package:clash_for_flutter/utils/base_page_controller.dart';
 
-class PageSettingController extends GetxController {
+class PageSettingController extends BasePageController {
   final List<String> modes = ['global', 'rule', 'direct', 'script'];
 
   var systemProxySwitchIng = false.obs;
+
+  @override
+  Future<void> updateDate() async {
+    if (!controllers.service.coreIsRuning.value) return;
+    if (controllers.pageHome.pageController.page != 5) return;
+    log.debug('call: updateDate in page-setting');
+    await controllers.core.updateConfig();
+  }
 
   void launchWebGui() {
     final address = controllers.config.clashCoreApiAddress.value.split(':');

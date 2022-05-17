@@ -25,9 +25,7 @@ class ProtocolController extends GetxController with ProtocolListener {
     } else {
       return;
     }
-    await windowManager.show();
-    await windowManager.focus();
-    controllers.window.onWindowShow();
+    await controllers.window.showWindow();
   }
 
   @override

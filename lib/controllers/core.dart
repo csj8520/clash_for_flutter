@@ -3,7 +3,6 @@ import 'package:get/get.dart';
 import 'package:web_socket_channel/io.dart';
 
 import 'package:clash_for_flutter/types/rule.dart';
-import 'package:clash_for_flutter/utils/logger.dart';
 import 'package:clash_for_flutter/types/proxie.dart';
 import 'package:clash_for_flutter/types/connect.dart';
 import 'package:clash_for_flutter/types/clash_core.dart';
@@ -79,37 +78,36 @@ class CoreController extends GetxController {
     }
   }
 
-  Future<void> fetchVersion() async {
+  Future<void> updateVersion() async {
     final res = await dio.get('/version');
     version.value = ClashCoreVersion.fromJson(res.data);
   }
 
-  Future<void> fetchConfig() async {
+  Future<void> updateConfig() async {
     final res = await dio.get('/configs');
     config.value = ClashCoreConfig.fromJson(res.data);
   }
 
   Future<void> fetchConfigUpdate(Map<String, dynamic> config) async {
     await dio.patch('/configs', data: config);
-    await fetchConfig();
+    await updateConfig();
   }
 
-  Future<void> fetchCloseConnection(String id) async {
+  Future<void> fetchCloseConnections(String id) async {
     await dio.delete('/connections/${Uri.encodeComponent(id)}');
   }
 
-  IOWebSocketChannel fetchConnectionWs() {
-    log.debug('fetchConnectionWs');
+  IOWebSocketChannel fetchConnectionsWs() {
     return IOWebSocketChannel.connect(Uri.parse('ws://${address.value}/connections?token=${secret.value}'));
   }
 
-  Future fetchRuleProvider() async {
+  Future updateRuleProvider() async {
     final res = await dio.get('/providers/rules');
     ruleProvider.value = RuleProvider.fromJson(res.data);
     ruleProvider.refresh();
   }
 
-  Future fetchRule() async {
+  Future updateRule() async {
     final res = await dio.get('/rules');
     rule.value = Rule.fromJson(res.data);
     rule.refresh();
@@ -119,7 +117,7 @@ class CoreController extends GetxController {
     await dio.put('/providers/rules/${Uri.encodeComponent(name)}');
   }
 
-  Future<dynamic> fetchProxie() async {
+  Future<dynamic> updateProxie() async {
     final res = await dio.get('/proxies');
     final proxie = Proxie.fromJson(res.data);
     final global = proxie.proxies["GLOBAL"]!;
@@ -136,7 +134,7 @@ class CoreController extends GetxController {
     proxieProxies.refresh();
   }
 
-  Future<dynamic> fetchProxieProvider() async {
+  Future<dynamic> updateProxieProvider() async {
     final res = await dio.get('/providers/proxies');
     proxieProviders.value = ProxieProvider.fromJson(res.data).providers.values.where((it) => it.vehicleType != 'Compatible').toList();
     for (final it in proxieProviders) {
@@ -161,7 +159,7 @@ class CoreController extends GetxController {
     await dio.put('/providers/proxies/${Uri.encodeComponent(name)}');
   }
 
-  Future<void> fetchProxieDelay() async {
+  Future<void> updateProxieDelay() async {
     try {
       await Future.wait(proxieProxies.map((it) async {
         final res = await dio.get(

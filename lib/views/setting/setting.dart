@@ -19,11 +19,18 @@ class _PageSettingState extends State<PageSetting> {
   final ScrollController _scrollController = ScrollController();
 
   @override
+  void initState() {
+    controllers.pageSetting.updateDate();
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
       controller: _scrollController,
       child: Obx(() {
-        final disabled = controllers.service.serviceModeSwitching.value || controllers.service.restartClashCoreIng.value;
+        final disabled = !controllers.service.isRunning;
+
         return Column(
           children: [
             CardHead(title: 'setting_title'.tr),

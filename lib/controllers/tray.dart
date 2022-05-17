@@ -18,9 +18,10 @@ class TrayController extends GetxController with TrayListener {
   }
 
   Future<void> updateTray() async {
-    log.debug('updateTray');
+    log.debug('call: updateTray');
     final visible = await windowManager.isVisible();
-    final disabled = controllers.service.serviceModeSwitching.value || controllers.service.restartClashCoreIng.value;
+    final disabled = !controllers.service.isRunning;
+
     trayMenu = Menu(items: [
       MenuItem.checkbox(label: 'tray_show'.tr, checked: visible, onClick: handleClickShow),
       MenuItem.separator(),
@@ -78,13 +79,13 @@ class TrayController extends GetxController with TrayListener {
 
   @override
   void onTrayIconMouseDown() async {
-    log.debug('onTrayIconMouseDown');
+    log.debug('call: onTrayIconMouseDown');
     await controllers.window.showWindow();
   }
 
   @override
   void onTrayIconRightMouseDown() async {
-    log.debug('onTrayIconRightMouseDown');
+    log.debug('call: onTrayIconRightMouseDown');
     await updateTray();
     trayManager.popUpContextMenu();
   }

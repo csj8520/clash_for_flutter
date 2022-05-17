@@ -22,7 +22,7 @@ class _PageConnectionState extends State<PageConnection> {
 
   @override
   void initState() {
-    controllers.pageConnection.initWs();
+    controllers.pageConnection.initDate();
     _filterTextEditingController.addListener(() {
       controllers.pageConnection.filter = _filterTextEditingController.text;
     });
@@ -119,7 +119,7 @@ class _PageConnectionState extends State<PageConnection> {
 
   @override
   void dispose() {
-    controllers.pageConnection.closeWs();
+    controllers.pageConnection.clearDate();
     _filterTextEditingController.dispose();
     super.dispose();
   }

@@ -9,6 +9,8 @@ import 'package:clash_for_flutter/controllers/config.dart';
 import 'package:clash_for_flutter/controllers/service.dart';
 
 import 'package:clash_for_flutter/controller.dart';
+import 'package:clash_for_flutter/views/log/controller.dart';
+import 'package:clash_for_flutter/views/rule/controller.dart';
 import 'package:clash_for_flutter/views/home/controller.dart';
 import 'package:clash_for_flutter/views/proxie/controller.dart';
 import 'package:clash_for_flutter/views/profile/controller.dart';
@@ -24,8 +26,10 @@ class Controllers {
   late final ConfigController config;
   late final ServiceController service;
 
+  late final PageLogController pageLog;
   late final PageMainController pageMain;
   late final PageHomeController pageHome;
+  late final PageRuleController pageRule;
   late final PageProxieController pageProxie;
   late final PageProfileController pageProfile;
   late final PageSettingController pageSetting;
@@ -40,8 +44,10 @@ class Controllers {
     config = Get.find();
     service = Get.find();
 
+    pageLog = Get.find();
     pageMain = Get.find();
     pageHome = Get.find();
+    pageRule = Get.find();
     pageProxie = Get.find();
     pageProfile = Get.find();
     pageSetting = Get.find();

@@ -77,7 +77,7 @@ class _ConnectDetailState extends State<ConnectDetail> {
                             shape: MaterialStateProperty.all(const StadiumBorder()),
                             padding: MaterialStateProperty.all(const EdgeInsets.all(15)),
                           ),
-                          onPressed: widget.closed ? null : () => controllers.core.fetchCloseConnection(widget.connection.id),
+                          onPressed: widget.closed ? null : () => controllers.core.fetchCloseConnections(widget.connection.id),
                           child: Text('connection_info_close_connection'.tr).textColor(widget.closed ? Colors.grey.shade400 : Colors.white),
                         ),
                       ],

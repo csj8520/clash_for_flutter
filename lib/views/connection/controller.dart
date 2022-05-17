@@ -2,6 +2,7 @@ import 'dart:io';
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:clash_for_flutter/utils/logger.dart';
 import 'package:day/day.dart';
 import 'package:day/plugins/relative_time.dart';
 
@@ -16,8 +17,9 @@ import 'package:clash_for_flutter/utils/utils.dart';
 import 'package:clash_for_flutter/types/connect.dart';
 import 'package:clash_for_flutter/widgets/dialogs.dart';
 import 'package:clash_for_flutter/controllers/controllers.dart';
+import 'package:clash_for_flutter/utils/base_page_controller.dart';
 
-class PageConnectionController extends GetxController {
+class PageConnectionController extends BasePageController {
   List<TableItem<ConnectConnection>> get tableItems {
     return [
       TableItem(
@@ -80,21 +82,32 @@ class PageConnectionController extends GetxController {
 
   String filter = '';
 
-  IOWebSocketChannel? connectChannel;
-  StreamSubscription<dynamic>? _listenStreamSub;
+  IOWebSocketChannel? connectionsWsChannel;
+  StreamSubscription<dynamic>? _connectionsWsChannelSub;
   Map<String, ConnectConnection> _connectionsCache = {};
 
-  void initWs() {
+  @override
+  Future<void> initDate() async {
+    if (!controllers.service.coreIsRuning.value) return;
+    if (controllers.pageHome.pageController.page != 3) return;
+    if (controllers.pageConnection.connectionsWsChannel != null) return;
+    log.debug('call: initDate in page-connection');
+
     sortBy.value = tableItems.last;
-    connectChannel = controllers.core.fetchConnectionWs();
-    _listenStreamSub = connectChannel!.stream.listen(_handleStream, onDone: _handleOnDone);
+    connectionsWsChannel = controllers.core.fetchConnectionsWs();
+    _connectionsWsChannelSub = connectionsWsChannel!.stream.listen(_handleStream, onDone: _handleOnDone, onError: (_) => _handleOnDone());
   }
 
-  Future<void> closeWs() async {
-    await _listenStreamSub?.cancel();
-    _listenStreamSub = null;
-    await connectChannel?.sink.close(WebSocketStatus.goingAway);
-    connectChannel = null;
+  @override
+  Future<void> clearDate() async {
+    if (connectionsWsChannel == null && _connectionsWsChannelSub == null) return;
+    log.debug('call: clearDate in page-connection');
+    await _connectionsWsChannelSub?.cancel();
+    _connectionsWsChannelSub = null;
+    await connectionsWsChannel?.sink.close(WebSocketStatus.goingAway);
+    connectionsWsChannel = null;
+    connect.value.connections.clear();
+    connect.refresh();
   }
 
   void handleSetSort(TableItem<ConnectConnection> item) {
@@ -121,7 +134,7 @@ class PageConnectionController extends GetxController {
         title: "connection_close_all_title".tr, content: 'connection_close_all_content'.tr, enterText: "model_ok".tr, cancelText: "model_cancel".tr);
     if (res != true) return;
     for (final it in connect.value.connections) {
-      await controllers.core.fetchCloseConnection(it.id);
+      await controllers.core.fetchCloseConnections(it.id);
     }
   }
 
@@ -151,9 +164,13 @@ class PageConnectionController extends GetxController {
   }
 
   void _handleOnDone() {
-    if (connectChannel?.closeCode != WebSocketStatus.goingAway) {
+    if (connectionsWsChannel?.closeCode != WebSocketStatus.goingAway) {
       BotToast.showText(text: "连接异常断开");
     } else {}
+    _connectionsWsChannelSub = null;
+    connectionsWsChannel = null;
+    connect.value.connections.clear();
+    connect.refresh();
   }
 
   void _handleFilter() {

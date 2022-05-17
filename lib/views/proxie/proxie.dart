@@ -18,6 +18,12 @@ class _PageProxieState extends State<PageProxie> {
   final ScrollController _scrollController = ScrollController();
 
   @override
+  void initState() {
+    controllers.pageProxie.updateDate();
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
       controller: _scrollController,
@@ -68,7 +74,7 @@ class _PageProxieState extends State<PageProxie> {
                       alignment: Alignment.centerRight,
                       child: IconButton(
                         icon: Icon(Icons.speed, size: 20, color: Theme.of(context).primaryColor),
-                        onPressed: controllers.core.fetchProxieDelay,
+                        onPressed: controllers.core.updateProxieDelay,
                       ),
                     ).expanded(),
                   ),

@@ -3,7 +3,6 @@ import 'dart:async';
 
 import 'package:dio/dio.dart';
 import 'package:get/get.dart';
-import 'package:day/day.dart';
 import 'package:path/path.dart' as path;
 import 'package:flutter/foundation.dart';
 import 'package:bot_toast/bot_toast.dart';
@@ -24,14 +23,13 @@ class ServiceController extends GetxController {
   final dio = Dio(BaseOptions(baseUrl: 'http://127.0.0.1:9089', headers: headers));
 
   var serviceMode = false.obs;
-  var restartClashCoreIng = false.obs;
-  var serviceModeSwitching = false.obs;
+
+  var coreIsRuning = false.obs;
+  var serviceIsRuning = false.obs;
 
   Process? clashServiceProcess;
 
-  IOWebSocketChannel? wsChannelLogs;
-  StreamSubscription<dynamic>? listenLogsSub;
-  RxList<ClashServiceLog> logs = <ClashServiceLog>[].obs;
+  bool get isRunning => serviceIsRuning.value && coreIsRuning.value;
 
   Future<void> initService() async {
     try {
@@ -40,32 +38,8 @@ class ServiceController extends GetxController {
     } catch (e) {
       await startService();
     }
-    final visible = await windowManager.isVisible();
-    if (visible) initLog();
-  }
-
-  void initLog() {
-    wsChannelLogs = IOWebSocketChannel.connect(Uri.parse('ws://127.0.0.1:9089/logs'), headers: headers);
-    listenLogsSub = wsChannelLogs!.stream.listen((event) {
-      for (final it in (event as String).split('\n')) {
-        final matchs = RegExp(r'^time="([\d-T:+]+)" level=(\w+) msg="(.+)"$').firstMatch(it.trim());
-
-        final res = matchs?.groups([1, 2, 3]);
-        final time = res?[0] ?? '1970-01-01T00:00:00+00:00';
-        final type = res?[1] ?? 'debug';
-        final msg = res?[2] ?? it;
-
-        logs.add(ClashServiceLog(time: Day.fromString(time).format('YYYY-MM-DD HH:mm:ss'), type: type, msg: msg));
-        if (logs.length > 1000) logs.removeAt(0);
-      }
-    });
-  }
-
-  Future<void> closeLog() async {
-    await listenLogsSub?.cancel();
-    listenLogsSub = null;
-    await wsChannelLogs?.sink.close();
-    wsChannelLogs = null;
+    serviceIsRuning.value = true;
+    if (await windowManager.isVisible()) await controllers.window.handleWindowShow();
   }
 
   Future<void> _startService() async {
@@ -74,9 +48,9 @@ class ServiceController extends GetxController {
       log.error('clash-service exit with code: $code');
       // for macos
       if (code == 101) {
-        BotToast.showText(text: 'clash-service exit with code: $code,After 5 seconds, try to restart');
-        log.error('After 5 seconds, try to restart');
-        await Future.delayed(const Duration(seconds: 5));
+        BotToast.showText(text: 'clash-service exit with code: $code,After 10 seconds, try to restart');
+        log.error('After 10 seconds, try to restart');
+        await Future.delayed(const Duration(seconds: 10));
         await _startService();
       }
     });
@@ -117,6 +91,10 @@ class ServiceController extends GetxController {
     return ClashServiceInfo.fromJson(res.data);
   }
 
+  IOWebSocketChannel fetchLogWs() {
+    return IOWebSocketChannel.connect(Uri.parse('ws://127.0.0.1:9089/logs'), headers: headers);
+  }
+
   Future<void> fetchStart(String name) async {
     final data = await fetchInfo();
     if (data.status == 'running') await fetchStop();
@@ -130,7 +108,7 @@ class ServiceController extends GetxController {
   }
 
   Future<void> exit() async {
-    await closeLog();
+    serviceIsRuning.value = false;
     await stopClashCore();
     if (clashServiceProcess != null) {
       clashServiceProcess!.kill();
@@ -153,15 +131,14 @@ class ServiceController extends GetxController {
   }
 
   Future<void> serviceModeSwitch(bool open) async {
-    serviceModeSwitching.value = true;
     await exit();
     open ? await install() : await uninstall();
     await initService();
     await startClashCore();
-    serviceModeSwitching.value = false;
   }
 
   Future<void> stopClashCore() async {
+    coreIsRuning.value = false;
     if (Platform.isMacOS &&
         controllers.service.serviceMode.value &&
         controllers.config.clashCoreTunEnable.value &&
@@ -176,6 +153,7 @@ class ServiceController extends GetxController {
     await fetchStart(controllers.config.config.value.selected);
     controllers.core.setApi(controllers.config.clashCoreApiAddress.value, controllers.config.clashCoreApiSecret.value);
     await controllers.core.waitCoreStart();
+    await controllers.core.updateConfig();
     if (Platform.isMacOS &&
         controllers.service.serviceMode.value &&
         controllers.config.clashCoreTunEnable.value &&
@@ -183,16 +161,15 @@ class ServiceController extends GetxController {
       await MacSystemDns.instance.set([controllers.config.clashCoreDns.value]);
     }
     if (controllers.config.config.value.setSystemProxy) await SystemProxy.instance.set(controllers.core.proxyConfig);
-    await controllers.core.fetchConfig();
+    coreIsRuning.value = true;
+    if (await windowManager.isVisible()) await controllers.window.handleWindowShow();
   }
 
   Future<void> reloadClashCore() async {
-    restartClashCoreIng.value = true;
     BotToast.showText(text: '正在重启 Clash Core ……');
     await stopClashCore();
     await controllers.config.readClashCoreApi();
     await startClashCore();
     BotToast.showText(text: '重启成功');
-    restartClashCoreIng.value = false;
   }
 }
