@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:clash_for_flutter/controllers/controllers.dart';
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 import 'package:styled_widget/styled_widget.dart';
@@ -11,6 +12,17 @@ import 'package:clash_for_flutter/widgets/tag.dart';
 import 'package:clash_for_flutter/types/proxie.dart';
 import 'package:clash_for_flutter/widgets/loading.dart';
 import 'package:clash_for_flutter/widgets/card_view.dart';
+
+final _colors = {
+  const Color(0xff909399): 0,
+  const Color(0xff00c520): 260,
+  const Color(0xffff9a28): 600,
+  const Color(0xffff3e5e): double.infinity,
+};
+
+Color getColor(int delay) {
+  return _colors.keys.firstWhere((it) => (delay <= _colors[it]!));
+}
 
 class PageProxieGroupItem extends StatefulWidget {
   const PageProxieGroupItem({Key? key, required this.proxie, required this.onChange}) : super(key: key);
@@ -44,8 +56,7 @@ class _PageProxieGroupItemState extends State<PageProxieGroupItem> {
           runSpacing: 6,
           children: tags
               .map((e) => PageProxieGroupItemTab(
-                    text: e,
-                    // fail: proxiesStore.timeoutProxies.contains(e),
+                    name: e,
                     value: group.now == e,
                     disabled: group.type != ProxieProxieType.selector,
                     onClick: () => widget.onChange(widget.proxie, e),
@@ -63,55 +74,71 @@ class _PageProxieGroupItemState extends State<PageProxieGroupItem> {
 }
 
 class PageProxieGroupItemTab extends StatelessWidget {
-  const PageProxieGroupItemTab({Key? key, required this.text, this.fail = false, this.value = false, this.disabled = false, this.onClick})
-      : super(key: key);
-  final String text;
-  final bool fail;
+  const PageProxieGroupItemTab({Key? key, required this.name, this.value = false, this.disabled = false, this.onClick}) : super(key: key);
+  final String name;
   final bool value;
   final bool disabled;
   final Function()? onClick;
 
+  static const groups = [
+    ProxieProxieType.selector,
+    ProxieProxieType.urltest,
+    ProxieProxieType.fallback,
+  ];
+
+  int getDelay(ProxieProxiesItem? proxie) {
+    final delay = proxie?.delay ?? 0;
+    if (delay > 0) return delay;
+    if (proxie != null && groups.contains(proxie.type)) {
+      return getDelay(controllers.pageProxie.allProxies[proxie.now]);
+    }
+    return 0;
+  }
+
   @override
   Widget build(BuildContext context) {
+    ProxieProxiesItem? proxie = controllers.pageProxie.allProxies[name];
+    final delay = getDelay(proxie);
+
     return TextButton(
-      onPressed: disabled ? null : onClick,
-      child: Text(text, overflow: TextOverflow.ellipsis).fontSize(12).textColor((fail || value) ? Colors.white : const Color(0xff54759a)),
-    )
+            onPressed: disabled ? null : onClick,
+            child: RichText(
+              overflow: TextOverflow.ellipsis,
+              text: TextSpan(
+                style: TextStyle(fontSize: 12, color: value ? Colors.white : const Color(0xff54759a)),
+                children: [
+                  TextSpan(text: name),
+                  if (proxie != null) TextSpan(text: ' ${proxie.type}').fontSize(8),
+                  if (delay > 0) TextSpan(text: ' ${delay}ms').fontSize(8).textColor(getColor(delay)),
+                ],
+              ),
+            ))
         .height(24)
-        .backgroundColor((fail && value)
-            ? const Color(0xff8f7bb3)
-            : fail
-                ? Theme.of(context).errorColor
-                : value
-                    ? Theme.of(context).primaryColor
-                    : Colors.transparent)
+        .backgroundColor(value ? Theme.of(context).primaryColor : Colors.transparent)
         .decorated(border: Border.all(width: 1, color: Theme.of(context).primaryColor), borderRadius: BorderRadius.circular(12))
         .clipRRect(all: 12);
   }
 }
 
 class PageProxieItem extends StatelessWidget {
-  PageProxieItem({Key? key, required this.proxie}) : super(key: key);
+  const PageProxieItem({Key? key, required this.proxie}) : super(key: key);
   final ProxieProxiesItem proxie;
-
-  final _colors = {
-    const Color(0xff909399): 0,
-    const Color(0xff00c520): 260,
-    const Color(0xffff9a28): 600,
-    const Color(0xffff3e5e): double.infinity,
-  };
 
   @override
   Widget build(BuildContext context) {
     final delay = proxie.delay;
     final name = proxie.name;
-    Color color = _colors.keys.firstWhere((it) => (delay <= _colors[it]!));
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Text(proxie.type).textColor(Colors.white).fontSize(10).padding(left: 5, right: 5, top: 2, bottom: 2).backgroundColor(color).clipRRect(all: 2),
+        Text(proxie.type)
+            .textColor(Colors.white)
+            .fontSize(10)
+            .padding(left: 5, right: 5, top: 2, bottom: 2)
+            .backgroundColor(getColor(delay))
+            .clipRRect(all: 2),
         Text(name, overflow: TextOverflow.ellipsis, maxLines: 2).textColor(const Color(0xff54759a)).fontSize(10),
         Text(delay == 0 ? '-' : '${delay}ms').textColor(const Color(0xcc54759a)).fontSize(10),
       ],

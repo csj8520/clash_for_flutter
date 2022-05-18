@@ -32,7 +32,7 @@ class _PageConnectionState extends State<PageConnection> {
   Widget _buildHeader(TableItem<ConnectConnection> e) {
     return TextButton(
       child: Text(
-        '${e.head}${e == controllers.pageConnection.sortBy.value ? controllers.pageConnection.sortAscend.value ? ' ↑' : ' ↓' : ''}',
+        '${e.head}${e.head == controllers.pageConnection.sortBy.value?.head ? controllers.pageConnection.sortAscend.value ? ' ↑' : ' ↓' : ''}',
         overflow: TextOverflow.ellipsis,
       ).textColor(const Color(0xff909399)).fontSize(14).alignment(Alignment.center),
       onPressed: () => controllers.pageConnection.handleSetSort(e),

@@ -29,7 +29,7 @@ class TrayController extends GetxController with TrayListener {
         label: 'proxie_group_title'.tr,
         disabled: disabled,
         submenu: Menu(
-            items: controllers.core.proxieGroups
+            items: controllers.pageProxie.proxieGroups
                 .map((it) => MenuItem.submenu(
                       label: it.name,
                       submenu: Menu(

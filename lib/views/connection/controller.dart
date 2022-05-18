@@ -20,8 +20,12 @@ import 'package:clash_for_flutter/controllers/controllers.dart';
 import 'package:clash_for_flutter/utils/base_page_controller.dart';
 
 class PageConnectionController extends BasePageController {
+  List<TableItem<ConnectConnection>>? _tableItemsCache;
+  String? _tableItemsCacheKey;
   List<TableItem<ConnectConnection>> get tableItems {
-    return [
+    if (Get.locale?.languageCode == _tableItemsCacheKey && _tableItemsCache != null) return _tableItemsCache!;
+    _tableItemsCacheKey = Get.locale?.languageCode;
+    return _tableItemsCache = [
       TableItem(
         head: 'connection_columns_host'.tr,
         width: 260,
@@ -111,7 +115,7 @@ class PageConnectionController extends BasePageController {
   }
 
   void handleSetSort(TableItem<ConnectConnection> item) {
-    if (sortBy.value == item) {
+    if (sortBy.value?.head == item.head) {
       if (sortAscend.value) {
         sortBy.value = null;
       } else {

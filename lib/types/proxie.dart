@@ -153,10 +153,10 @@ class ProxieProviderItem {
 }
 
 class ProxieProxieType {
-  static String selector = 'Selector';
-  static String urltest = 'URLTest';
-  static String fallback = 'Fallback';
-  static String loadbalance = 'LoadBalance';
-  static String direct = 'Direct';
-  static String reject = 'Reject';
+  static const String selector = 'Selector';
+  static const String urltest = 'URLTest';
+  static const String fallback = 'Fallback';
+  static const String loadbalance = 'LoadBalance';
+  static const String direct = 'Direct';
+  static const String reject = 'Reject';
 }

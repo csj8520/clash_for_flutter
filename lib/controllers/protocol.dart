@@ -1,6 +1,5 @@
 import 'package:day/day.dart';
 import 'package:get/get.dart';
-import 'package:window_manager/window_manager.dart';
 import 'package:protocol_handler/protocol_handler.dart';
 
 import 'package:clash_for_flutter/types/config.dart';
