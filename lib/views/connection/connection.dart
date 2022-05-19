@@ -23,6 +23,7 @@ class _PageConnectionState extends State<PageConnection> {
   @override
   void initState() {
     controllers.pageConnection.initDate();
+    _filterTextEditingController.text = controllers.pageConnection.filter;
     _filterTextEditingController.addListener(() {
       controllers.pageConnection.filter = _filterTextEditingController.text;
     });
@@ -140,6 +141,7 @@ class _ConnectionsTableState extends State<_ConnectionsTable> {
 
   @override
   Widget build(BuildContext context) {
+    // TODO: 优化滚动交互
     return Scrollbar(
       controller: _horizontalScrollController,
       child: SingleChildScrollView(

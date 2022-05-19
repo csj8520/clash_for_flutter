@@ -1,6 +1,3 @@
-import 'dart:math';
-
-import 'package:clash_for_flutter/controllers/controllers.dart';
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 import 'package:styled_widget/styled_widget.dart';
@@ -8,6 +5,7 @@ import 'package:styled_widget/styled_widget.dart';
 import 'package:day/day.dart';
 import 'package:day/plugins/relative_time.dart';
 
+import 'package:clash_for_flutter/utils/utils.dart';
 import 'package:clash_for_flutter/widgets/tag.dart';
 import 'package:clash_for_flutter/types/proxie.dart';
 import 'package:clash_for_flutter/widgets/loading.dart';
@@ -24,99 +22,127 @@ Color getColor(int delay) {
   return _colors.keys.firstWhere((it) => (delay <= _colors[it]!));
 }
 
-class PageProxieGroupItem extends StatefulWidget {
-  const PageProxieGroupItem({Key? key, required this.proxie, required this.onChange}) : super(key: key);
-  final ProxieProxiesItem proxie;
-  final Function(ProxieProxiesItem proxie, String value) onChange;
-
-  @override
-  State<PageProxieGroupItem> createState() => _PageProxieGroupItemState();
+class PageProxieGroupTabItem {
+  final String name;
+  final String? type;
+  final int? delay;
+  PageProxieGroupTabItem({required this.name, required this.type, required this.delay});
 }
 
-class _PageProxieGroupItemState extends State<PageProxieGroupItem> {
-  bool _expand = false;
+class PageProxieGroup extends StatefulWidget {
+  const PageProxieGroup({Key? key, required this.title, required this.type, this.now, this.tabs, this.onChange}) : super(key: key);
+  final String title;
+  final String type;
+  final String? now;
+  final List<PageProxieGroupTabItem>? tabs;
+  final void Function(String name)? onChange;
+
+  @override
+  State<PageProxieGroup> createState() => _PageProxieGroupState();
+}
+
+class _PageProxieGroupState extends State<PageProxieGroup> {
+  bool overflow = false;
+  bool expand = false;
+  double cacheWidth = 0;
+  bool init = false;
+  List<Widget> children = [];
+
+  final EdgeInsets itemPadding = const EdgeInsets.only(left: 10, right: 10);
+  final double padding = 15;
+  final double titleWidth = 190;
+  final double expandWidth = 50;
+  final double spacing = 6;
+
+  final textPainter = TextPainter(textDirection: TextDirection.ltr);
+
+  void _buildTab() {
+    children = [];
+    if (widget.tabs == null) return;
+    final maxWidth = (context.findRenderObject() as RenderBox).size.width - padding * 2 - titleWidth - expandWidth;
+    double currentWidth = 0;
+    for (final it in widget.tabs!) {
+      final active = widget.now == it.name;
+      final span = TextSpan(
+        style: TextStyle(fontSize: 12, color: active ? Colors.white : const Color(0xff54759a)),
+        children: [
+          TextSpan(text: it.name),
+          // WidgetSpan(child: Text('ii').constrained(width: 50, height: 24)),
+          if (it.type != null) TextSpan(text: ' ${it.type}').fontSize(8),
+          if (it.delay != null && it.delay! > 0) TextSpan(text: ' ${it.delay}ms').fontSize(8).textColor(getColor(it.delay!)),
+        ],
+      );
+      textPainter
+        ..text = span
+        ..layout();
+      currentWidth += (textPainter.width + spacing + itemPadding.left + itemPadding.right);
+      if ((currentWidth - spacing) > maxWidth && !expand && children.isNotEmpty) break;
+
+      children.add(TextButton(
+        style: ButtonStyle(
+          padding: MaterialStateProperty.all(itemPadding),
+          minimumSize: MaterialStateProperty.all(Size.zero),
+          fixedSize: MaterialStateProperty.all(const Size.fromHeight(24)),
+        ),
+        onPressed: widget.onChange?.bindOne(it.name),
+        child: RichText(text: span, overflow: TextOverflow.ellipsis),
+      ).decorated(
+        color: active ? Theme.of(context).primaryColor : Colors.transparent,
+        border: Border.all(width: 1, color: Theme.of(context).primaryColor),
+        borderRadius: BorderRadius.circular(12),
+      ));
+    }
+    overflow = (currentWidth - spacing) > maxWidth;
+  }
+
+  void setExpand() {
+    setState(() {
+      expand = !expand;
+      _buildTab();
+    });
+  }
+
+  @override
+  void initState() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _buildTab();
+      init = true;
+    });
+    super.initState();
+  }
+
+  @override
+  void didUpdateWidget(covariant PageProxieGroup oldWidget) {
+    _buildTab();
+    super.didUpdateWidget(oldWidget);
+  }
 
   @override
   Widget build(BuildContext context) {
-    final group = widget.proxie;
-    // TODO: 临时解决卡顿问题
-    final tags = group.all!.sublist(0, _expand ? group.all!.length : min(group.all!.length, 10));
-
+    final width = MediaQuery.of(context).size.width;
+    if (init && width != cacheWidth) {
+      cacheWidth = width;
+      _buildTab();
+    }
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Row(
-          children: [
-            Text(group.name, overflow: TextOverflow.ellipsis).width(80),
-            Tag(group.type).padding(left: 10),
-          ],
-        ).width(190),
-        Wrap(
-          spacing: 6,
-          runSpacing: 6,
-          children: tags
-              .map((e) => PageProxieGroupItemTab(
-                    name: e,
-                    value: group.now == e,
-                    disabled: group.type != ProxieProxieType.selector,
-                    onClick: () => widget.onChange(widget.proxie, e),
-                  ))
-              .toList(),
-        ).constrained(maxHeight: _expand ? double.infinity : 24).clipRect().expanded(),
-        // TODO: 无更多时不显示
-        TextButton(
-          child: Text(_expand ? 'proxie_collapse'.tr : 'proxie_expand'.tr).fontSize(14).textColor(const Color(0xff546b87)),
-          onPressed: () => setState(() => _expand = !_expand),
-        )
+        Row(children: [
+          Text(widget.title, overflow: TextOverflow.ellipsis).width(80),
+          Tag(widget.type).padding(left: 10),
+        ]).width(titleWidth),
+        Wrap(spacing: spacing, runSpacing: 6, children: children).constrained(maxHeight: expand ? double.infinity : 24).clipRect().expanded(),
+        if (overflow)
+          TextButton(
+            style: ButtonStyle(
+              minimumSize: MaterialStateProperty.all(Size.zero),
+              fixedSize: MaterialStateProperty.all(Size(expandWidth, 24)),
+            ),
+            onPressed: setExpand,
+            child: Text(expand ? 'proxie_collapse'.tr : 'proxie_expand'.tr).fontSize(14).textColor(const Color(0xff546b87)),
+          )
       ],
-    ).padding(all: 15).border(bottom: 1, color: const Color(0xffd8dee2));
-  }
-}
-
-class PageProxieGroupItemTab extends StatelessWidget {
-  const PageProxieGroupItemTab({Key? key, required this.name, this.value = false, this.disabled = false, this.onClick}) : super(key: key);
-  final String name;
-  final bool value;
-  final bool disabled;
-  final Function()? onClick;
-
-  static const groups = [
-    ProxieProxieType.selector,
-    ProxieProxieType.urltest,
-    ProxieProxieType.fallback,
-  ];
-
-  int getDelay(ProxieProxiesItem? proxie) {
-    final delay = proxie?.delay ?? 0;
-    if (delay > 0) return delay;
-    if (proxie != null && groups.contains(proxie.type)) {
-      return getDelay(controllers.pageProxie.allProxies[proxie.now]);
-    }
-    return 0;
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    ProxieProxiesItem? proxie = controllers.pageProxie.allProxies[name];
-    final delay = getDelay(proxie);
-
-    return TextButton(
-            onPressed: disabled ? null : onClick,
-            child: RichText(
-              overflow: TextOverflow.ellipsis,
-              text: TextSpan(
-                style: TextStyle(fontSize: 12, color: value ? Colors.white : const Color(0xff54759a)),
-                children: [
-                  TextSpan(text: name),
-                  if (proxie != null) TextSpan(text: ' ${proxie.type}').fontSize(8),
-                  if (delay > 0) TextSpan(text: ' ${delay}ms').fontSize(8).textColor(getColor(delay)),
-                ],
-              ),
-            ))
-        .height(24)
-        .backgroundColor(value ? Theme.of(context).primaryColor : Colors.transparent)
-        .decorated(border: Border.all(width: 1, color: Theme.of(context).primaryColor), borderRadius: BorderRadius.circular(12))
-        .clipRRect(all: 12);
+    ).paddingAll(padding).border(bottom: 1, color: const Color(0xffd8dee2));
   }
 }
 

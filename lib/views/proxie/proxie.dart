@@ -2,6 +2,8 @@ import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 import 'package:styled_widget/styled_widget.dart';
 
+import 'package:clash_for_flutter/utils/utils.dart';
+import 'package:clash_for_flutter/types/proxie.dart';
 import 'package:clash_for_flutter/widgets/card_head.dart';
 import 'package:clash_for_flutter/widgets/card_view.dart';
 import 'package:clash_for_flutter/views/proxie/widgets.dart';
@@ -21,6 +23,21 @@ class _PageProxieState extends State<PageProxie> {
   void initState() {
     controllers.pageProxie.updateDate();
     super.initState();
+  }
+
+  static const groups = [
+    ProxieProxieType.selector,
+    ProxieProxieType.urltest,
+    ProxieProxieType.fallback,
+  ];
+
+  int getDelay(ProxieProxiesItem? proxie) {
+    final delay = proxie?.delay ?? 0;
+    if (delay > 0) return delay;
+    if (proxie != null && groups.contains(proxie.type)) {
+      return getDelay(controllers.pageProxie.allProxies[proxie.now]);
+    }
+    return 0;
   }
 
   @override
@@ -46,7 +63,18 @@ class _PageProxieState extends State<PageProxie> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: controllers.pageProxie.proxieGroups
-                          .map((it) => PageProxieGroupItem(proxie: it, onChange: controllers.pageProxie.handleSetProxieGroup))
+                          .map((it) => PageProxieGroup(
+                              title: it.name,
+                              type: it.type,
+                              now: it.now,
+                              onChange: controllers.pageProxie.handleSetProxieGroup.orNull(it.type == ProxieProxieType.selector)?.bindFirst(it),
+                              tabs: it.all
+                                  ?.map((it) => PageProxieGroupTabItem(
+                                        name: it,
+                                        type: controllers.pageProxie.allProxies[it]?.type,
+                                        delay: getDelay(controllers.pageProxie.allProxies[it]),
+                                      ))
+                                  .toList()))
                           .toList(),
                     ),
                   ),

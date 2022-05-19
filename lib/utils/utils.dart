@@ -28,3 +28,31 @@ Future<void> copyCommandLineProxy(String type, {String? http, String? https}) as
 
   if (commands.isNotEmpty) await Clipboard.setData(ClipboardData(text: commands.join(join)));
 }
+
+extension OrNull<T> on T {
+  T? orNull(bool a) {
+    return a ? this : null;
+  }
+}
+
+extension BindOne<T, R> on R Function(T a) {
+  R Function() bindOne(T a) {
+    return () => this(a);
+  }
+}
+
+extension BindFirst<T, T2, R> on R Function(T a, T2 b) {
+  R Function(T2 b) bindFirst(T a) {
+    return (T2 b) => this(a, b);
+  }
+}
+
+extension MapIndex<T> on List<T> {
+  List<R> mapIndex<R>(R Function(int index, T item) fn) {
+    final List<R> list = [];
+    for (int idx = 0; idx < length; idx++) {
+      list.add(fn(idx, this[idx]));
+    }
+    return list;
+  }
+}

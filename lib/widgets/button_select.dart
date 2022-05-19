@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:styled_widget/styled_widget.dart';
 
+import 'package:clash_for_flutter/utils/utils.dart';
+
 class ButtonSelect extends StatelessWidget {
   const ButtonSelect({Key? key, required this.labels, this.value = 0, this.onSelect}) : super(key: key);
   final List<String> labels;
@@ -13,7 +15,7 @@ class ButtonSelect extends StatelessWidget {
       children: List.generate(
         labels.length,
         ((idx) => TextButton(
-              onPressed: onSelect?.bind(idx),
+              onPressed: onSelect?.bindOne(idx),
               child: Text(labels[idx]).textColor(value == idx ? Colors.white : const Color(0xff54759a)).fontSize(12),
             ).decorated(
               color: idx == value ? Theme.of(context).primaryColor : Colors.white,
@@ -25,11 +27,5 @@ class ButtonSelect extends StatelessWidget {
             )),
       ),
     );
-  }
-}
-
-extension Bind<T, R> on R Function(T a) {
-  R Function() bind(T a) {
-    return () => this(a);
   }
 }
