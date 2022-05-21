@@ -107,9 +107,11 @@ class ServiceController extends GetxController {
     await dio.post('/stop');
   }
 
-  Future<void> exit() async {
+  Future<void> exitServiceForUserMode() async {
     serviceIsRuning.value = false;
+    coreIsRuning.value = false;
     await stopClashCore();
+    if (serviceMode.value) return;
     if (clashServiceProcess != null) {
       clashServiceProcess!.kill();
       clashServiceProcess = null;
@@ -131,7 +133,7 @@ class ServiceController extends GetxController {
   }
 
   Future<void> serviceModeSwitch(bool open) async {
-    await exit();
+    await exitServiceForUserMode();
     open ? await install() : await uninstall();
     await initService();
     await startClashCore();

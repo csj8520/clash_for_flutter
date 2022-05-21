@@ -53,7 +53,6 @@ class PageMainController extends BasePageController {
 
   void initRegularlyUpdate() {
     Future.delayed(const Duration(minutes: 5)).then((_) async {
-      initRegularlyUpdate();
       for (final it in controllers.config.config.value.subs) {
         try {
           if (it.url == null || it.url!.isEmpty) continue;
@@ -66,14 +65,15 @@ class PageMainController extends BasePageController {
           await Future.delayed(const Duration(seconds: 20));
         } catch (_) {}
       }
+      initRegularlyUpdate();
     });
   }
 
   Future<void> handleExit() async {
-    await controllers.service.exit();
-    trayManager.destroy();
-    windowManager.destroy();
-    exit(0);
+    await controllers.service.exitServiceForUserMode();
+    await trayManager.destroy();
+    await windowManager.destroy();
+    // exit(0);
   }
 
   @override

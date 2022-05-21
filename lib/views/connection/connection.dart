@@ -1,9 +1,9 @@
+import 'package:easy_table/easy_table.dart';
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 import 'package:styled_widget/styled_widget.dart';
 
 import 'package:clash_for_flutter/utils/utils.dart';
-import 'package:clash_for_flutter/types/table.dart';
 import 'package:clash_for_flutter/types/connect.dart';
 import 'package:clash_for_flutter/widgets/card_view.dart';
 import 'package:clash_for_flutter/widgets/card_head.dart';
@@ -20,6 +20,13 @@ class PageConnection extends StatefulWidget {
 class _PageConnectionState extends State<PageConnection> {
   final TextEditingController _filterTextEditingController = TextEditingController();
 
+  static Color hoverColor(int _) => const Color(0x10111111);
+  static Color rowColor(int _) => Colors.white;
+
+  // static const Color headerBgColor = Color(0xfff3f6f9);
+  static const Color headerTextColor = Color(0xff909399);
+  static const Color dividerColor = Color(0x10555555);
+
   @override
   void initState() {
     controllers.pageConnection.initDate();
@@ -27,37 +34,8 @@ class _PageConnectionState extends State<PageConnection> {
     _filterTextEditingController.addListener(() {
       controllers.pageConnection.filter = _filterTextEditingController.text;
     });
+
     super.initState();
-  }
-
-  Widget _buildHeader(TableItem<ConnectConnection> e) {
-    return TextButton(
-      child: Text(
-        '${e.head}${e.head == controllers.pageConnection.sortBy.value?.head ? controllers.pageConnection.sortAscend.value ? ' ↑' : ' ↓' : ''}',
-        overflow: TextOverflow.ellipsis,
-      ).textColor(const Color(0xff909399)).fontSize(14).alignment(Alignment.center),
-      onPressed: () => controllers.pageConnection.handleSetSort(e),
-    ).width(e.width);
-  }
-
-  Widget _buildTableRow(ConnectConnection it) {
-    return TextButton(
-      style: ButtonStyle(padding: MaterialStateProperty.all(EdgeInsets.zero)),
-      child: controllers.pageConnection.tableItems
-          .map((e) {
-            String label = e.getLabel(it);
-            final text = Text(label, overflow: TextOverflow.ellipsis)
-                .textColor(const Color(0xff54759a))
-                .fontSize(14)
-                .alignment(e.align)
-                .padding(left: 5, right: 5)
-                .width(e.width);
-            return e.tooltip ? Tooltip(message: label, child: text) : text;
-          })
-          .toList()
-          .toRow(),
-      onPressed: () => controllers.pageConnection.handleShowDetail(it),
-    ).height(36);
   }
 
   @override
@@ -103,9 +81,52 @@ class _PageConnectionState extends State<PageConnection> {
           CardView(
             child: Stack(
               children: [
-                _ConnectionsTable(
-                  tableHeaders: controllers.pageConnection.tableItems.map(_buildHeader).toList(),
-                  tableRows: controllers.pageConnection.connect.value.connections.map(_buildTableRow).toList(),
+                EasyTableTheme(
+                  data: const EasyTableThemeData(
+                    decoration: BoxDecoration(),
+                    topCornerBorderColor: Colors.transparent,
+                    topCornerColor: Colors.transparent,
+                    bottomCornerBorderColor: Colors.transparent,
+                    bottomCornerColor: Colors.transparent,
+                    columnDividerThickness: 1,
+                    columnDividerColor: Colors.transparent,
+                    header: HeaderThemeData(
+                      bottomBorderHeight: 1,
+                      bottomBorderColor: dividerColor,
+                      columnDividerColor: dividerColor,
+                    ),
+                    row: RowThemeData(
+                      dividerThickness: 0,
+                      color: rowColor,
+                      hoveredColor: hoverColor,
+                    ),
+                    cell: CellThemeData(
+                      textStyle: TextStyle(color: Color(0xff54759a)),
+                      alignment: Alignment.center,
+                    ),
+                    headerCell: HeaderCellThemeData(
+                      textStyle: TextStyle(color: headerTextColor),
+                      alignment: Alignment.center,
+                      sortIconColor: headerTextColor,
+                      ascendingIcon: Icons.keyboard_arrow_up,
+                      descendingIcon: Icons.keyboard_arrow_down,
+                    ),
+                    scrollbar: TableScrollbarThemeData(
+                      thickness: 8,
+                      radius: Radius.circular(4),
+                      thumbColor: Color.fromARGB(100, 0, 0, 0),
+                      verticalColor: Colors.transparent,
+                      verticalBorderColor: Colors.transparent,
+                      unpinnedHorizontalColor: Colors.transparent,
+                      unpinnedHorizontalBorderColor: Colors.transparent,
+                      pinnedHorizontalBorderColor: Colors.transparent,
+                      pinnedHorizontalColor: Colors.transparent,
+                    ),
+                  ),
+                  child: EasyTable<ConnectConnection>(
+                    controllers.pageConnection.model,
+                    onRowTap: controllers.pageConnection.handleShowDetail,
+                  ),
                 ),
                 if (controllers.pageConnection.detail.value != null)
                   ConnectDetail(
@@ -115,7 +136,7 @@ class _PageConnectionState extends State<PageConnection> {
               ],
             ),
           ).expanded()
-        ].toColumn());
+        ].toColumn().padding(top: 5, right: 20, bottom: 20));
   }
 
   @override
@@ -123,41 +144,5 @@ class _PageConnectionState extends State<PageConnection> {
     controllers.pageConnection.clearDate();
     _filterTextEditingController.dispose();
     super.dispose();
-  }
-}
-
-class _ConnectionsTable extends StatefulWidget {
-  const _ConnectionsTable({Key? key, required this.tableHeaders, required this.tableRows}) : super(key: key);
-  final List<Widget> tableHeaders;
-  final List<Widget> tableRows;
-
-  @override
-  State<_ConnectionsTable> createState() => _ConnectionsTableState();
-}
-
-class _ConnectionsTableState extends State<_ConnectionsTable> {
-  final ScrollController _horizontalScrollController = ScrollController();
-  final ScrollController _verticalScrollController = ScrollController();
-
-  @override
-  Widget build(BuildContext context) {
-    // TODO: 优化滚动交互
-    return Scrollbar(
-      controller: _horizontalScrollController,
-      child: SingleChildScrollView(
-        scrollDirection: Axis.horizontal,
-        controller: _horizontalScrollController,
-        child: Column(
-          children: [
-            Row(children: widget.tableHeaders).height(30).backgroundColor(const Color(0xfff3f6f9)),
-            SingleChildScrollView(
-              scrollDirection: Axis.vertical,
-              controller: _verticalScrollController,
-              child: Column(children: widget.tableRows),
-            ).expanded(),
-          ],
-        ),
-      ),
-    );
   }
 }

@@ -47,6 +47,7 @@ dependencies:
   flutter_emoji: ^2.4.0
   protocol_handler: ^0.1.2
   path: ^1.8.1
+  easy_table: ^1.4.0
 
 dev_dependencies:
   flutter_test:

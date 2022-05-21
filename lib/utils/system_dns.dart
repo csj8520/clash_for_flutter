@@ -31,7 +31,7 @@ class MacSystemDns extends SystemDnsPlatform {
         commands.add('networksetup -setdnsservers "$network" "${dns.join('" "')}"');
       }
     }
-    log.debug(commands);
+    log.debug('MacSystemDns.set:', commands);
     await Process.run('bash', ['-c', commands.join(' && ')]);
   }
 

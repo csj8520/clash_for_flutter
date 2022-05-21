@@ -51,7 +51,7 @@ class _PageProxieGroupState extends State<PageProxieGroup> {
   final EdgeInsets itemPadding = const EdgeInsets.only(left: 10, right: 10);
   final double padding = 15;
   final double titleWidth = 190;
-  final double expandWidth = 50;
+  final double expandWidth = 65;
   final double spacing = 6;
 
   final textPainter = TextPainter(textDirection: TextDirection.ltr);
@@ -93,6 +93,7 @@ class _PageProxieGroupState extends State<PageProxieGroup> {
       ));
     }
     overflow = (currentWidth - spacing) > maxWidth;
+    setState(() {});
   }
 
   void setExpand() {
@@ -106,6 +107,7 @@ class _PageProxieGroupState extends State<PageProxieGroup> {
   void initState() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _buildTab();
+      cacheWidth = MediaQuery.of(context).size.width;
       init = true;
     });
     super.initState();
@@ -119,10 +121,12 @@ class _PageProxieGroupState extends State<PageProxieGroup> {
 
   @override
   Widget build(BuildContext context) {
-    final width = MediaQuery.of(context).size.width;
-    if (init && width != cacheWidth) {
-      cacheWidth = width;
-      _buildTab();
+    if (init) {
+      final width = MediaQuery.of(context).size.width;
+      if (width != cacheWidth) {
+        cacheWidth = width;
+        _buildTab();
+      }
     }
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -135,6 +139,7 @@ class _PageProxieGroupState extends State<PageProxieGroup> {
         if (overflow)
           TextButton(
             style: ButtonStyle(
+              padding: MaterialStateProperty.all(EdgeInsets.zero),
               minimumSize: MaterialStateProperty.all(Size.zero),
               fixedSize: MaterialStateProperty.all(Size(expandWidth, 24)),
             ),

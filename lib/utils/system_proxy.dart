@@ -69,7 +69,7 @@ class MacSystemProxy extends SystemProxyPlatform {
       }
     }
 
-    log.debug(commands);
+    log.debug('MacSystemProxy.set:', commands);
     await Process.run('bash', ['-c', commands.join(' && ')]);
   }
 

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:get/get.dart';
 import 'package:bot_toast/bot_toast.dart';
 
@@ -30,8 +32,8 @@ class PageProxieController extends BasePageController {
     if (controllers.pageHome.pageController.page != 0) return;
     log.debug('call: updateDate in page-proxie');
 
-    await updateProxie();
-    await updateProxieProvider();
+    await _updateProxie();
+    await _updateProxieProvider();
     await controllers.core.updateConfig();
     allProxies.clear();
     for (final provide in proxieProviders) {
@@ -45,9 +47,13 @@ class PageProxieController extends BasePageController {
     for (final it in proxieGroups) {
       allProxies[it.name] = it;
     }
+    proxieGroups.refresh();
+    proxieProxies.refresh();
+    proxieProviders.refresh();
+    allProxies.refresh();
   }
 
-  Future<dynamic> updateProxie() async {
+  Future<dynamic> _updateProxie() async {
     final proxie = await controllers.core.fetchProxie();
     final global = proxie.proxies["GLOBAL"]!;
     proxieGroups.value = global.all!
@@ -59,11 +65,9 @@ class PageProxieController extends BasePageController {
         .map((it) => proxie.proxies[it]!)
         .toList();
     if (controllers.core.config.value.mode == 'global') proxieGroups.insert(0, global);
-    proxieGroups.refresh();
-    proxieProxies.refresh();
   }
 
-  Future<dynamic> updateProxieProvider() async {
+  Future<dynamic> _updateProxieProvider() async {
     proxieProviders.value = (await controllers.core.fetchProxieProvider()).providers.values.where((it) => it.vehicleType != 'Compatible').toList();
     for (final it in proxieProviders) {
       it.proxies.sort((a, b) {
@@ -72,7 +76,6 @@ class PageProxieController extends BasePageController {
         return a.delay - b.delay;
       });
     }
-    proxieProviders.refresh();
   }
 
   Future<void> updateProxieDelay() async {
@@ -82,14 +85,14 @@ class PageProxieController extends BasePageController {
         it.history.add(ProxieProxiesItemHistory(delay: delay, time: DateTime.now().toString()));
         proxieProxies.refresh();
       }));
-      await updateProxie();
+      await updateDate();
     } catch (_) {}
   }
 
   Future<void> handleSetProxieGroup(ProxieProxiesItem proxie, String value) async {
     if (proxie.now == value) return;
     await controllers.core.fetchSetProxieGroup(proxie.name, value);
-    await updateProxie();
+    await updateDate();
     if (controllers.config.config.value.breakConnections) {
       final conn = await controllers.core.fetchConnection();
       for (final it in conn.connections) {
@@ -108,11 +111,13 @@ class PageProxieController extends BasePageController {
   }
 
   Future<void> handleHealthCheckProvider(ProxieProviderItem provider) async {
+    final timer = Timer.periodic(const Duration(seconds: 2), (_) => updateDate());
     try {
       await controllers.core.fetchProxieProviderHealthCheck(provider.name);
       await updateDate();
     } catch (e) {
       BotToast.showText(text: 'Health Check Error');
     }
+    timer.cancel();
   }
 }
