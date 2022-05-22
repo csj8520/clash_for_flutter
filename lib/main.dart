@@ -37,7 +37,7 @@ void main() async {
     minimumSize: const Size(500, 400),
     center: true,
     backgroundColor: Colors.transparent,
-    skipTaskbar: Platform.isMacOS,
+    // skipTaskbar: Platform.isMacOS,
     // titleBarStyle: Platform.isMacOS ? TitleBarStyle.hidden : TitleBarStyle.normal,
   );
   await windowManager.waitUntilReadyToShow(windowOptions);

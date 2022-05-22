@@ -41,5 +41,8 @@
 		</array>
 		<key>NSPrincipalClass</key>
 		<string>NSApplication</string>
+		<!-- https://blog.csdn.net/HeroGuo_JP/article/details/88122460 -->
+		<key>LSUIElement</key>
+		<true/>
 	</dict>
 </plist>
