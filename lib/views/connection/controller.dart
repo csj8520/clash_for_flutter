@@ -39,7 +39,6 @@ class PageConnectionController extends BasePageController {
     if (controllers.pageHome.pageController.page != 3) return;
     if (controllers.pageConnection.connectionsWsChannel != null) return;
     log.debug('call: initDate in page-connection');
-
     model
       ..removeColumns()
       ..addColumns([
@@ -126,6 +125,7 @@ class PageConnectionController extends BasePageController {
     _connectionsWsChannelSub = null;
     await connectionsWsChannel?.sink.close(WebSocketStatus.goingAway);
     connectionsWsChannel = null;
+    _connectionsCache.clear();
     connect.value.connections.clear();
     connect.refresh();
   }
@@ -179,14 +179,51 @@ class PageConnectionController extends BasePageController {
     connect.refresh();
   }
 
+  bool _handleFilterExpression(String exp, List<String> strings) {
+    if (exp.isEmpty) return true;
+    exp = exp.replaceAll('!!', '');
+    final l = exp.indexOf('(');
+    if (l > -1) {
+      final r = exp.lastIndexOf(')');
+      if (r > -1) {
+        final left = exp.substring(0, l).trim();
+        final center = exp.substring(l + 1, r);
+        final right = exp.substring(r + 1);
+        return _handleFilterExpression('$left${_handleFilterExpression(center, strings)}$right', strings);
+      } else {
+        return false;
+      }
+    } else {
+      final filtters =
+          exp.split('|').map((e) => e.trim()).where((e) => e.isNotEmpty).map((e) => e.split('&').map((e) => e.trim()).where((e) => e.isNotEmpty));
+      // print(filtters.map((e) => e.toList()).toList());
+      return filtters.any((f) => f.every((t) => t[0] == '!'
+          ? !strings.any((s) => t.substring(1) == 'true' || (t.substring(1) == 'false' ? false : s.contains(t.substring(1))))
+          : strings.any((s) => t == 'true' || (t == 'false' ? false : s.contains(t)))));
+    }
+  }
+
   void _handleFilter() {
     if (filter.isNotEmpty) {
+      // final filtters = filter
+      //     .toLowerCase()
+      //     .split('|')
+      //     .map((e) => e.trim())
+      //     .where((e) => e.isNotEmpty)
+      //     .map((e) => e.split('&').map((e) => e.trim()).where((e) => e.isNotEmpty));
+
       connect.value.connections = connect.value.connections.where((it) {
-        final str = ('${it.metadata.host.isEmpty ? it.metadata.destinationIP : it.metadata.host}:${it.metadata.destinationPort}'
-                '|${it.metadata.sourceIP}|${it.metadata.processPath}|${it.metadata.network}|${it.metadata.type}'
-                '|${it.rule}(${it.rulePayload})|${it.chains.join('/')}')
-            .toLowerCase();
-        return filter.toLowerCase().split('|').any((f) => f.split('&').every((t) => str.contains(t.trim())));
+        final List<String> strings = [];
+        for (var i = 0; i < model.columnsLength; i++) {
+          final column = model.columnAt(i);
+          if (column.stringValueMapper == null) continue;
+          final str = column.stringValueMapper!(it);
+          if (str == null || str.isEmpty || str == '-') continue;
+          strings.add(str.toLowerCase());
+        }
+        if (strings.isEmpty) return false;
+        return _handleFilterExpression(filter.toLowerCase(), strings);
+        // return filtters.any((f) => f.every((t) => t[0] == '!' ? !strings.any((s) => s.contains(t.substring(1))) : strings.any((s) => s.contains(t))));
       }).toList();
     }
   }

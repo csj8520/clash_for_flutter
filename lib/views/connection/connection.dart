@@ -30,10 +30,9 @@ class _PageConnectionState extends State<PageConnection> {
   @override
   void initState() {
     controllers.pageConnection.initDate();
-    _filterTextEditingController.text = controllers.pageConnection.filter;
-    _filterTextEditingController.addListener(() {
-      controllers.pageConnection.filter = _filterTextEditingController.text;
-    });
+    _filterTextEditingController
+      ..text = controllers.pageConnection.filter
+      ..addListener(() => controllers.pageConnection.filter = _filterTextEditingController.text);
 
     super.initState();
   }
@@ -48,7 +47,7 @@ class _PageConnectionState extends State<PageConnection> {
                 Text('connection_total'.trParams({
                   "upload": bytesToSize(controllers.pageConnection.connect.value.uploadTotal),
                   "download": bytesToSize(controllers.pageConnection.connect.value.downloadTotal)
-                })).textColor(Theme.of(context).primaryColor).fontSize(14).padding(left: 10, right: 50),
+                })).textColor(Theme.of(context).primaryColor).fontSize(14).padding(left: 10, right: 10).expanded(),
                 Row(
                   children: [
                     Text("connection_filter".tr).textColor(Colors.grey.shade700).padding(right: 10),
@@ -57,21 +56,27 @@ class _PageConnectionState extends State<PageConnection> {
                       style: TextStyle(fontSize: 12, color: Colors.grey.shade700),
                       keyboardType: TextInputType.text,
                       decoration: InputDecoration(
-                        hintText: 'google | github & TUN',
+                        hintText: 'chrome | github & TUN',
                         isCollapsed: true,
-                        contentPadding: const EdgeInsets.fromLTRB(5, 10, 5, 10),
+                        contentPadding: const EdgeInsets.fromLTRB(5, 10, 0, 10),
                         border: InputBorder.none,
                         hintStyle: TextStyle(color: Colors.grey.shade500),
+                        suffixIcon: IconButton(
+                          onPressed: () => _filterTextEditingController.text = '',
+                          icon: Icon(Icons.clear, size: 12, color: Colors.grey.shade500),
+                          padding: const EdgeInsets.all(0),
+                        ),
+                        suffixIconConstraints: const BoxConstraints.tightFor(width: 24, height: 20),
                       ),
-                    ).width(150).decorated(border: Border.all(width: 1, color: Colors.grey.shade400), borderRadius: BorderRadius.circular(4)),
+                    ).decorated(border: Border.all(width: 1, color: Colors.grey.shade400), borderRadius: BorderRadius.circular(4)).expanded(),
                   ],
-                ).expanded(),
+                ).padding(right: 20).expanded(),
                 IconButton(
                   icon: const Icon(Icons.close),
                   color: Colors.red,
                   iconSize: 20,
                   tooltip: 'Close All Connections',
-                  onPressed: () => controllers.pageConnection.hanldeCloseAllConnections(context),
+                  onPressed: controllers.pageConnection.hanldeCloseAllConnections.bindOne(context),
                   constraints: const BoxConstraints(minHeight: 30, minWidth: 30),
                   padding: EdgeInsets.zero,
                 ),

@@ -30,7 +30,7 @@ class PageMainController extends BasePageController {
     // init clash core
     await controllers.service.startClashCore();
     await controllers.core.updateVersion();
-    await controllers.pageProxie.updateDate();
+    // await controllers.pageProxie.updateDate();
 
     initRegularlyUpdate();
   }
