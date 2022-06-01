@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:clash_for_flutter/utils/utils.dart';
 import 'package:get/get.dart';
 import 'package:bot_toast/bot_toast.dart';
 
@@ -28,7 +29,7 @@ class PageProxieController extends BasePageController {
 
   @override
   Future<void> updateDate() async {
-    if (!controllers.service.coreIsRuning.value) return;
+    if (controllers.service.coreStatus.value != RunningState.running) return;
     if (controllers.pageHome.pageController.page != 0) return;
     log.debug('call: updateDate in page-proxie');
 

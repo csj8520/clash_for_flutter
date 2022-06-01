@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:dio/dio.dart';
 import 'package:get/get.dart';
@@ -8,6 +9,7 @@ import 'package:flutter/foundation.dart';
 import 'package:bot_toast/bot_toast.dart';
 import 'package:web_socket_channel/io.dart';
 
+import 'package:clash_for_flutter/utils/utils.dart';
 import 'package:clash_for_flutter/const/const.dart';
 import 'package:clash_for_flutter/utils/shell.dart';
 import 'package:clash_for_flutter/utils/logger.dart';
@@ -24,64 +26,94 @@ class ServiceController extends GetxController {
 
   var serviceMode = false.obs;
 
-  var coreIsRuning = false.obs;
-  var serviceIsRuning = false.obs;
+  var coreStatus = RunningState.stoped.obs;
+  var serviceStatus = RunningState.stoped.obs;
 
   Process? clashServiceProcess;
 
-  bool get isRunning => serviceIsRuning.value && coreIsRuning.value;
+  bool get isRunning => serviceStatus.value == RunningState.running && coreStatus.value == RunningState.running;
+  bool get isCanOperationService =>
+      ![RunningState.starting, RunningState.stopping].contains(serviceStatus.value) &&
+      ![RunningState.starting, RunningState.stopping].contains(coreStatus.value);
+  bool get isCanOperationCore =>
+      serviceStatus.value == RunningState.running && ![RunningState.starting, RunningState.stopping].contains(coreStatus.value);
 
-  Future<void> initService() async {
+  Future<void> startService() async {
+    serviceStatus.value = RunningState.starting;
     try {
       final data = await fetchInfo();
       serviceMode.value = data.mode == 'service-mode';
     } catch (e) {
-      await startService();
+      await startUserModeService();
+      if (serviceStatus.value == RunningState.error) return;
     }
-    serviceIsRuning.value = true;
+    serviceStatus.value = RunningState.running;
     if (await windowManager.isVisible()) await controllers.window.handleWindowShow();
   }
 
-  Future<void> _startService() async {
-    clashServiceProcess = await Process.start(Files.assetsClashService.path, ['user-mode'], mode: ProcessStartMode.inheritStdio);
-    clashServiceProcess?.exitCode.then((code) async {
-      log.error('clash-service exit with code: $code');
-      // for macos
-      if (code == 101) {
-        BotToast.showText(text: 'clash-service exit with code: $code,After 10 seconds, try to restart');
-        log.error('After 10 seconds, try to restart');
-        await Future.delayed(const Duration(seconds: 10));
-        await _startService();
+  Future<void> startUserModeService() async {
+    serviceMode.value = false;
+    try {
+      int? exitCode;
+      clashServiceProcess = await Process.start(Files.assetsClashService.path, ['user-mode'], mode: ProcessStartMode.inheritStdio);
+      clashServiceProcess!.exitCode.then((code) => exitCode = code);
+
+      while (true) {
+        await Future.delayed(const Duration(milliseconds: 200));
+        if (exitCode == 101) {
+          BotToast.showText(text: 'clash-service exit with code: $exitCode,After 10 seconds, try to restart');
+          log.error('After 10 seconds, try to restart');
+          await Future.delayed(const Duration(seconds: 10));
+          await startUserModeService();
+          break;
+        } else if (exitCode != null) {
+          serviceStatus.value = RunningState.error;
+          break;
+        }
+        try {
+          await dio.post('/info');
+          break;
+        } catch (_) {}
       }
-    });
+    } catch (e) {
+      serviceStatus.value = RunningState.error;
+      BotToast.showText(text: e.toString());
+    }
   }
 
-  Future<void> startService() async {
-    serviceMode.value = false;
-    await _startService();
-    await _waitServiceStart();
+  Future<void> stopService() async {
+    serviceStatus.value = RunningState.stopping;
+    if (coreStatus.value == RunningState.running) await stopClashCore();
+    if (!serviceMode.value) {
+      if (clashServiceProcess != null) {
+        clashServiceProcess!.kill();
+        clashServiceProcess = null;
+      } else if (kDebugMode) {
+        await killProcess(path.basename(Files.assetsClashService.path));
+      }
+    }
+    serviceStatus.value = RunningState.stoped;
   }
 
   // for macos
-  Future<void> _waitServiceStart() async {
+  Future<void> waitServiceStart() async {
     while (true) {
+      await Future.delayed(const Duration(milliseconds: 100));
       try {
-        await fetchInfo();
-        return;
-      } catch (e) {
-        await Future.delayed(const Duration(milliseconds: 100));
-      }
+        await dio.post('/info');
+        break;
+      } catch (_) {}
     }
   }
 
   // for windows
-  Future<void> _waitServiceStop() async {
+  Future<void> waitServiceStop() async {
     while (true) {
+      await Future.delayed(const Duration(milliseconds: 100));
       try {
-        await fetchInfo();
-        await Future.delayed(const Duration(milliseconds: 50));
+        await dio.post('/info');
       } catch (e) {
-        return;
+        break;
       }
     }
   }
@@ -96,51 +128,78 @@ class ServiceController extends GetxController {
   }
 
   Future<void> fetchStart(String name) async {
-    final data = await fetchInfo();
-    if (data.status == 'running') await fetchStop();
-    await dio.post('/start', data: {
+    await fetchStop();
+    final res = await dio.post<String>('/start', data: {
       "args": ['-d', Paths.config.path, '-f', path.join(Paths.config.path, name)]
     });
+    if (json.decode(res.data!)["code"] != 0) throw json.decode(res.data!)["msg"];
   }
 
   Future<void> fetchStop() async {
     await dio.post('/stop');
   }
 
-  Future<void> exitServiceForUserMode() async {
-    serviceIsRuning.value = false;
-    coreIsRuning.value = false;
-    await stopClashCore();
-    if (serviceMode.value) return;
-    if (clashServiceProcess != null) {
-      clashServiceProcess!.kill();
-      clashServiceProcess = null;
-    } else if (kDebugMode) {
-      await killProcess(path.basename(Files.assetsClashService.path));
-    }
-  }
-
   Future<void> install() async {
     final res = await runAsAdmin(Files.assetsClashService.path, ["install", "start"]);
-    log.debug('install', res.stdout);
-    if (res.exitCode == 0) await _waitServiceStart();
+    log.debug('install', res.stdout, res.stderr);
+    if (res.exitCode != 0) throw res.stderr;
+    await waitServiceStart();
   }
 
   Future<void> uninstall() async {
     final res = await runAsAdmin(Files.assetsClashService.path, ["stop", "uninstall"]);
-    log.debug('uninstall', res.stdout);
-    if (res.exitCode == 0) await _waitServiceStop();
+    log.debug('uninstall', res.stdout, res.stderr);
+    if (res.exitCode != 0) throw res.stderr;
+    await waitServiceStop();
   }
 
   Future<void> serviceModeSwitch(bool open) async {
-    await exitServiceForUserMode();
-    open ? await install() : await uninstall();
-    await initService();
+    if (serviceStatus.value == RunningState.running) await stopService();
+    try {
+      open ? await install() : await uninstall();
+    } catch (e) {
+      BotToast.showText(text: e.toString());
+    }
+    await startService();
     await startClashCore();
   }
 
+  Future<void> startClashCore() async {
+    try {
+      coreStatus.value = RunningState.starting;
+      await fetchStart(controllers.config.config.value.selected);
+      controllers.core.setApi(controllers.config.clashCoreApiAddress.value, controllers.config.clashCoreApiSecret.value);
+      while (true) {
+        await Future.delayed(const Duration(milliseconds: 200));
+        final info = await fetchInfo();
+        if (info.status == 'running') {
+          try {
+            await controllers.core.fetchHello();
+            break;
+          } catch (_) {}
+        } else {
+          throw 'clash-core start error';
+        }
+      }
+      await controllers.core.updateConfig();
+      if (Platform.isMacOS &&
+          controllers.service.serviceMode.value &&
+          controllers.config.clashCoreTunEnable.value &&
+          controllers.config.clashCoreDns.isNotEmpty) {
+        await MacSystemDns.instance.set([controllers.config.clashCoreDns.value]);
+      }
+      if (controllers.config.config.value.setSystemProxy) await SystemProxy.instance.set(controllers.core.proxyConfig);
+      coreStatus.value = RunningState.running;
+      if (await windowManager.isVisible()) await controllers.window.handleWindowShow();
+    } catch (e) {
+      log.error(e);
+      BotToast.showText(text: e.toString());
+      coreStatus.value = RunningState.error;
+    }
+  }
+
   Future<void> stopClashCore() async {
-    coreIsRuning.value = false;
+    coreStatus.value = RunningState.stopping;
     if (Platform.isMacOS &&
         controllers.service.serviceMode.value &&
         controllers.config.clashCoreTunEnable.value &&
@@ -149,22 +208,7 @@ class ServiceController extends GetxController {
     }
     if (controllers.config.config.value.setSystemProxy) await SystemProxy.instance.set(SystemProxyConfig());
     await fetchStop();
-  }
-
-  Future<void> startClashCore() async {
-    await fetchStart(controllers.config.config.value.selected);
-    controllers.core.setApi(controllers.config.clashCoreApiAddress.value, controllers.config.clashCoreApiSecret.value);
-    await controllers.core.waitCoreStart();
-    await controllers.core.updateConfig();
-    if (Platform.isMacOS &&
-        controllers.service.serviceMode.value &&
-        controllers.config.clashCoreTunEnable.value &&
-        controllers.config.clashCoreDns.isNotEmpty) {
-      await MacSystemDns.instance.set([controllers.config.clashCoreDns.value]);
-    }
-    if (controllers.config.config.value.setSystemProxy) await SystemProxy.instance.set(controllers.core.proxyConfig);
-    coreIsRuning.value = true;
-    if (await windowManager.isVisible()) await controllers.window.handleWindowShow();
+    coreStatus.value = RunningState.stoped;
   }
 
   Future<void> reloadClashCore() async {
@@ -172,6 +216,10 @@ class ServiceController extends GetxController {
     await stopClashCore();
     await controllers.config.readClashCoreApi();
     await startClashCore();
-    BotToast.showText(text: '重启成功');
+    if (coreStatus.value == RunningState.error) {
+      BotToast.showText(text: '重启失败');
+    } else {
+      BotToast.showText(text: '重启成功');
+    }
   }
 }

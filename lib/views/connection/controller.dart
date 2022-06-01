@@ -35,7 +35,7 @@ class PageConnectionController extends BasePageController {
 
   @override
   Future<void> initDate() async {
-    if (!controllers.service.coreIsRuning.value) return;
+    if (controllers.service.coreStatus.value != RunningState.running) return;
     if (controllers.pageHome.pageController.page != 3) return;
     if (controllers.pageConnection.connectionsWsChannel != null) return;
     log.debug('call: initDate in page-connection');

@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:clash_for_flutter/utils/utils.dart';
 import 'package:flutter/widgets.dart' hide MenuItem;
 
 import 'package:tray_manager/tray_manager.dart';
@@ -25,10 +26,12 @@ class PageMainController extends BasePageController {
     await controllers.pageSetting.applyLanguage(Locale(language[0], language[1]));
 
     // init service
-    await controllers.service.initService();
+    await controllers.service.startService();
+    if (controllers.service.serviceStatus.value != RunningState.running) return;
 
     // init clash core
     await controllers.service.startClashCore();
+    if (controllers.service.coreStatus.value != RunningState.running) return;
     await controllers.core.updateVersion();
     // await controllers.pageProxie.updateDate();
 
@@ -70,7 +73,7 @@ class PageMainController extends BasePageController {
   }
 
   Future<void> handleExit() async {
-    await controllers.service.exitServiceForUserMode();
+    await controllers.service.stopService();
     await trayManager.destroy();
     await windowManager.destroy();
     // exit(0);

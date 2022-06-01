@@ -71,7 +71,7 @@ class _PageSettingState extends State<PageSetting> {
                     title: 'setting_service_open'.tr,
                     child: Switch(
                       value: controllers.service.serviceMode.value,
-                      onChanged: disabled ? null : controllers.service.serviceModeSwitch,
+                      onChanged: !controllers.service.isCanOperationService ? null : controllers.service.serviceModeSwitch,
                     ),
                   ),
                   const SettingItem(),

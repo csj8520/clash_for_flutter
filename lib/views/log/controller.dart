@@ -6,6 +6,7 @@ import 'package:clash_for_flutter/controllers/controllers.dart';
 import 'package:clash_for_flutter/types/clash_service.dart';
 import 'package:clash_for_flutter/utils/base_page_controller.dart';
 import 'package:clash_for_flutter/utils/logger.dart';
+import 'package:clash_for_flutter/utils/utils.dart';
 import 'package:day/day.dart';
 import 'package:get/get.dart';
 import 'package:web_socket_channel/io.dart';
@@ -44,7 +45,7 @@ class PageLogController extends BasePageController {
 
   @override
   Future<void> initDate() async {
-    if (!controllers.service.serviceIsRuning.value) return;
+    if (controllers.service.serviceStatus.value != RunningState.running) return;
     if (controllers.pageHome.pageController.page != 1) return;
     if (logWsChannel != null) return;
     log.debug('call: initDate in page-log');

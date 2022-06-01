@@ -42,14 +42,6 @@ class CoreController extends GetxController {
     );
   }
 
-  Future<void> waitCoreStart() async {
-    while (true) {
-      final hello = await fetchHello();
-      if (hello) return;
-      await Future.delayed(const Duration(milliseconds: 100));
-    }
-  }
-
   setApi(String apiAddress, String apiSecret) {
     address.value = apiAddress;
     secret.value = apiSecret;
@@ -57,13 +49,8 @@ class CoreController extends GetxController {
     if (apiSecret.isNotEmpty) dio.options.headers['Authorization'] = 'Bearer $apiSecret';
   }
 
-  Future<bool> fetchHello() async {
-    try {
-      final res = await dio.get('/');
-      return res.data['hello'] == 'clash';
-    } catch (e) {
-      return false;
-    }
+  Future<dynamic> fetchHello() async {
+    return await dio.get('/');
   }
 
   Future<void> updateVersion() async {

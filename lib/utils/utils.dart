@@ -56,3 +56,11 @@ extension MapIndex<T> on List<T> {
     return list;
   }
 }
+
+enum RunningState {
+  starting,
+  running,
+  stopping,
+  stoped,
+  error,
+}

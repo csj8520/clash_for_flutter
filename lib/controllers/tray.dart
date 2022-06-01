@@ -47,7 +47,7 @@ class TrayController extends GetxController with TrayListener {
       ),
       MenuItem(
         label: 'tray_restart_clash_core'.tr,
-        disabled: disabled,
+        disabled: !controllers.service.isCanOperationCore,
         onClick: handleClickRestartClashCore,
       ),
       MenuItem.checkbox(
@@ -59,7 +59,7 @@ class TrayController extends GetxController with TrayListener {
       MenuItem.checkbox(
         label: 'setting_service_open'.tr,
         checked: controllers.service.serviceMode.value,
-        disabled: disabled,
+        disabled: !controllers.service.isCanOperationService,
         onClick: handleClickServiceModeSwitch,
       ),
       MenuItem.submenu(
