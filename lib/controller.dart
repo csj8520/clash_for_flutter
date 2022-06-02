@@ -41,13 +41,15 @@ class PageMainController extends BasePageController {
   void watchExit() {
     // watch process kill
     // ref https://github.com/dart-lang/sdk/issues/12170
-    // TODO: test windows
-    // for macos 任务管理器退出进程
-    ProcessSignal.sigterm.watch().listen((_) {
-      stdout.writeln('exit: sigterm');
-      handleExit();
-    });
-    // for macos ctrl+c
+    if (Platform.isMacOS) {
+      // windows not support https://github.com/dart-lang/sdk/issues/28603
+      // for macos 任务管理器退出进程
+      ProcessSignal.sigterm.watch().listen((_) {
+        stdout.writeln('exit: sigterm');
+        handleExit();
+      });
+    }
+    // for macos, windows ctrl+c
     ProcessSignal.sigint.watch().listen((_) {
       stdout.writeln('exit: sigint');
       handleExit();
