@@ -4,6 +4,7 @@
 
 list(APPEND FLUTTER_PLUGIN_LIST
   protocol_handler
+  screen_retriever
   tray_manager
   url_launcher_windows
   window_manager

@@ -9,22 +9,15 @@
 
 int APIENTRY wWinMain(_In_ HINSTANCE instance, _In_opt_ HINSTANCE prev,
                       _In_ wchar_t *command_line, _In_ int show_command) {
-  HWND hwnd = ::FindWindow(L"FLUTTER_RUNNER_WIN32_WINDOW", L"clash");
-  if (hwnd != NULL) {
-    DispatchToProtocolHandler(hwnd);
-
-    ::ShowWindow(hwnd, SW_NORMAL);
-    ::SetForegroundWindow(hwnd);
-    return EXIT_FAILURE;
-  }
   // Attach to console when present (e.g., 'flutter run') or create a
   // new console when running with a debugger.
 
-  // https://github.com/biyidev/biyi/commit/66ad34c21c221460c0bd7c47a743259f5e15a38d
-  HWND hWnd = ::FindWindow(L"FLUTTER_RUNNER_WIN32_WINDOW", L"Clash For Flutter");
-  if (hWnd != NULL) {
-    ::ShowWindow(hWnd, SW_NORMAL);
-    ::SetForegroundWindow(hWnd);
+  // https://github.com/biyidev/biyi/blob/152bc7bbced37ba41ea6de42830a001c09f093b4/windows/runner/main.cpp#L12-L19
+  HWND hwnd = ::FindWindow(L"FLUTTER_RUNNER_WIN32_WINDOW", L"Clash For Flutter");
+  if (hwnd != NULL) {
+    DispatchToProtocolHandler(hwnd);
+    ::ShowWindow(hwnd, SW_NORMAL);
+    ::SetForegroundWindow(hwnd);
     return EXIT_FAILURE;
   }
 

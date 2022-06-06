@@ -30,9 +30,9 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await windowManager.ensureInitialized();
   await protocolHandler.register('clash');
-  WindowOptions windowOptions = WindowOptions(
-    size: const Size(950, 600),
-    minimumSize: const Size(500, 400),
+  WindowOptions windowOptions = const WindowOptions(
+    size: Size(950, 600),
+    minimumSize: Size(500, 400),
     center: true,
     backgroundColor: Colors.transparent,
     // skipTaskbar: Platform.isMacOS,

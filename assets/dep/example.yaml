@@ -56,11 +56,10 @@ dns:
     - 119.29.29.29
     - "[2001:da8::666]:53"
 
-# windows 使用 system 模式防火墙需要允许访问公用网络
 tun:
   enable: true
-  # stack: system # or system
-  stack: gvisor # windows need use gvisor
+  stack: system
+  # stack: gvisor
   dns-hijack:
     - 198.18.0.2:53 # when `fake-ip-range` is 198.18.0.1/16, should hijack 198.18.0.2:53
   auto-route: true # auto set global route for Windows
@@ -336,6 +335,8 @@ rule-providers:
 rules:
   # - DOMAIN,pub.dev,🌎 国外网站
   # - DOMAIN,translate.googleapis.com,🌎 国外网站
+  # # https://github.com/Dreamacro/clash/issues/1663#issuecomment-1075815348
+  # - DOMAIN-SUFFIX,msftconnecttest.com,🌎 国外网站
 
   # - RULE-SET,private,DIRECT
   # - RULE-SET,lancidr,DIRECT,no-resolve

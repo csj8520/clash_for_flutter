@@ -84,7 +84,7 @@ packages:
       name: cupertino_icons
       url: "https://pub.flutter-io.cn"
     source: hosted
-    version: "1.0.4"
+    version: "1.0.5"
   day:
     dependency: "direct main"
     description:
@@ -105,7 +105,7 @@ packages:
       name: easy_table
       url: "https://pub.flutter-io.cn"
     source: hosted
-    version: "1.4.0"
+    version: "1.5.1"
   fake_async:
     dependency: transitive
     description:
@@ -162,7 +162,7 @@ packages:
       name: get
       url: "https://pub.flutter-io.cn"
     source: hosted
-    version: "4.6.3"
+    version: "4.6.5"
   http:
     dependency: transitive
     description:
@@ -218,7 +218,7 @@ packages:
       name: menu_base
       url: "https://pub.flutter-io.cn"
     source: hosted
-    version: "0.1.0"
+    version: "0.1.1"
   meta:
     dependency: transitive
     description:
@@ -261,6 +261,13 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "2.1.1"
+  screen_retriever:
+    dependency: transitive
+    description:
+      name: screen_retriever
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "0.1.2"
   shortid:
     dependency: transitive
     description:
@@ -433,7 +440,7 @@ packages:
       name: window_manager
       url: "https://pub.flutter-io.cn"
     source: hosted
-    version: "0.2.3"
+    version: "0.2.5"
   yaml:
     dependency: "direct main"
     description:
@@ -443,4 +450,4 @@ packages:
     version: "3.1.1"
 sdks:
   dart: ">=2.17.0 <3.0.0"
-  flutter: ">=2.10.0"
+  flutter: ">=3.0.0"
