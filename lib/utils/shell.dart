@@ -32,7 +32,8 @@ Future<ProcessResult> runAsAdmin(String executable, List<String> arguments) asyn
       [executable, ...arguments],
     );
   } else {
-    UnimplementedError();
-    return await Process.run("", []);
+    // https://blog.csdn.net/weixin_49867936/article/details/109612918
+    // https://askubuntu.com/questions/287845/how-to-configure-pkexec
+    return await Process.run("pkexec", [executable, ...arguments]);
   }
 }

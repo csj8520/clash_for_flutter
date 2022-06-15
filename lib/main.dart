@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 import 'package:bot_toast/bot_toast.dart';
@@ -29,11 +31,12 @@ void main() async {
   // init windowManager
   WidgetsFlutterBinding.ensureInitialized();
   await windowManager.ensureInitialized();
-  await protocolHandler.register('clash');
-  WindowOptions windowOptions = const WindowOptions(
-    size: Size(950, 600),
-    minimumSize: Size(500, 400),
-    center: true,
+  if (!Platform.isLinux) await protocolHandler.register('clash');
+  WindowOptions windowOptions = WindowOptions(
+    size: const Size(950, 600),
+    minimumSize: const Size(500, 400),
+    // TODO: fix it
+    center: !Platform.isLinux,
     backgroundColor: Colors.transparent,
     // skipTaskbar: Platform.isMacOS,
     // titleBarStyle: Platform.isMacOS ? TitleBarStyle.hidden : TitleBarStyle.normal,

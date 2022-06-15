@@ -40,6 +40,10 @@ class ServiceController extends GetxController {
 
   Future<void> startService() async {
     serviceStatus.value = RunningState.starting;
+    if (Platform.isLinux) {
+      await fixBinaryExecutePermissions(Files.assetsClashService);
+      await fixBinaryExecutePermissions(Files.assetsClashCore);
+    }
     try {
       final data = await fetchInfo();
       serviceMode.value = data.mode == 'service-mode';
@@ -49,6 +53,14 @@ class ServiceController extends GetxController {
     }
     serviceStatus.value = RunningState.running;
     if (await windowManager.isVisible()) await controllers.window.handleWindowShow();
+  }
+
+  Future<void> fixBinaryExecutePermissions(File file) async {
+    final stat = await file.stat();
+    // 0b001000000
+    final has = (stat.mode & 64) == 64;
+    if (has) return;
+    await Process.run('chmod', ['+x', file.path]);
   }
 
   Future<void> startUserModeService() async {
