@@ -39,8 +39,9 @@ class _PageLogState extends State<PageLog> {
             padding: const EdgeInsets.only(left: 10, top: 10, right: 10, bottom: 10),
             itemBuilder: (context, index) {
               final it = controllers.pageLog.logs[controllers.pageLog.logs.length - index - 1];
-              return RichText(
-                text: TextSpan(
+              // TODO: 跨行复制
+              return SelectableText.rich(
+                TextSpan(
                   style: const TextStyle(height: 1.5, fontSize: 13, color: Color(0xff73808f)),
                   children: [
                     TextSpan(text: it.time).textColor(const Color(0xfffb923c)),

@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:bot_toast/bot_toast.dart';
 import 'package:window_manager/window_manager.dart';
 import 'package:protocol_handler/protocol_handler.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 
 import 'package:clash_for_flutter/i18n/i18n.dart';
 
@@ -65,6 +66,12 @@ void main() async {
   runApp(GetMaterialApp(
     translations: I18n(),
     locale: Get.deviceLocale,
+    localizationsDelegates: const [
+      GlobalMaterialLocalizations.delegate,
+      GlobalCupertinoLocalizations.delegate,
+      GlobalWidgetsLocalizations.delegate,
+    ],
+    supportedLocales: I18n.locales,
     home: const MyApp(),
   ));
 }
