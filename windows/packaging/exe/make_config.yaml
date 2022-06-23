@@ -3,4 +3,6 @@ publisher_name: csj8520
 publisher_url: https://github.com/csj8520/clash_for_flutter
 display_name: Clash For Flutter
 create_desktop_icon: true
-install_dir_name: Clash For Flutter
+install_dir_name: '{autopf}\Clash For Flutter'
+script_template: setup.iss
+setup_icon_file: ..\..\assets\logo\logo.ico

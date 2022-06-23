@@ -95,7 +95,7 @@ BEGIN
             VALUE "FileVersion", VERSION_AS_STRING "\0"
             VALUE "InternalName", "Clash For Flutter" "\0"
             VALUE "LegalCopyright", "Copyright (C) 2022 csj8520. All rights reserved." "\0"
-            VALUE "OriginalFilename", "Clash For Flutter.exe" "\0"
+            VALUE "OriginalFilename", "Clash-For-Flutter.exe" "\0"
             VALUE "ProductName", "Clash For Flutter" "\0"
             VALUE "ProductVersion", VERSION_AS_STRING "\0"
         END
