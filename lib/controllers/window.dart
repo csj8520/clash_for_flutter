@@ -5,6 +5,9 @@ import 'package:clash_for_flutter/utils/logger.dart';
 import 'package:clash_for_flutter/controllers/controllers.dart';
 
 class WindowController extends GetxController with WindowListener {
+  var event = ''.obs;
+  bool show = false;
+
   void initWindow() {
     windowManager.addListener(this);
   }
@@ -12,7 +15,11 @@ class WindowController extends GetxController with WindowListener {
   @override
   Future<void> onWindowFocus() async {
     log.debug('call: onWindowFocus');
-    await handleUpdateData();
+    if (!show) {
+      await handleWindowShow();
+    } else {
+      await handleUpdateData();
+    }
   }
 
   @override
@@ -33,8 +40,14 @@ class WindowController extends GetxController with WindowListener {
     await handleWindowShow();
   }
 
+  @override
+  void onWindowEvent(String eventName) {
+    event.value = eventName;
+  }
+
   Future<void> handleWindowShow() async {
     log.debug('call: handleWindowShow');
+    show = true;
     await controllers.pageMain.initDate();
     await controllers.pageProxie.initDate();
     await controllers.pageLog.initDate();
@@ -57,6 +70,7 @@ class WindowController extends GetxController with WindowListener {
 
   Future<void> handleWindowHide() async {
     log.debug('call: handleWindowHide');
+    show = false;
     await controllers.pageMain.clearDate();
     await controllers.pageProxie.clearDate();
     await controllers.pageLog.clearDate();
@@ -74,7 +88,6 @@ class WindowController extends GetxController with WindowListener {
   Future<void> showWindow() async {
     log.debug('call: showWindow');
     await windowManager.show();
-    await handleWindowShow();
   }
 
   @override

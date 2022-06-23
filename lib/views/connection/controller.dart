@@ -128,6 +128,7 @@ class PageConnectionController extends BasePageController {
     _connectionsCache.clear();
     connect.value.connections.clear();
     connect.refresh();
+    model.replaceRows(connect.value.connections);
   }
 
   void handleShowDetail(ConnectConnection? connection) {

@@ -7,6 +7,11 @@ import 'package:clash_for_flutter/utils/base_page_controller.dart';
 
 class PageRuleController extends BasePageController {
   @override
+  Future<void> initDate() async {
+    await updateDate();
+  }
+
+  @override
   Future<void> updateDate() async {
     if (controllers.service.coreStatus.value != RunningState.running) return;
     if (controllers.pageHome.pageController.page != 2) return;

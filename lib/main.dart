@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:async';
 
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
@@ -63,17 +64,7 @@ void main() async {
   Get.put(PageProfileController());
   Get.put(PageConnectionController());
 
-  runApp(GetMaterialApp(
-    translations: I18n(),
-    locale: Get.deviceLocale,
-    localizationsDelegates: const [
-      GlobalMaterialLocalizations.delegate,
-      GlobalCupertinoLocalizations.delegate,
-      GlobalWidgetsLocalizations.delegate,
-    ],
-    supportedLocales: I18n.locales,
-    home: const MyApp(),
-  ));
+  runApp(const MyApp());
 }
 
 class MyApp extends StatefulWidget {
@@ -84,17 +75,32 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
+  late StreamSubscription<String> listenShow;
+
   @override
   void initState() {
     controllers.init();
     controllers.pageMain.init(context);
+    // TODO: 关闭后，使用 tray 打开白屏
+    // 编译后无效
+    listenShow = controllers.window.event.stream.listen((event) async {
+      if (['focus', 'restore'].contains(event)) await Get.forceAppUpdate();
+    });
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return GetMaterialApp(
       title: 'Clash For Flutter',
+      translations: I18n(),
+      locale: Get.deviceLocale,
+      localizationsDelegates: const [
+        GlobalMaterialLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+      ],
+      supportedLocales: I18n.locales,
       theme: ThemeData(
         primarySwatch: Colors.blue,
         primaryColor: const Color(0xff2c8af8),
@@ -109,6 +115,7 @@ class _MyAppState extends State<MyApp> {
   @override
   void dispose() {
     controllers.pageMain.dispose();
+    listenShow.cancel();
     super.dispose();
   }
 }
