@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 import 'package:styled_widget/styled_widget.dart';
@@ -18,11 +20,28 @@ class PageProxie extends StatefulWidget {
 
 class _PageProxieState extends State<PageProxie> {
   final ScrollController _scrollController = ScrollController();
+  late StreamSubscription<RunningState> _coreStatusSub;
+  late StreamSubscription<bool> _windowStatusSub;
+  late StreamSubscription<String> _windowEventSub;
 
   @override
   void initState() {
-    controllers.pageProxie.updateDate();
+    _handleStateChange();
+    _coreStatusSub = controllers.service.coreStatus.stream.listen(_handleStateChange);
+    _windowStatusSub = controllers.window.isVisible.stream.listen(_handleStateChange);
+    _windowEventSub = controllers.window.event.stream.listen((e) {
+      if (e == 'focus') _handleStateChange();
+    });
     super.initState();
+  }
+
+  void _handleStateChange([dynamic _]) async {
+    final coreStatus = controllers.service.coreStatus.value;
+    final isVisible = controllers.window.isVisible.value;
+
+    if (coreStatus == RunningState.running && isVisible) {
+      await controllers.pageProxie.updateDate();
+    }
   }
 
   static const groups = [
@@ -115,6 +134,9 @@ class _PageProxieState extends State<PageProxie> {
 
   @override
   void dispose() {
+    _coreStatusSub.cancel();
+    _windowStatusSub.cancel();
+    _windowEventSub.cancel();
     _scrollController.dispose();
     super.dispose();
   }

@@ -7,27 +7,17 @@ import 'package:get/get.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import 'package:clash_for_flutter/i18n/i18n.dart';
-import 'package:clash_for_flutter/utils/utils.dart';
 import 'package:clash_for_flutter/utils/logger.dart';
 import 'package:clash_for_flutter/utils/system_proxy.dart';
 import 'package:clash_for_flutter/controllers/controllers.dart';
-import 'package:clash_for_flutter/utils/base_page_controller.dart';
 
-class PageSettingController extends BasePageController {
+class PageSettingController extends GetxController {
   final List<String> modes = ['global', 'rule', 'direct', 'script'];
 
   var systemProxySwitchIng = false.obs;
 
-  @override
-  Future<void> initDate() async {
-    await updateDate();
-  }
-
-  @override
   Future<void> updateDate() async {
-    if (controllers.service.coreStatus.value != RunningState.running) return;
-    if (controllers.pageHome.pageController.page != 5) return;
-    log.debug('call: updateDate in page-setting');
+    log.debug('controller.setting.updateDate()');
     await controllers.core.updateConfig();
   }
 

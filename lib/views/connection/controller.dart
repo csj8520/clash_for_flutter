@@ -17,9 +17,8 @@ import 'package:clash_for_flutter/utils/logger.dart';
 import 'package:clash_for_flutter/types/connect.dart';
 import 'package:clash_for_flutter/widgets/dialogs.dart';
 import 'package:clash_for_flutter/controllers/controllers.dart';
-import 'package:clash_for_flutter/utils/base_page_controller.dart';
 
-class PageConnectionController extends BasePageController {
+class PageConnectionController extends GetxController {
   var connect = Connect(downloadTotal: 0, uploadTotal: 0, connections: []).obs;
 
   var detail = Rx<ConnectConnection?>(null);
@@ -33,12 +32,8 @@ class PageConnectionController extends BasePageController {
   StreamSubscription<dynamic>? _connectionsWsChannelSub;
   Map<String, ConnectConnection> _connectionsCache = {};
 
-  @override
-  Future<void> initDate() async {
-    if (controllers.service.coreStatus.value != RunningState.running) return;
-    if (controllers.pageHome.pageController.page != 3) return;
-    if (controllers.pageConnection.connectionsWsChannel != null) return;
-    log.debug('call: initDate in page-connection');
+  Future<void> init() async {
+    log.debug('controller.connection.init()');
     model
       ..removeColumns()
       ..addColumns([
@@ -117,10 +112,8 @@ class PageConnectionController extends BasePageController {
     _connectionsWsChannelSub = connectionsWsChannel!.stream.listen(_handleStream, onDone: _handleOnDone, onError: (_) => _handleOnDone());
   }
 
-  @override
-  Future<void> clearDate() async {
-    if (connectionsWsChannel == null && _connectionsWsChannelSub == null) return;
-    log.debug('call: clearDate in page-connection');
+  Future<void> clear() async {
+    log.debug('controller.connection.clear()');
     await _connectionsWsChannelSub?.cancel();
     _connectionsWsChannelSub = null;
     await connectionsWsChannel?.sink.close(WebSocketStatus.goingAway);

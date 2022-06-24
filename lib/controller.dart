@@ -1,14 +1,14 @@
 import 'dart:io';
 
-import 'package:clash_for_flutter/utils/utils.dart';
-import 'package:flutter/widgets.dart' hide MenuItem;
-
+import 'package:get/get.dart';
 import 'package:tray_manager/tray_manager.dart';
+import 'package:flutter/widgets.dart' hide MenuItem;
 import 'package:window_manager/window_manager.dart';
-import 'package:clash_for_flutter/controllers/controllers.dart';
-import 'package:clash_for_flutter/utils/base_page_controller.dart';
 
-class PageMainController extends BasePageController {
+import 'package:clash_for_flutter/utils/utils.dart';
+import 'package:clash_for_flutter/controllers/controllers.dart';
+
+class PageMainController extends GetxController {
   late BuildContext context;
 
   Future<void> init(BuildContext context) async {

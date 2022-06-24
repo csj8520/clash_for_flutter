@@ -41,6 +41,7 @@ class SettingPort extends StatelessWidget {
   Widget build(BuildContext context) {
     return Text(text)
         .textColor(Colors.grey.shade800)
+        .fontSize(14)
         .alignment(Alignment.center)
         .padding(all: 5)
         .decorated(border: Border.all(width: 1, color: Colors.grey.shade300), borderRadius: BorderRadius.circular(4))

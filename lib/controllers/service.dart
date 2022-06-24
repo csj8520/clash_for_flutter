@@ -17,7 +17,6 @@ import 'package:clash_for_flutter/utils/system_dns.dart';
 import 'package:clash_for_flutter/utils/system_proxy.dart';
 import 'package:clash_for_flutter/types/clash_service.dart';
 import 'package:clash_for_flutter/controllers/controllers.dart';
-import 'package:window_manager/window_manager.dart';
 
 final headers = {"User-Agent": "clash-for-flutter/0.0.1"};
 
@@ -52,7 +51,6 @@ class ServiceController extends GetxController {
       if (serviceStatus.value == RunningState.error) return;
     }
     serviceStatus.value = RunningState.running;
-    if (await windowManager.isVisible()) await controllers.window.handleWindowShow();
   }
 
   Future<void> fixBinaryExecutePermissions(File file) async {
@@ -202,7 +200,6 @@ class ServiceController extends GetxController {
       }
       if (controllers.config.config.value.setSystemProxy) await SystemProxy.instance.set(controllers.core.proxyConfig);
       coreStatus.value = RunningState.running;
-      if (await windowManager.isVisible()) await controllers.window.handleWindowShow();
     } catch (e) {
       log.error(e);
       BotToast.showText(text: e.toString());

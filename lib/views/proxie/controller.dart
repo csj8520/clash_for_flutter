@@ -1,15 +1,13 @@
 import 'dart:async';
 
-import 'package:clash_for_flutter/utils/utils.dart';
 import 'package:get/get.dart';
 import 'package:bot_toast/bot_toast.dart';
 
 import 'package:clash_for_flutter/types/proxie.dart';
 import 'package:clash_for_flutter/utils/logger.dart';
 import 'package:clash_for_flutter/controllers/controllers.dart';
-import 'package:clash_for_flutter/utils/base_page_controller.dart';
 
-class PageProxieController extends BasePageController {
+class PageProxieController extends GetxController {
   // 策略组
   var proxieGroups = <ProxieProxiesItem>[].obs;
   // 代理集
@@ -27,20 +25,12 @@ class PageProxieController extends BasePageController {
     ProxieProxieType.loadbalance,
   ];
 
-  @override
-  Future<void> initDate() async {
-    await updateDate();
-  }
-
-  @override
   Future<void> updateDate() async {
-    if (controllers.service.coreStatus.value != RunningState.running) return;
-    if (controllers.pageHome.pageController.page != 0) return;
-    log.debug('call: updateDate in page-proxie');
+    log.debug('controller.proxie.updateDate()');
 
+    await controllers.core.updateConfig();
     await _updateProxie();
     await _updateProxieProvider();
-    await controllers.core.updateConfig();
     allProxies.clear();
     for (final provide in proxieProviders) {
       for (final it in provide.proxies) {

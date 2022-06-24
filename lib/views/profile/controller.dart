@@ -5,9 +5,8 @@ import 'package:bot_toast/bot_toast.dart';
 import 'package:clash_for_flutter/types/config.dart';
 import 'package:clash_for_flutter/widgets/dialogs.dart';
 import 'package:clash_for_flutter/controllers/controllers.dart';
-import 'package:clash_for_flutter/utils/base_page_controller.dart';
 
-class PageProfileController extends BasePageController {
+class PageProfileController extends GetxController {
   bool validatorSub(ConfigSub newSub, ConfigSub? oldSub) {
     if (!RegExp(r'^[^.].*\.ya?ml$').hasMatch(newSub.name)) {
       BotToast.showText(text: 'profile_config_ext_error'.tr);

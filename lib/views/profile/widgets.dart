@@ -44,9 +44,12 @@ class _PageProfileSubItemState extends State<PageProfileSubItem> {
         controller: _loadingController,
         child: Row(
           children: [
-            Text(widget.sub.name).padding(right: 5).expanded(),
-            Text(widget.sub.url ?? '-').padding(right: 5).expanded(),
-            Text(widget.sub.updateTime == null ? '-' : Day().from(Day.fromUnix(widget.sub.updateTime! * 1000))).padding(right: 5).expanded(),
+            Text(widget.sub.name).fontSize(14).padding(right: 5).expanded(),
+            Text(widget.sub.url ?? '-').fontSize(14).padding(right: 5).expanded(),
+            Text(widget.sub.updateTime == null ? '-' : Day().from(Day.fromUnix(widget.sub.updateTime! * 1000)))
+                .fontSize(14)
+                .padding(right: 5)
+                .expanded(),
             Row(
               children: [
                 IconButton(

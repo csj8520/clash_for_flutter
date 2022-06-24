@@ -37,9 +37,9 @@ class _PageProfileState extends State<PageProfile> {
                   children: [
                     Row(
                       children: [
-                        Text('profile_columens_config_name'.tr).textColor(Colors.grey.shade600).expanded(),
-                        Text('profile_columens_url'.tr).textColor(Colors.grey.shade600).expanded(),
-                        Text('profile_columens_update_time'.tr).textColor(Colors.grey.shade600).expanded(),
+                        Text('profile_columens_config_name'.tr).textColor(Colors.grey.shade600).fontSize(14).expanded(),
+                        Text('profile_columens_url'.tr).textColor(Colors.grey.shade600).fontSize(14).expanded(),
+                        Text('profile_columens_update_time'.tr).textColor(Colors.grey.shade600).fontSize(14).expanded(),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.end,
                           children: [

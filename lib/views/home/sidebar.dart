@@ -104,10 +104,7 @@ class _SlideBarButtonState extends State<_SlideBarButton> with TickerProviderSta
       ),
       child: TextButton(
         onPressed: widget.onPressed,
-        child: Text(
-          widget.label,
-          style: TextStyle(color: Color(widget.value ? 0xffffffff : 0xff909399)),
-        ),
+        child: Text(widget.label).textColor(Color(widget.value ? 0xffffffff : 0xff909399)).fontSize(14),
       ),
     ).clipRRect(all: 18).padding(top: 5, bottom: 5);
   }

@@ -23,6 +23,6 @@ class _CardHeadState extends State<CardHead> {
             .textShadow(color: const Color(0x662c8af8), blurRadius: 6, offset: const Offset(0, 2)),
         widget.suffix,
       ].whereType<Widget>().toList(),
-    ).padding(top: 10, bottom: 10);
+    ).height(50);
   }
 }

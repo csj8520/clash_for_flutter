@@ -1,6 +1,8 @@
-import 'package:easy_table/easy_table.dart';
+import 'dart:async';
+
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
+import 'package:easy_table/easy_table.dart';
 import 'package:styled_widget/styled_widget.dart';
 
 import 'package:clash_for_flutter/utils/utils.dart';
@@ -26,15 +28,31 @@ class _PageConnectionState extends State<PageConnection> {
   // static const Color headerBgColor = Color(0xfff3f6f9);
   static const Color headerTextColor = Color(0xff909399);
   static const Color dividerColor = Color(0x10555555);
+  late StreamSubscription<RunningState> _coreStatusSub;
+  late StreamSubscription<bool> _windowStatusSub;
 
   @override
   void initState() {
-    controllers.pageConnection.initDate();
+    _handleStateChange();
+    _coreStatusSub = controllers.service.coreStatus.stream.listen(_handleStateChange);
+    _windowStatusSub = controllers.window.isVisible.stream.listen(_handleStateChange);
+
     _filterTextEditingController
       ..text = controllers.pageConnection.filter
       ..addListener(() => controllers.pageConnection.filter = _filterTextEditingController.text);
 
     super.initState();
+  }
+
+  void _handleStateChange([dynamic _]) async {
+    final coreStatus = controllers.service.coreStatus.value;
+    final isVisible = controllers.window.isVisible.value;
+
+    if (coreStatus == RunningState.running && isVisible) {
+      await controllers.pageConnection.init();
+    } else {
+      await controllers.pageConnection.clear();
+    }
   }
 
   @override
@@ -106,11 +124,11 @@ class _PageConnectionState extends State<PageConnection> {
                       hoveredColor: hoverColor,
                     ),
                     cell: CellThemeData(
-                      textStyle: TextStyle(color: Color(0xff54759a)),
+                      textStyle: TextStyle(color: Color(0xff54759a), fontSize: 14),
                       alignment: Alignment.center,
                     ),
                     headerCell: HeaderCellThemeData(
-                      textStyle: TextStyle(color: headerTextColor),
+                      textStyle: TextStyle(color: headerTextColor, fontSize: 14),
                       alignment: Alignment.center,
                       sortIconColor: headerTextColor,
                       ascendingIcon: Icons.keyboard_arrow_up,
@@ -146,7 +164,9 @@ class _PageConnectionState extends State<PageConnection> {
 
   @override
   void dispose() {
-    controllers.pageConnection.clearDate();
+    _coreStatusSub.cancel();
+    _windowStatusSub.cancel();
+    controllers.pageConnection.clear();
     _filterTextEditingController.dispose();
     super.dispose();
   }

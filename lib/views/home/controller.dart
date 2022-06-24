@@ -1,6 +1,6 @@
+import 'package:get/get.dart';
 import 'package:flutter/widgets.dart';
-import 'package:clash_for_flutter/utils/base_page_controller.dart';
 
-class PageHomeController extends BasePageController {
+class PageHomeController extends GetxController {
   final PageController pageController = PageController(initialPage: 1);
 }

@@ -4,12 +4,13 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:window_manager/window_manager.dart';
 
 import 'package:clash_for_flutter/utils/utils.dart';
-import 'package:clash_for_flutter/utils/logger.dart';
 import 'package:clash_for_flutter/types/proxie.dart';
 import 'package:clash_for_flutter/controllers/controllers.dart';
 
 class TrayController extends GetxController with TrayListener {
   late Menu trayMenu;
+
+  var show = false.obs;
 
   Future<void> initTray() async {
     await trayManager.setIcon('assets/logo/logo.ico');
@@ -18,7 +19,6 @@ class TrayController extends GetxController with TrayListener {
   }
 
   Future<void> updateTray() async {
-    log.debug('call: updateTray');
     final visible = await windowManager.isVisible();
     final disabled = !controllers.service.isRunning;
 
@@ -79,18 +79,19 @@ class TrayController extends GetxController with TrayListener {
 
   @override
   void onTrayIconMouseDown() async {
-    log.debug('call: onTrayIconMouseDown');
     await controllers.window.showWindow();
   }
 
   @override
   void onTrayIconRightMouseDown() async {
-    log.debug('call: onTrayIconRightMouseDown');
+    show.value = true;
     await updateTray();
-    trayManager.popUpContextMenu();
+    await trayManager.popUpContextMenu();
+    show.value = false;
   }
 
   Future<void> handleClickShow(MenuItem menuItem) async {
+    show.value = false;
     if (menuItem.checked == true) {
       await controllers.window.closeWindow();
     } else {

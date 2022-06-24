@@ -44,6 +44,7 @@ void main() async {
     // titleBarStyle: Platform.isMacOS ? TitleBarStyle.hidden : TitleBarStyle.normal,
   );
   await windowManager.waitUntilReadyToShow(windowOptions);
+  await windowManager.setPreventClose(true);
   // await windowManager.show();
 
   // init controllers
@@ -75,16 +76,16 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  late StreamSubscription<String> listenShow;
+  late StreamSubscription<bool> listenShow;
 
   @override
   void initState() {
     controllers.init();
     controllers.pageMain.init(context);
-    // TODO: 关闭后，使用 tray 打开白屏
-    // 编译后无效
-    listenShow = controllers.window.event.stream.listen((event) async {
-      if (['focus', 'restore'].contains(event)) await Get.forceAppUpdate();
+    listenShow = controllers.window.isVisible.stream.listen((event) async {
+      if (!event) return;
+      await Future.delayed(const Duration(milliseconds: 100));
+      await Get.forceAppUpdate();
     });
     super.initState();
   }

@@ -132,7 +132,7 @@ class _PageProxieGroupState extends State<PageProxieGroup> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Row(children: [
-          Text(widget.title, overflow: TextOverflow.ellipsis).width(80),
+          Text(widget.title, overflow: TextOverflow.ellipsis).fontSize(14).width(80),
           Tag(widget.type).padding(left: 10),
         ]).width(titleWidth),
         Wrap(spacing: spacing, runSpacing: 6, children: children).constrained(maxHeight: expand ? double.infinity : 24).clipRect().expanded(),
