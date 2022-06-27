@@ -65,7 +65,25 @@ void main() async {
   Get.put(PageProfileController());
   Get.put(PageConnectionController());
 
-  runApp(const MyApp());
+  runApp(GetMaterialApp(
+    title: 'Clash For Flutter',
+    translations: I18n(),
+    locale: Get.deviceLocale,
+    localizationsDelegates: const [
+      GlobalMaterialLocalizations.delegate,
+      GlobalCupertinoLocalizations.delegate,
+      GlobalWidgetsLocalizations.delegate,
+    ],
+    supportedLocales: I18n.locales,
+    theme: ThemeData(
+      primarySwatch: Colors.blue,
+      primaryColor: const Color(0xff2c8af8),
+      errorColor: const Color(0xfff56c6c),
+    ),
+    builder: BotToastInit(),
+    navigatorObservers: [BotToastNavigatorObserver()],
+    home: const MyApp(),
+  ));
 }
 
 class MyApp extends StatefulWidget {
@@ -92,25 +110,7 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
-    return GetMaterialApp(
-      title: 'Clash For Flutter',
-      translations: I18n(),
-      locale: Get.deviceLocale,
-      localizationsDelegates: const [
-        GlobalMaterialLocalizations.delegate,
-        GlobalCupertinoLocalizations.delegate,
-        GlobalWidgetsLocalizations.delegate,
-      ],
-      supportedLocales: I18n.locales,
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-        primaryColor: const Color(0xff2c8af8),
-        errorColor: const Color(0xfff56c6c),
-      ),
-      builder: BotToastInit(),
-      navigatorObservers: [BotToastNavigatorObserver()],
-      home: const PageHome(),
-    );
+    return const PageHome();
   }
 
   @override
