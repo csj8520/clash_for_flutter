@@ -39,7 +39,9 @@ class _PageProfileState extends State<PageProfile> {
                       children: [
                         Text('profile_columens_config_name'.tr).textColor(Colors.grey.shade600).fontSize(14).expanded(),
                         Text('profile_columens_url'.tr).textColor(Colors.grey.shade600).fontSize(14).expanded(),
-                        Text('profile_columens_update_time'.tr).textColor(Colors.grey.shade600).fontSize(14).expanded(),
+                        Text('profile_columens_update_time'.tr).textColor(Colors.grey.shade600).fontSize(14).width(100),
+                        Text('profile_columens_traffic'.tr).textColor(Colors.grey.shade600).fontSize(14).width(80),
+                        Text('profile_columens_expire'.tr).textColor(Colors.grey.shade600).fontSize(14).width(80),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.end,
                           children: [

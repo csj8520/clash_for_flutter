@@ -24,7 +24,7 @@ class PageLogController extends GetxController {
       final type = res?[1] ?? 'debug';
       final msg = res?[2] ?? it;
 
-      logs.add(ClashServiceLog(time: Day.fromString(time).format('YYYY-MM-DD HH:mm:ss'), type: type, msg: msg));
+      logs.add(ClashServiceLog(time: Day.fromString(time).toLocal().format('YYYY-MM-DD HH:mm:ss'), type: type, msg: msg));
       if (logs.length > 500) logs.removeRange(0, 200);
     }
   }

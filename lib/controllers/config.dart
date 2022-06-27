@@ -110,11 +110,17 @@ class ConfigController extends GetxController {
   Future<bool> updateSub(ConfigSub sub) async {
     if ((sub.url ?? '').isEmpty) return false;
     final res = await dio.get(sub.url!);
+    final subInfo = res.headers['subscription-userinfo'];
     final file = File(path.join(Paths.config.path, sub.name));
     final oldConfig = await file.exists() ? await file.readAsString() : '';
     final changed = oldConfig != res.data;
     if (changed) await file.writeAsString(res.data);
     sub.updateTime = DateTime.now().millisecondsSinceEpoch ~/ 1000;
+    sub.info = null;
+    if (subInfo != null) {
+      final info = Map.fromEntries(subInfo.first.split(RegExp(r';\s*')).map((e) => e.split('=')).map((e) => MapEntry(e[0], int.parse(e[1]))));
+      sub.info = ConfigSubInfo.fromJson(info);
+    }
     await setSub(sub.name, sub);
     return changed;
   }

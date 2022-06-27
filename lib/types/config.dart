@@ -53,23 +53,63 @@ class ConfigSub {
     required this.name,
     this.url,
     this.updateTime,
+    this.info,
   });
+
   late String name;
   String? url;
   int? updateTime;
+  ConfigSubInfo? info;
 
   ConfigSub.fromJson(Map<String, dynamic> json) {
     name = json['name'];
     url = json['url'];
     updateTime = json['updateTime'];
+    if (json['info'] != null) info = ConfigSubInfo.fromJson(json['info']);
   }
 
   Map<String, dynamic> toJson() {
-    final data = <String, dynamic>{};
-    data['name'] = name;
-    data['url'] = url;
-    data['updateTime'] = updateTime;
-    return data;
+    return {
+      'name': name,
+      'url': url,
+      'updateTime': updateTime,
+      'info': info?.toJson(),
+    };
+  }
+
+  @override
+  String toString() {
+    return toJson().toString();
+  }
+}
+
+class ConfigSubInfo {
+  ConfigSubInfo({
+    this.upload,
+    this.download,
+    this.total,
+    this.expire,
+  });
+
+  int? upload;
+  int? download;
+  int? total;
+  int? expire;
+
+  ConfigSubInfo.fromJson(Map<String, dynamic> json) {
+    upload = json['upload'];
+    download = json['download'];
+    total = json['total'];
+    expire = json['expire'];
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'upload': upload,
+      'download': download,
+      'total': total,
+      'expire': expire,
+    };
   }
 
   @override
