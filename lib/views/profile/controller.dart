@@ -28,6 +28,7 @@ class PageProfileController extends GetxController {
     final subDate = await showEditProfileDialog(context, sub: sub, title: 'profile_config_edit'.tr, validator: (n) => validatorSub(n, sub));
     if (subDate == null) return;
     if (subDate.name == sub.name && subDate.url == sub.url) return;
+    subDate.info = sub.info;
     await controllers.config.setSub(sub.name, subDate);
   }
 
@@ -39,7 +40,7 @@ class PageProfileController extends GetxController {
         await controllers.service.reloadClashCore();
       }
     } catch (e) {
-      BotToast.showText(text: 'profile_config_update_error'.trParams({"name": sub.name}));
+      BotToast.showText(text: 'profile_config_update_error'.trParams({"name": sub.name, "msg": e.toString()}));
     }
   }
 

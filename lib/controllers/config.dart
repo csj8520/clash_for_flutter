@@ -118,7 +118,8 @@ class ConfigController extends GetxController {
     sub.updateTime = DateTime.now().millisecondsSinceEpoch ~/ 1000;
     sub.info = null;
     if (subInfo != null) {
-      final info = Map.fromEntries(subInfo.first.split(RegExp(r';\s*')).map((e) => e.split('=')).map((e) => MapEntry(e[0], int.parse(e[1]))));
+      final info = Map.fromEntries(
+          subInfo.first.split(RegExp(r';\s*')).where((s) => s.isNotEmpty).map((e) => e.split('=')).map((e) => MapEntry(e[0], int.parse(e[1]))));
       sub.info = ConfigSubInfo.fromJson(info);
     }
     await setSub(sub.name, sub);

@@ -108,8 +108,8 @@ class _DetailItem extends StatelessWidget {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(title).fontWeight(FontWeight.w700).width(65),
-        Text(content).textColor(contentColor).expanded(),
+        Text(title).fontSize(14).fontWeight(FontWeight.w700).width(65),
+        Text(content).fontSize(14).textColor(contentColor).expanded(),
       ],
     ).padding(top: 10, bottom: 10);
   }

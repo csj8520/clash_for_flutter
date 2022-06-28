@@ -43,7 +43,7 @@ class _RuleProviderItemState extends State<RuleProviderItem> {
               .padding(right: 5),
           IconButton(icon: Icon(Icons.refresh, color: Theme.of(context).primaryColor, size: 20), onPressed: widget.onUpdate == null ? null : _update),
         ],
-      ).padding(all: 20).border(bottom: 1, color: const Color(0xffe5e7eb)),
+      ).padding(all: 15).border(bottom: 1, color: const Color(0xffe5e7eb)),
     );
   }
 }

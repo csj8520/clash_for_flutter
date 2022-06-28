@@ -42,17 +42,23 @@ class _PageProfileSubItemState extends State<PageProfileSubItem> {
   @override
   Widget build(BuildContext context) {
     final sub = widget.sub;
+    final used = (sub.info?.upload ?? 0) + (sub.info?.download ?? 0);
+    final total = sub.info?.total ?? 0;
+    final expire = (sub.info?.expire ?? 0) * 1000;
     return Loading(
         controller: _loadingController,
         child: Row(
           children: [
-            Text(sub.name).fontSize(14).padding(right: 10).expanded(),
-            Text(sub.url ?? '-').fontSize(14).padding(right: 10).expanded(),
+            Text(sub.name, overflow: TextOverflow.ellipsis, maxLines: 2).fontSize(14).padding(right: 10).expanded(),
+            Tooltip(
+              message: sub.url ?? '',
+              child: Text(sub.url ?? '-', overflow: TextOverflow.ellipsis, maxLines: 2).fontSize(14).padding(right: 10),
+            ).expanded(),
             Text(sub.updateTime == null ? '-' : Day().from(Day.fromUnix(sub.updateTime! * 1000))).fontSize(14).padding(right: 5).width(100),
-            Text(sub.info == null ? '-' : '${bytesToSize((sub.info?.upload ?? 0) + (sub.info?.download ?? 0))}\n${bytesToSize(sub.info?.total ?? 0)}')
-                .fontSize(14)
+            Text((used == 0 && total == 0) ? '-' : '${used == 0 ? '-' : bytesToSize(used)}\n${total == 0 ? '-' : bytesToSize(total)}')
+                .fontSize(12)
                 .width(80),
-            Text(sub.info == null ? '-' : Day.fromUnix((sub.info?.expire ?? 0) * 1000).format('YYYY-MM-DD')).fontSize(14).width(80),
+            Text(expire == 0 ? '-' : Day.fromUnix(expire).format('YYYY-MM-DD')).fontSize(14).width(80),
             Row(
               children: [
                 IconButton(
@@ -81,6 +87,19 @@ class _PageProfileSubItemState extends State<PageProfileSubItem> {
               ],
             ).width(160),
           ],
-        ).padding(left: 15, right: 15, all: 5).border(bottom: 1, color: Colors.grey.shade200));
+        ).padding(left: 15, right: 15, all: 5).height(50).border(bottom: 1, color: Colors.grey.shade200));
   }
 }
+
+// extension TextOverflowUtil on String {
+//   /// 将flutter系统默认的单词截断模式转换成字符截断模式
+//   /// 通过向文本中插入宽度为0的空格实现
+//   String toCharacterBreakStr() {
+//     String breakWord = '';
+//     for (var it in runes) {
+//       breakWord += String.fromCharCode(it);
+//       breakWord += '\u200B';
+//     }
+//     return breakWord;
+//   }
+// }

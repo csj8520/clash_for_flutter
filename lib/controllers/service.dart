@@ -228,6 +228,7 @@ class ServiceController extends GetxController {
     if (coreStatus.value == RunningState.error) {
       BotToast.showText(text: '重启失败');
     } else {
+      await controllers.core.updateVersion();
       BotToast.showText(text: '重启成功');
     }
   }
