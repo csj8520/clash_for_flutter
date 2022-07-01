@@ -45,8 +45,8 @@ class CoreController extends GetxController {
   setApi(String apiAddress, String apiSecret) {
     address.value = apiAddress;
     secret.value = apiSecret;
-    dio.options.baseUrl = 'http://$apiAddress';
-    if (apiSecret.isNotEmpty) dio.options.headers['Authorization'] = 'Bearer $apiSecret';
+    dio.options.baseUrl = 'http://${address.value}';
+    dio.options.headers['Authorization'] = 'Bearer ${secret.value}';
   }
 
   Future<dynamic> fetchHello() async {
@@ -68,12 +68,24 @@ class CoreController extends GetxController {
     await updateConfig();
   }
 
+  // type updateConfigRequest struct {
+  // 	Path    string `json:"path"`
+  // 	Payload string `json:"payload"`
+  // }
+  // https://github.com/Dreamacro/clash/blob/c231fd14666d6ea05d6a75eaba6db69f9eee5ae9/hub/route/configs.go#L95
+  Future<void> fetchReloadConfig(Map<String, String> config) async {
+    await dio.put('/configs', data: config);
+  }
+
   Future<void> fetchCloseConnections(String id) async {
     await dio.delete('/connections/${Uri.encodeComponent(id)}');
   }
 
   IOWebSocketChannel fetchConnectionsWs() {
-    return IOWebSocketChannel.connect(Uri.parse('ws://${address.value}/connections?token=${secret.value}'));
+    return IOWebSocketChannel.connect(
+      Uri.parse('ws://${address.value}/connections'),
+      headers: {"Authorization": dio.options.headers["Authorization"]},
+    );
   }
 
   Future updateRuleProvider() async {

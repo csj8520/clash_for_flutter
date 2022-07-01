@@ -26,7 +26,7 @@ class PageSettingController extends GetxController {
     final host = address[0];
     final port = address[1];
     final url =
-        'http${host == '127.0.0.1' ? 's' : ''}://clash.razord.top/#/proxies?host=$host&port=$port&secret=${controllers.config.clashCoreApiSecret.value}';
+        'http${host == '127.0.0.1' ? 's' : ''}://clash.razord.top/#/proxies?host=$host&port=$port&secret=${Uri.encodeComponent(controllers.config.clashCoreApiSecret.value)}';
     launchUrl(Uri.parse(url));
   }
 

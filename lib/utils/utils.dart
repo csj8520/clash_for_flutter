@@ -10,7 +10,7 @@ String bytesToSize(int bytes) {
   return '${(bytes / math.pow(k, i)).toStringAsFixed(2)} ${sizes[i]}';
 }
 
-final Map<String, Map<String, String>> _copyCommandLineProxyTypes = {
+const Map<String, Map<String, String>> _copyCommandLineProxyTypes = {
   'cmd': {'prefix': 'set ', 'quot': '', 'join': '&&'},
   'bash': {'prefix': 'export ', 'quot': '"', 'join': ' && '},
   'powershell': {'prefix': '\$env:', 'quot': '"', 'join': ';'},
