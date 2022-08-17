@@ -24,10 +24,52 @@ class _PageConnectionState extends State<PageConnection> {
 
   static Color hoverColor(int _) => const Color(0x10111111);
   static Color rowColor(int _) => Colors.white;
-
   // static const Color headerBgColor = Color(0xfff3f6f9);
   static const Color headerTextColor = Color(0xff909399);
   static const Color dividerColor = Color(0x10555555);
+
+  static const EasyTableThemeData _easyTableThemeData = EasyTableThemeData(
+    decoration: BoxDecoration(),
+    topCornerBorderColor: Colors.transparent,
+    topCornerColor: Colors.transparent,
+    bottomCornerBorderColor: Colors.transparent,
+    bottomCornerColor: Colors.transparent,
+    columnDividerThickness: 1,
+    columnDividerColor: Colors.transparent,
+    header: HeaderThemeData(
+      bottomBorderHeight: 1,
+      bottomBorderColor: dividerColor,
+      columnDividerColor: dividerColor,
+    ),
+    row: RowThemeData(
+      dividerThickness: 0,
+      color: rowColor,
+      hoveredColor: hoverColor,
+    ),
+    cell: CellThemeData(
+      textStyle: TextStyle(color: Color(0xff54759a), fontSize: 14),
+      alignment: Alignment.center,
+    ),
+    headerCell: HeaderCellThemeData(
+      textStyle: TextStyle(color: headerTextColor, fontSize: 14),
+      alignment: Alignment.center,
+      sortIconColor: headerTextColor,
+      ascendingIcon: Icons.keyboard_arrow_up,
+      descendingIcon: Icons.keyboard_arrow_down,
+    ),
+    scrollbar: TableScrollbarThemeData(
+      thickness: 8,
+      radius: Radius.circular(4),
+      thumbColor: Color.fromARGB(100, 0, 0, 0),
+      verticalColor: Colors.transparent,
+      verticalBorderColor: Colors.transparent,
+      unpinnedHorizontalColor: Colors.transparent,
+      unpinnedHorizontalBorderColor: Colors.transparent,
+      pinnedHorizontalBorderColor: Colors.transparent,
+      pinnedHorizontalColor: Colors.transparent,
+    ),
+  );
+
   late StreamSubscription<RunningState> _coreStatusSub;
   late StreamSubscription<bool> _windowStatusSub;
 
@@ -105,47 +147,7 @@ class _PageConnectionState extends State<PageConnection> {
             child: Stack(
               children: [
                 EasyTableTheme(
-                  data: const EasyTableThemeData(
-                    decoration: BoxDecoration(),
-                    topCornerBorderColor: Colors.transparent,
-                    topCornerColor: Colors.transparent,
-                    bottomCornerBorderColor: Colors.transparent,
-                    bottomCornerColor: Colors.transparent,
-                    columnDividerThickness: 1,
-                    columnDividerColor: Colors.transparent,
-                    header: HeaderThemeData(
-                      bottomBorderHeight: 1,
-                      bottomBorderColor: dividerColor,
-                      columnDividerColor: dividerColor,
-                    ),
-                    row: RowThemeData(
-                      dividerThickness: 0,
-                      color: rowColor,
-                      hoveredColor: hoverColor,
-                    ),
-                    cell: CellThemeData(
-                      textStyle: TextStyle(color: Color(0xff54759a), fontSize: 14),
-                      alignment: Alignment.center,
-                    ),
-                    headerCell: HeaderCellThemeData(
-                      textStyle: TextStyle(color: headerTextColor, fontSize: 14),
-                      alignment: Alignment.center,
-                      sortIconColor: headerTextColor,
-                      ascendingIcon: Icons.keyboard_arrow_up,
-                      descendingIcon: Icons.keyboard_arrow_down,
-                    ),
-                    scrollbar: TableScrollbarThemeData(
-                      thickness: 8,
-                      radius: Radius.circular(4),
-                      thumbColor: Color.fromARGB(100, 0, 0, 0),
-                      verticalColor: Colors.transparent,
-                      verticalBorderColor: Colors.transparent,
-                      unpinnedHorizontalColor: Colors.transparent,
-                      unpinnedHorizontalBorderColor: Colors.transparent,
-                      pinnedHorizontalBorderColor: Colors.transparent,
-                      pinnedHorizontalColor: Colors.transparent,
-                    ),
-                  ),
+                  data: _easyTableThemeData,
                   child: EasyTable<ConnectConnection>(
                     controllers.pageConnection.model,
                     onRowTap: controllers.pageConnection.handleShowDetail,

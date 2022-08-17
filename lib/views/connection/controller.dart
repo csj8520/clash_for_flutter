@@ -24,7 +24,7 @@ class PageConnectionController extends GetxController {
   var detail = Rx<ConnectConnection?>(null);
   var detailClosed = true.obs;
 
-  final EasyTableModel<ConnectConnection> model = EasyTableModel<ConnectConnection>(rows: [], columns: []);
+  EasyTableModel<ConnectConnection>? model;
 
   String filter = '';
 
@@ -34,79 +34,77 @@ class PageConnectionController extends GetxController {
 
   Future<void> init() async {
     log.debug('controller.connection.init()');
-    model
-      ..removeColumns()
-      ..addColumns([
-        EasyTableColumn(
-          name: 'connection_columns_host'.tr,
-          width: 260,
-          // pinned: true,
-          cellAlignment: Alignment.centerLeft,
-          stringValue: (c) => '${c.metadata.host.isNotEmpty ? c.metadata.host : c.metadata.destinationIP}:${c.metadata.destinationPort}',
-        ),
-        EasyTableColumn(
-          name: 'connection_columns_network'.tr,
-          width: 80,
-          stringValue: (c) => c.metadata.network,
-        ),
-        EasyTableColumn(
-          name: 'connection_columns_type'.tr,
-          width: 120,
-          stringValue: (c) => c.metadata.type,
-        ),
-        EasyTableColumn(
-          name: 'connection_columns_chains'.tr,
-          width: 200,
-          cellAlignment: Alignment.centerLeft,
-          stringValue: (c) => c.chains.reversed.join('/'),
-        ),
-        EasyTableColumn(
-          name: 'connection_columns_rule'.tr,
-          width: 140,
-          stringValue: (c) => '${c.rule}(${c.rulePayload})',
-        ),
-        EasyTableColumn(
-          name: 'connection_columns_process'.tr,
-          width: 100,
-          stringValue: (c) => path.basename(c.metadata.processPath),
-        ),
-        EasyTableColumn(
-          name: 'connection_columns_speed'.tr,
-          width: 200,
-          stringValue: (c) {
-            final download = c.speed.download;
-            final upload = c.speed.upload;
-            if (upload == 0 && download == 0) return '-';
-            if (upload == 0) return '↓ ${bytesToSize(download)}/s';
-            if (download == 0) return '↑ ${bytesToSize(upload)}/s';
-            return '↑ ${bytesToSize(upload)}/s ↓ ${bytesToSize(download)}/s';
-          },
-          sort: (a, b) => (a.speed.download + a.speed.upload) - (b.speed.download + b.speed.upload),
-        ),
-        EasyTableColumn(
-          name: 'connection_columns_upload'.tr,
-          width: 100,
-          stringValue: (c) => bytesToSize(c.upload),
-          sort: (a, b) => a.upload - b.upload,
-        ),
-        EasyTableColumn(
-          name: 'connection_columns_download'.tr,
-          width: 100,
-          stringValue: (c) => bytesToSize(c.download),
-          sort: (a, b) => a.download - b.download,
-        ),
-        EasyTableColumn(
-          name: 'connection_columns_source_ip'.tr,
-          width: 140,
-          stringValue: (c) => c.metadata.sourceIP,
-        ),
-        EasyTableColumn(
-          name: 'connection_columns_time'.tr,
-          width: 120,
-          stringValue: (c) => Day().from(Day.fromString(c.start)),
-          sort: (a, b) => a.start.compareTo(b.start),
-        ),
-      ]);
+    model = EasyTableModel<ConnectConnection>(rows: [], columns: [
+      EasyTableColumn(
+        name: 'connection_columns_host'.tr,
+        width: 260,
+        // pinned: true,
+        cellAlignment: Alignment.centerLeft,
+        stringValue: (c) => '${c.metadata.host.isNotEmpty ? c.metadata.host : c.metadata.destinationIP}:${c.metadata.destinationPort}',
+      ),
+      EasyTableColumn(
+        name: 'connection_columns_network'.tr,
+        width: 80,
+        stringValue: (c) => c.metadata.network,
+      ),
+      EasyTableColumn(
+        name: 'connection_columns_type'.tr,
+        width: 120,
+        stringValue: (c) => c.metadata.type,
+      ),
+      EasyTableColumn(
+        name: 'connection_columns_chains'.tr,
+        width: 200,
+        cellAlignment: Alignment.centerLeft,
+        stringValue: (c) => c.chains.reversed.join('/'),
+      ),
+      EasyTableColumn(
+        name: 'connection_columns_rule'.tr,
+        width: 140,
+        stringValue: (c) => '${c.rule}(${c.rulePayload})',
+      ),
+      EasyTableColumn(
+        name: 'connection_columns_process'.tr,
+        width: 100,
+        stringValue: (c) => path.basename(c.metadata.processPath),
+      ),
+      EasyTableColumn(
+        name: 'connection_columns_speed'.tr,
+        width: 200,
+        stringValue: (c) {
+          final download = c.speed.download;
+          final upload = c.speed.upload;
+          if (upload == 0 && download == 0) return '-';
+          if (upload == 0) return '↓ ${bytesToSize(download)}/s';
+          if (download == 0) return '↑ ${bytesToSize(upload)}/s';
+          return '↑ ${bytesToSize(upload)}/s ↓ ${bytesToSize(download)}/s';
+        },
+        sort: (a, b) => (a.speed.download + a.speed.upload) - (b.speed.download + b.speed.upload),
+      ),
+      EasyTableColumn(
+        name: 'connection_columns_upload'.tr,
+        width: 100,
+        stringValue: (c) => bytesToSize(c.upload),
+        sort: (a, b) => a.upload - b.upload,
+      ),
+      EasyTableColumn(
+        name: 'connection_columns_download'.tr,
+        width: 100,
+        stringValue: (c) => bytesToSize(c.download),
+        sort: (a, b) => a.download - b.download,
+      ),
+      EasyTableColumn(
+        name: 'connection_columns_source_ip'.tr,
+        width: 140,
+        stringValue: (c) => c.metadata.sourceIP,
+      ),
+      EasyTableColumn(
+        name: 'connection_columns_time'.tr,
+        width: 120,
+        stringValue: (c) => Day().from(Day.fromString(c.start)),
+        sort: (a, b) => a.start.compareTo(b.start),
+      ),
+    ]);
 
     connectionsWsChannel = controllers.core.fetchConnectionsWs();
     _connectionsWsChannelSub = connectionsWsChannel!.stream.listen(_handleStream, onDone: _handleOnDone, onError: (_) => _handleOnDone());
@@ -121,7 +119,7 @@ class PageConnectionController extends GetxController {
     _connectionsCache.clear();
     connect.value.connections.clear();
     connect.refresh();
-    model.replaceRows(connect.value.connections);
+    model = null;
   }
 
   void handleShowDetail(ConnectConnection? connection) {
@@ -160,7 +158,7 @@ class PageConnectionController extends GetxController {
       }
     }
     _handleFilter();
-    model.replaceRows(connect.value.connections);
+    model!.replaceRows(connect.value.connections);
   }
 
   void _handleOnDone() {
@@ -208,8 +206,8 @@ class PageConnectionController extends GetxController {
 
       connect.value.connections = connect.value.connections.where((it) {
         final List<String> strings = [];
-        for (var i = 0; i < model.columnsLength; i++) {
-          final column = model.columnAt(i);
+        for (var i = 0; i < model!.columnsLength; i++) {
+          final column = model!.columnAt(i);
           if (column.stringValueMapper == null) continue;
           final str = column.stringValueMapper!(it);
           if (str == null || str.isEmpty || str == '-') continue;
