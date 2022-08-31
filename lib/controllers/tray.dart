@@ -14,6 +14,7 @@ class TrayController extends GetxController with TrayListener {
 
   Future<void> initTray() async {
     await trayManager.setIcon('assets/logo/logo.ico');
+    // await trayManager.setTitle('Clash For Flutter');
     updateTray();
     trayManager.addListener(this);
   }

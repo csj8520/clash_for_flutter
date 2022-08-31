@@ -150,7 +150,7 @@ class ServiceController extends GetxController {
   }
 
   Future<void> install() async {
-    final res = await runAsAdmin(Files.assetsClashService.path, ["install", "start"]);
+    final res = await runAsAdmin(Files.assetsClashService.path, ["stop", "uninstall", "install", "start"]);
     log.debug('install', res.stdout, res.stderr);
     if (res.exitCode != 0) throw res.stderr;
     await waitServiceStart();

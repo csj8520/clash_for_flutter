@@ -58,7 +58,7 @@ Name: "{userstartup}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; WorkingDi
 Name: "{userappdata}\Microsoft\Internet Explorer\Quick Launch\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; Tasks: quicklaunchicon
 
 [Run]
-Filename: "{app}\{#ServicePath}"; Parameters: "install start"; Flags: runhidden; Tasks: service; StatusMsg: "{cm:InstallingService}"
+Filename: "{app}\{#ServicePath}"; Parameters: "stop uninstall install start"; Flags: runhidden; Tasks: service; StatusMsg: "{cm:InstallingService}"
 Filename: "{app}\{#MyAppExeName}"; Description: "{cm:LaunchProgram,{#StringChange(MyAppName, '&', '&&')}}"; Flags: nowait postinstall skipifsilent
 
 [UninstallRun]

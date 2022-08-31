@@ -31,60 +31,62 @@ class _ConnectDetailState extends State<ConnectDetail> {
           SingleChildScrollView(
             padding: const EdgeInsets.all(15),
             controller: _scrollController,
-            child: Column(
-              children: [
-                Text('connection_info_title'.tr)
-                    .fontSize(16)
-                    .fontWeight(FontWeight.w700)
-                    .padding(left: 12)
-                    .alignment(Alignment.centerLeft)
-                    .height(32),
-                Column(
-                  children: [
-                    _DetailItem(title: 'connection_info_id'.tr, content: d.id),
-                    Row(children: [
-                      _DetailItem(title: 'connection_info_network'.tr, content: m.network).expanded(),
-                      _DetailItem(title: 'connection_info_inbound'.tr, content: m.type).expanded(),
-                    ]),
-                    _DetailItem(
-                        title: 'connection_info_host'.tr, content: m.host.isEmpty ? 'connection_info_empty'.tr : '${m.host}:${m.destinationPort}'),
-                    _DetailItem(
-                        title: 'connection_info_dst_ip'.tr,
-                        content: m.destinationIP.isEmpty ? 'connection_info_empty'.tr : '${m.destinationIP}:${m.destinationPort}'),
-                    _DetailItem(title: 'connection_info_src_ip'.tr, content: '${m.sourceIP}:${m.sourcePort}'),
-                    _DetailItem(
-                        title: 'connection_info_process'.tr,
-                        content: m.processPath.isEmpty ? 'connection_info_empty'.tr : path.basename(m.processPath)),
-                    _DetailItem(
-                        title: 'connection_info_process_path'.tr, content: m.processPath.isEmpty ? 'connection_info_empty'.tr : m.processPath),
-                    _DetailItem(title: 'connection_info_rule'.tr, content: '${d.rule}(${d.rulePayload})'),
-                    _DetailItem(title: 'connection_info_chains'.tr, content: d.chains.reversed.join(' / ')),
-                    Row(children: [
-                      _DetailItem(title: 'connection_info_upload'.tr, content: bytesToSize(d.upload)).expanded(),
-                      _DetailItem(title: 'connection_info_download'.tr, content: bytesToSize(d.download)).expanded(),
-                    ]),
-                    _DetailItem(
-                        title: 'connection_info_status'.tr,
-                        content: widget.closed ? 'connection_info_closed'.tr : 'connection_info_opening'.tr,
-                        contentColor: Color(widget.closed ? 0xfff56c6c : 0xff67c23a)),
-                    Row(
-                      children: [
-                        Container().expanded(),
-                        TextButton(
-                          style: ButtonStyle(
-                            backgroundColor: MaterialStateProperty.resolveWith(
-                                (states) => states.contains(MaterialState.disabled) ? Colors.grey.shade200 : Colors.red),
-                            shape: MaterialStateProperty.all(const StadiumBorder()),
-                            padding: MaterialStateProperty.all(const EdgeInsets.all(15)),
+            child: SelectionArea(
+              child: Column(
+                children: [
+                  Text('connection_info_title'.tr)
+                      .fontSize(16)
+                      .fontWeight(FontWeight.w700)
+                      .padding(left: 12)
+                      .alignment(Alignment.centerLeft)
+                      .height(32),
+                  Column(
+                    children: [
+                      _DetailItem(title: 'connection_info_id'.tr, content: d.id),
+                      Row(children: [
+                        _DetailItem(title: 'connection_info_network'.tr, content: m.network).expanded(),
+                        _DetailItem(title: 'connection_info_inbound'.tr, content: m.type).expanded(),
+                      ]),
+                      _DetailItem(
+                          title: 'connection_info_host'.tr, content: m.host.isEmpty ? 'connection_info_empty'.tr : '${m.host}:${m.destinationPort}'),
+                      _DetailItem(
+                          title: 'connection_info_dst_ip'.tr,
+                          content: m.destinationIP.isEmpty ? 'connection_info_empty'.tr : '${m.destinationIP}:${m.destinationPort}'),
+                      _DetailItem(title: 'connection_info_src_ip'.tr, content: '${m.sourceIP}:${m.sourcePort}'),
+                      _DetailItem(
+                          title: 'connection_info_process'.tr,
+                          content: m.processPath.isEmpty ? 'connection_info_empty'.tr : path.basename(m.processPath)),
+                      _DetailItem(
+                          title: 'connection_info_process_path'.tr, content: m.processPath.isEmpty ? 'connection_info_empty'.tr : m.processPath),
+                      _DetailItem(title: 'connection_info_rule'.tr, content: '${d.rule}(${d.rulePayload})'),
+                      _DetailItem(title: 'connection_info_chains'.tr, content: d.chains.reversed.join(' / ')),
+                      Row(children: [
+                        _DetailItem(title: 'connection_info_upload'.tr, content: bytesToSize(d.upload)).expanded(),
+                        _DetailItem(title: 'connection_info_download'.tr, content: bytesToSize(d.download)).expanded(),
+                      ]),
+                      _DetailItem(
+                          title: 'connection_info_status'.tr,
+                          content: widget.closed ? 'connection_info_closed'.tr : 'connection_info_opening'.tr,
+                          contentColor: Color(widget.closed ? 0xfff56c6c : 0xff67c23a)),
+                      Row(
+                        children: [
+                          Container().expanded(),
+                          TextButton(
+                            style: ButtonStyle(
+                              backgroundColor: MaterialStateProperty.resolveWith(
+                                  (states) => states.contains(MaterialState.disabled) ? Colors.grey.shade200 : Colors.red),
+                              shape: MaterialStateProperty.all(const StadiumBorder()),
+                              padding: MaterialStateProperty.all(const EdgeInsets.all(15)),
+                            ),
+                            onPressed: widget.closed ? null : () => controllers.core.fetchCloseConnections(widget.connection.id),
+                            child: Text('connection_info_close_connection'.tr).textColor(widget.closed ? Colors.grey.shade400 : Colors.white),
                           ),
-                          onPressed: widget.closed ? null : () => controllers.core.fetchCloseConnections(widget.connection.id),
-                          child: Text('connection_info_close_connection'.tr).textColor(widget.closed ? Colors.grey.shade400 : Colors.white),
-                        ),
-                      ],
-                    ),
-                  ],
-                ).padding(left: 20)
-              ],
+                        ],
+                      ),
+                    ],
+                  ).padding(left: 20)
+                ],
+              ),
             ),
           ).constrained(width: 450, height: double.infinity).decorated(
                 color: Colors.white,
