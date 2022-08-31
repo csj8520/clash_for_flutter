@@ -1,7 +1,6 @@
 import 'dart:io';
 import 'dart:async';
 
-import 'package:day/day.dart';
 import 'package:get/get.dart';
 import 'package:bot_toast/bot_toast.dart';
 import 'package:web_socket_channel/io.dart';
@@ -17,14 +16,14 @@ class PageLogController extends GetxController {
 
   void _handleLog(dynamic event) {
     for (final it in (event as String).split('\n')) {
-      final matchs = RegExp(r'^time="([\d-T:+]+)" level=(\w+) msg="(.+)"$').firstMatch(it.trim());
+      final matchs = RegExp(r'^([\d:]+) (\w+) (.+)$').firstMatch(it.trim());
 
       final res = matchs?.groups([1, 2, 3]);
-      final time = res?[0] ?? '1970-01-01T00:00:00+00:00';
-      final type = res?[1] ?? 'debug';
+      final time = res?[0] ?? '00:00:00';
+      final type = res?[1] ?? 'DBG';
       final msg = res?[2] ?? it;
 
-      logs.add(ClashServiceLog(time: Day.fromString(time).toLocal().format('YYYY-MM-DD HH:mm:ss'), type: type, msg: msg));
+      logs.add(ClashServiceLog(time: time, type: type, msg: msg));
       if (logs.length > 500) logs.removeRange(0, 200);
     }
   }

@@ -20,10 +20,10 @@ class _PageLogState extends State<PageLog> {
   final ScrollController _scrollController = ScrollController();
 
   final Map<String, Color> levelColors = const {
-    "debug": Color(0xff14b8a6),
-    "info": Color(0xff0ea5e9),
-    "warning": Color(0xffec4899),
-    "error": Color(0xfff43f5e),
+    "DBG": Color(0xff14b8a6),
+    "INF": Color(0xff0ea5e9),
+    "WRN": Color(0xffec4899),
+    "ERR": Color(0xfff43f5e),
   };
 
   late StreamSubscription<RunningState> _serviceStatusSub;
@@ -64,7 +64,7 @@ class _PageLogState extends State<PageLog> {
                 TextSpan(
                   style: const TextStyle(height: 1.5, fontSize: 13, color: Color(0xff73808f)),
                   children: [
-                    TextSpan(text: it.time).textColor(const Color(0xfffb923c)),
+                    TextSpan(text: '[${it.time}]').textColor(const Color(0xfffb923c)),
                     TextSpan(text: '  [${it.type.toUpperCase()}]  ').textColor(levelColors[it.type] ?? Colors.black),
                     TextSpan(text: it.msg),
                   ],
