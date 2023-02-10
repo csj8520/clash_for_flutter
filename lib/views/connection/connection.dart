@@ -1,8 +1,8 @@
 import 'dart:async';
 
 import 'package:get/get.dart';
+import 'package:davi/davi.dart';
 import 'package:flutter/material.dart';
-import 'package:easy_table/easy_table.dart';
 import 'package:styled_widget/styled_widget.dart';
 
 import 'package:clash_for_flutter/utils/utils.dart';
@@ -28,7 +28,11 @@ class _PageConnectionState extends State<PageConnection> {
   static const Color headerTextColor = Color(0xff909399);
   static const Color dividerColor = Color(0x10555555);
 
-  static const EasyTableThemeData _easyTableThemeData = EasyTableThemeData(
+  static Widget sortIconBuilder(DaviSortDirection direction, SortIconColors color) => direction == DaviSortDirection.ascending
+      ? Icon(Icons.keyboard_arrow_up, color: color.ascending, size: 18)
+      : Icon(Icons.keyboard_arrow_down, color: color.descending, size: 18);
+
+  static const DaviThemeData _daviThemeData = DaviThemeData(
     decoration: BoxDecoration(),
     topCornerBorderColor: Colors.transparent,
     topCornerColor: Colors.transparent,
@@ -44,7 +48,7 @@ class _PageConnectionState extends State<PageConnection> {
     row: RowThemeData(
       dividerThickness: 0,
       color: rowColor,
-      hoveredColor: hoverColor,
+      hoverBackground: hoverColor,
     ),
     cell: CellThemeData(
       textStyle: TextStyle(color: Color(0xff54759a), fontSize: 14),
@@ -53,9 +57,8 @@ class _PageConnectionState extends State<PageConnection> {
     headerCell: HeaderCellThemeData(
       textStyle: TextStyle(color: headerTextColor, fontSize: 14),
       alignment: Alignment.center,
-      sortIconColor: headerTextColor,
-      ascendingIcon: Icons.keyboard_arrow_up,
-      descendingIcon: Icons.keyboard_arrow_down,
+      sortIconColors: SortIconColors(ascending: headerTextColor, descending: headerTextColor),
+      sortIconBuilder: sortIconBuilder,
     ),
     scrollbar: TableScrollbarThemeData(
       thickness: 8,
@@ -146,9 +149,9 @@ class _PageConnectionState extends State<PageConnection> {
           CardView(
             child: Stack(
               children: [
-                EasyTableTheme(
-                  data: _easyTableThemeData,
-                  child: EasyTable<ConnectConnection>(
+                DaviTheme(
+                  data: _daviThemeData,
+                  child: Davi<ConnectConnection>(
                     controllers.pageConnection.model,
                     onRowTap: controllers.pageConnection.handleShowDetail,
                   ),

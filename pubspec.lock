@@ -105,6 +105,14 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "1.0.5"
+  davi:
+    dependency: "direct main"
+    description:
+      name: davi
+      sha256: c47ff1da5bb0930a8c725030af2b14528e470ff2e28a863c4f3d710133bdbe7e
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "3.2.0"
   day:
     dependency: "direct main"
     description:
@@ -121,14 +129,6 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "4.0.6"
-  easy_table:
-    dependency: "direct main"
-    description:
-      name: easy_table
-      sha256: f0e56201108ed7259ef527965e886eef295d0bc9b2ec5e79581379a4a26988d6
-      url: "https://pub.flutter-io.cn"
-    source: hosted
-    version: "1.6.0"
   fake_async:
     dependency: transitive
     description:

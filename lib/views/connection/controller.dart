@@ -3,7 +3,7 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:day/day.dart';
-import 'package:easy_table/easy_table.dart';
+import 'package:davi/davi.dart';
 import 'package:day/plugins/relative_time.dart';
 
 import 'package:get/get.dart';
@@ -24,7 +24,7 @@ class PageConnectionController extends GetxController {
   var detail = Rx<ConnectConnection?>(null);
   var detailClosed = true.obs;
 
-  EasyTableModel<ConnectConnection>? model;
+  DaviModel<ConnectConnection>? model;
 
   String filter = '';
 
@@ -34,41 +34,41 @@ class PageConnectionController extends GetxController {
 
   Future<void> init() async {
     log.debug('controller.connection.init()');
-    model = EasyTableModel<ConnectConnection>(rows: [], columns: [
-      EasyTableColumn(
+    model = DaviModel<ConnectConnection>(rows: [], columns: [
+      DaviColumn(
         name: 'connection_columns_host'.tr,
         width: 260,
         // pinned: true,
         cellAlignment: Alignment.centerLeft,
         stringValue: (c) => '${c.metadata.host.isNotEmpty ? c.metadata.host : c.metadata.destinationIP}:${c.metadata.destinationPort}',
       ),
-      EasyTableColumn(
+      DaviColumn(
         name: 'connection_columns_network'.tr,
         width: 80,
         stringValue: (c) => c.metadata.network,
       ),
-      EasyTableColumn(
+      DaviColumn(
         name: 'connection_columns_type'.tr,
         width: 120,
         stringValue: (c) => c.metadata.type,
       ),
-      EasyTableColumn(
+      DaviColumn(
         name: 'connection_columns_chains'.tr,
         width: 200,
         cellAlignment: Alignment.centerLeft,
         stringValue: (c) => c.chains.reversed.join('/'),
       ),
-      EasyTableColumn(
+      DaviColumn(
         name: 'connection_columns_rule'.tr,
         width: 140,
         stringValue: (c) => '${c.rule}(${c.rulePayload})',
       ),
-      EasyTableColumn(
+      DaviColumn(
         name: 'connection_columns_process'.tr,
         width: 100,
         stringValue: (c) => path.basename(c.metadata.processPath),
       ),
-      EasyTableColumn(
+      DaviColumn(
         name: 'connection_columns_speed'.tr,
         width: 200,
         stringValue: (c) {
@@ -79,30 +79,30 @@ class PageConnectionController extends GetxController {
           if (download == 0) return '↑ ${bytesToSize(upload)}/s';
           return '↑ ${bytesToSize(upload)}/s ↓ ${bytesToSize(download)}/s';
         },
-        sort: (a, b) => (a.speed.download + a.speed.upload) - (b.speed.download + b.speed.upload),
+        dataComparator: (a, b, _) => (a.speed.download + a.speed.upload) - (b.speed.download + b.speed.upload),
       ),
-      EasyTableColumn(
+      DaviColumn(
         name: 'connection_columns_upload'.tr,
         width: 100,
         stringValue: (c) => bytesToSize(c.upload),
-        sort: (a, b) => a.upload - b.upload,
+        dataComparator: (a, b, _) => a.upload - b.upload,
       ),
-      EasyTableColumn(
+      DaviColumn(
         name: 'connection_columns_download'.tr,
         width: 100,
         stringValue: (c) => bytesToSize(c.download),
-        sort: (a, b) => a.download - b.download,
+        dataComparator: (a, b, _) => a.download - b.download,
       ),
-      EasyTableColumn(
+      DaviColumn(
         name: 'connection_columns_source_ip'.tr,
         width: 140,
         stringValue: (c) => c.metadata.sourceIP,
       ),
-      EasyTableColumn(
+      DaviColumn(
         name: 'connection_columns_time'.tr,
         width: 120,
         stringValue: (c) => Day().from(Day.fromString(c.start)),
-        sort: (a, b) => a.start.compareTo(b.start),
+        dataComparator: (a, b, _) => a.start.compareTo(b.start),
       ),
     ]);
 

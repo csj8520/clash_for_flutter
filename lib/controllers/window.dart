@@ -9,8 +9,8 @@ class WindowController extends GetxController with WindowListener {
   var isVisible = false.obs;
 
   void initWindow() async {
-    // windowManager.addListener(this);
-    // isVisible.value = await windowManager.isVisible();
+    windowManager.addListener(this);
+    isVisible.value = await windowManager.isVisible();
   }
 
   @override
