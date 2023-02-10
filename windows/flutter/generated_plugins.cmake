@@ -5,6 +5,7 @@
 list(APPEND FLUTTER_PLUGIN_LIST
   protocol_handler
   screen_retriever
+  sentry_flutter
   tray_manager
   url_launcher_windows
   vclibs

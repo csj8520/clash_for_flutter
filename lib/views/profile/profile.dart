@@ -1,4 +1,3 @@
-import 'package:dio/dio.dart';
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -11,8 +10,6 @@ import 'package:clash_for_flutter/const/const.dart';
 import 'package:clash_for_flutter/views/profile/setting.dart';
 import 'package:clash_for_flutter/views/profile/widgets.dart';
 import 'package:clash_for_flutter/controllers/controllers.dart';
-
-final dio = Dio();
 
 class PageProfile extends StatefulWidget {
   const PageProfile({Key? key}) : super(key: key);

@@ -7,6 +7,7 @@ import 'package:get/get.dart';
 import 'package:path/path.dart' as path;
 import 'package:flutter/foundation.dart';
 import 'package:bot_toast/bot_toast.dart';
+import 'package:sentry_dio/sentry_dio.dart';
 import 'package:web_socket_channel/io.dart';
 
 import 'package:clash_for_flutter/utils/utils.dart';
@@ -36,6 +37,10 @@ class ServiceController extends GetxController {
       ![RunningState.starting, RunningState.stopping].contains(coreStatus.value);
   bool get isCanOperationCore =>
       serviceStatus.value == RunningState.running && ![RunningState.starting, RunningState.stopping].contains(coreStatus.value);
+
+  ServiceController() {
+    dio.addSentry(captureFailedRequests: true);
+  }
 
   Future<void> startService() async {
     serviceStatus.value = RunningState.starting;

@@ -4,6 +4,7 @@ import 'dart:async';
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 import 'package:bot_toast/bot_toast.dart';
+import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:window_manager/window_manager.dart';
 import 'package:protocol_handler/protocol_handler.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -39,7 +40,7 @@ void main() async {
     minimumSize: const Size(500, 400),
     // TODO: fix it
     center: !Platform.isLinux,
-    backgroundColor: Colors.transparent,
+    // backgroundColor: Colors.transparent, // https://github.com/leanflutter/window_manager/issues/293
     // skipTaskbar: Platform.isMacOS,
     // titleBarStyle: Platform.isMacOS ? TitleBarStyle.hidden : TitleBarStyle.normal,
   );
@@ -65,25 +66,38 @@ void main() async {
   Get.put(PageProfileController());
   Get.put(PageConnectionController());
 
-  runApp(GetMaterialApp(
-    title: 'Clash For Flutter',
-    translations: I18n(),
-    locale: Get.deviceLocale,
-    localizationsDelegates: const [
-      GlobalMaterialLocalizations.delegate,
-      GlobalCupertinoLocalizations.delegate,
-      GlobalWidgetsLocalizations.delegate,
-    ],
-    supportedLocales: I18n.locales,
-    theme: ThemeData(
-      primarySwatch: Colors.blue,
-      primaryColor: const Color(0xff2c8af8),
-      errorColor: const Color(0xfff56c6c),
+  await SentryFlutter.init(
+    (options) {
+      options.dsn = 'https://cf8215f2f40b4197ac87161b5694a7f3@o305870.ingest.sentry.io/4504115594657792';
+      // Set tracesSampleRate to 1.0 to capture 100% of transactions for performance monitoring.
+      // We recommend adjusting this value in production.
+      options.tracesSampleRate = 1.0;
+    },
+    appRunner: () => runApp(
+      DefaultAssetBundle(
+        bundle: SentryAssetBundle(),
+        child: GetMaterialApp(
+          title: 'Clash For Flutter',
+          translations: I18n(),
+          locale: Get.deviceLocale,
+          localizationsDelegates: const [
+            GlobalMaterialLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+          ],
+          supportedLocales: I18n.locales,
+          theme: ThemeData(
+            primarySwatch: Colors.blue,
+            primaryColor: const Color(0xff2c8af8),
+            errorColor: const Color(0xfff56c6c),
+          ),
+          builder: BotToastInit(),
+          navigatorObservers: [BotToastNavigatorObserver(), SentryNavigatorObserver()],
+          home: const MyApp(),
+        ),
+      ),
     ),
-    builder: BotToastInit(),
-    navigatorObservers: [BotToastNavigatorObserver()],
-    home: const MyApp(),
-  ));
+  );
 }
 
 class MyApp extends StatefulWidget {

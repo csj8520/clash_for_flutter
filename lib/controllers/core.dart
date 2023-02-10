@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:get/get.dart';
 import 'package:web_socket_channel/io.dart';
+import 'package:sentry_dio/sentry_dio.dart';
 
 import 'package:clash_for_flutter/types/rule.dart';
 import 'package:clash_for_flutter/types/proxie.dart';
@@ -29,6 +30,10 @@ class CoreController extends GetxController {
 
   var ruleProvider = RuleProvider(providers: {}).obs;
   var rule = Rule(rules: []).obs;
+
+  CoreController() {
+    dio.addSentry(captureFailedRequests: true);
+  }
 
   SystemProxyConfig get proxyConfig {
     final mixedPort = config.value.mixedPort == 0 ? null : config.value.mixedPort;

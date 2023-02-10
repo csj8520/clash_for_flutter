@@ -4,6 +4,7 @@ import 'package:dio/dio.dart';
 import 'package:get/get.dart';
 import 'package:yaml/yaml.dart';
 import 'package:path/path.dart' as path;
+import 'package:sentry_dio/sentry_dio.dart';
 import 'package:flutter_emoji/flutter_emoji.dart';
 
 import 'package:clash_for_flutter/const/const.dart';
@@ -30,6 +31,7 @@ class ConfigController extends GetxController {
   var clashCoreTunEnable = false.obs;
 
   Future<void> initConfig() async {
+    dio.addSentry(captureFailedRequests: true);
     if (!await Paths.config.exists()) await Paths.config.create(recursive: true);
     if (!await Files.configCountryMmdb.exists()) await Files.assetsCountryMmdb.copy(Files.configCountryMmdb.path);
     if (Platform.isWindows && !await Files.configWintun.exists()) await Files.assetsWintun.copy(Files.configWintun.path);
