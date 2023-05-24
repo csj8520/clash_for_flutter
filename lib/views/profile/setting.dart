@@ -68,7 +68,7 @@ class _PageProfileSettingState extends State<PageProfileSetting> {
                       .decorated(border: Border.all(width: 1, color: Colors.grey.shade300), borderRadius: BorderRadius.circular(4)),
                 ],
               ).padding(left: 15, right: 15).expanded(),
-              Row().padding(left: 15, right: 15).expanded(),
+              const Row().padding(left: 15, right: 15).expanded(),
             ],
           ).padding(top: 10, bottom: 10),
         ],

@@ -31,7 +31,7 @@ class ConfigController extends GetxController {
   var clashCoreTunEnable = false.obs;
 
   Future<void> initConfig() async {
-    dio.addSentry(captureFailedRequests: true);
+    dio.addSentry();
     if (!await Paths.config.exists()) await Paths.config.create(recursive: true);
     if (!await Files.configCountryMmdb.exists()) await Files.assetsCountryMmdb.copy(Files.configCountryMmdb.path);
     if (Platform.isWindows && !await Files.configWintun.exists()) await Files.assetsWintun.copy(Files.configWintun.path);

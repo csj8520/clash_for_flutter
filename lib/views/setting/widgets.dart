@@ -25,7 +25,7 @@ class SettingItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (title == null && child == null) return Row();
+    if (title == null && child == null) return const Row();
     return [
       Text(title ?? '').fontSize(14).textColor(const Color(0xff54859a)).expanded(),
       child ?? Container().expanded(),

@@ -39,7 +39,7 @@ class ServiceController extends GetxController {
       serviceStatus.value == RunningState.running && ![RunningState.starting, RunningState.stopping].contains(coreStatus.value);
 
   ServiceController() {
-    dio.addSentry(captureFailedRequests: true);
+    dio.addSentry();
   }
 
   Future<void> startService() async {

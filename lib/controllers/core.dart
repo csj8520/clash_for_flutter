@@ -32,7 +32,7 @@ class CoreController extends GetxController {
   var rule = Rule(rules: []).obs;
 
   CoreController() {
-    dio.addSentry(captureFailedRequests: true);
+    dio.addSentry();
   }
 
   SystemProxyConfig get proxyConfig {
